@@ -1,0 +1,25 @@
+{
+  "name": "ai-playbook-cli",
+  "version": "1.0.0",
+  "description": "CLI for the AI Agent Patterns Playbook — search patterns, get recommendations, explore relations",
+  "type": "module",
+  "bin": {
+    "ai-playbook": "./index.js"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "patterns",
+    "playbook",
+    "cli",
+    "mcp",
+    "llm"
+  ],
+  "author": "Murilo Scigliano",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muriloscigliano/ai-playbook.git",
+    "directory": "cli"
+  },
+  "license": "MIT"
+}
