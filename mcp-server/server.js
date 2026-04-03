@@ -14,11 +14,12 @@
  *   - list_patterns(part?)                    → List all patterns by Part
  *   - get_build_guide(section?)               → Decision trees & phases
  *
- * Design Principles (4 tools):
+ * Design Principles (5 tools):
  *   - get_design_principle(number)            → Get full content of a design principle (1-17)
  *   - get_ux_pattern(number)                  → Get full content of a UX pattern (1-7)
  *   - search_design(query)                    → Search design principles, UX patterns, governance
- *   - get_design_section(section)             → Get taxonomy, governance, rollout, metrics, or framing
+ *   - get_design_section(section)             → Get taxonomy, governance, rollout, metrics, human tasks, constraints, etc.
+ *   - recommend_design(description, focus)    → Unified design + engineering recommendation
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
@@ -532,6 +533,121 @@ server.tool(
   },
 )
 
+// ── Atlas Interaction Vocabulary ──
+
+const HUMAN_TASKS = {
+  authenticate: { name: 'Authenticate', phase: 'Pre-Action', uxPattern: 'P2', principles: [11], playbook: [64] },
+  grant_consent: { name: 'Grant / Revoke Consent', phase: 'Pre-Action', uxPattern: 'P2', principles: [11, 17], playbook: [64, 70] },
+  connect_integration: { name: 'Connect Integration', phase: 'Pre-Action', uxPattern: 'P2', principles: [11], playbook: [64] },
+  upload_file: { name: 'Upload File', phase: 'Pre-Action', uxPattern: 'P1', principles: [6], playbook: [] },
+  type_input: { name: 'Type Input', phase: 'Pre-Action', uxPattern: 'P1', principles: [2], playbook: [] },
+  voice_command: { name: 'Voice Command', phase: 'Pre-Action', uxPattern: 'P1', principles: [6], playbook: [] },
+  gesture_input: { name: 'Gesture Input', phase: 'Pre-Action', uxPattern: 'P1', principles: [6], playbook: [] },
+  navigate_space: { name: 'Navigate Space', phase: 'Pre-Action', uxPattern: null, principles: [7], playbook: [] },
+  adjust_control: { name: 'Adjust Control', phase: 'In-Action', uxPattern: 'P2', principles: [6], playbook: [] },
+  configure_system: { name: 'Configure System', phase: 'Pre-Action', uxPattern: 'P2', principles: [11, 12], playbook: [64] },
+  select_option: { name: 'Select Option', phase: 'In-Action', uxPattern: 'P1', principles: [12], playbook: [] },
+  choose_winner: { name: 'Choose Winner', phase: 'In-Action', uxPattern: 'P4', principles: [4], playbook: [] },
+  start_process: { name: 'Start Process', phase: 'Pre-Action', uxPattern: 'P1', principles: [12], playbook: [20] },
+  stop_process: { name: 'Stop Process', phase: 'In-Action', uxPattern: 'P6', principles: [9], playbook: [20] },
+  compare_options: { name: 'Compare Options', phase: 'In-Action', uxPattern: 'P4', principles: [4], playbook: [] },
+  organize_label: { name: 'Organize & Label', phase: 'Post-Action', uxPattern: 'P5', principles: [1], playbook: [] },
+  review_approve: { name: 'Review & Approve', phase: 'Post-Action', uxPattern: 'P1', principles: [12, 13], playbook: [20, 44] },
+  validate_data: { name: 'Validate Data', phase: 'Post-Action', uxPattern: 'P5', principles: [3], playbook: [] },
+  annotate: { name: 'Annotate & Mark Up', phase: 'Post-Action', uxPattern: 'P3', principles: [1], playbook: [] },
+  provide_feedback: { name: 'Provide Feedback', phase: 'Post-Action', uxPattern: 'P7', principles: [9, 12], playbook: [53] },
+  flag_content: { name: 'Flag Content', phase: 'Post-Action', uxPattern: 'P6', principles: [15], playbook: [50] },
+  edit_content: { name: 'Edit Content', phase: 'Post-Action', uxPattern: 'P1', principles: [4], playbook: [44] },
+  export_download: { name: 'Export / Download', phase: 'Post-Action', uxPattern: null, principles: [17], playbook: [76] },
+}
+
+const CONSTRAINT_CATEGORIES = {
+  quality_safety: { name: 'Quality & Safety', constraints: ['privacy_preserving', 'human_verification', 'auth_required', 'role_based_access', 'content_safety', 'data_retention', 'audit_logging', 'user_consent', 'eval_coverage', 'encryption'] },
+  performance: { name: 'Performance & Resource', constraints: ['latency_budget', 'rate_limit', 'cost_budget', 'compute_budget', 'caching_policy'] },
+  model_technical: { name: 'Model & Technical', constraints: ['confidence_threshold', 'context_window', 'quality_threshold', 'model_portability', 'few_shot'] },
+  ux_interaction: { name: 'UX & Interaction', constraints: ['tone_voice', 'error_handling', 'streaming_mode', 'localization', 'accessibility'] },
+  data_context: { name: 'Data & Context', constraints: ['output_format', 'context_scope'] },
+  execution: { name: 'Execution Behavior', constraints: ['autonomous_execution', 'parallel_execution', 'timeout_limit'] },
+  code_philosophy: { name: 'Code Philosophy', constraints: ['minimal_changes', 'code_style', 'backward_compat'] },
+  attribution: { name: 'Attribution', constraints: ['attribution_required', 'data_provenance', 'source_citation'] },
+}
+
+const CONSTRAINTS = {
+  privacy_preserving: { name: 'Privacy Preserving', category: 'Quality & Safety', principles: [11, 17], playbook: [64] },
+  human_verification: { name: 'Human Verification', category: 'Quality & Safety', principles: [13], playbook: [20] },
+  content_safety: { name: 'Content Safety', category: 'Quality & Safety', principles: [15], playbook: [50, 52] },
+  audit_logging: { name: 'Audit Logging', category: 'Quality & Safety', principles: [13], playbook: [53] },
+  user_consent: { name: 'User Consent', category: 'Quality & Safety', principles: [11], playbook: [64] },
+  cost_budget: { name: 'Cost Budget', category: 'Performance & Resource', principles: [9], playbook: [71] },
+  latency_budget: { name: 'Latency Budget', category: 'Performance & Resource', principles: [6], playbook: [65] },
+  confidence_threshold: { name: 'Confidence Threshold', category: 'Model & Technical', principles: [10], playbook: [50] },
+  context_window: { name: 'Context Window', category: 'Model & Technical', principles: [6], playbook: [7, 68] },
+  tone_voice: { name: 'Tone & Voice', category: 'UX & Interaction', principles: [5], playbook: [52] },
+  output_format: { name: 'Output Format', category: 'Data & Context', principles: [6], playbook: [49] },
+  autonomous_execution: { name: 'Autonomous Execution', category: 'Execution Behavior', principles: [12], playbook: [64] },
+  attribution_required: { name: 'Attribution Required', category: 'Attribution', principles: [13], playbook: [] },
+  data_provenance: { name: 'Data Provenance', category: 'Attribution', principles: [3, 13], playbook: [53] },
+}
+
+const TASK_KEYWORDS = {
+  authenticate: ['login', 'auth', 'identity', 'sign in', 'credentials', 'sso'],
+  grant_consent: ['consent', 'permission', 'authorize', 'allow', 'gdpr', 'privacy'],
+  upload_file: ['upload', 'file', 'document', 'attachment', 'import'],
+  type_input: ['input', 'type', 'text', 'prompt', 'query', 'search'],
+  voice_command: ['voice', 'speech', 'speak', 'audio', 'dictation', 'alexa', 'siri'],
+  configure_system: ['configure', 'settings', 'preferences', 'setup', 'customize', 'parameters'],
+  review_approve: ['review', 'approve', 'check', 'verify', 'confirm', 'validate'],
+  provide_feedback: ['feedback', 'rating', 'thumbs', 'like', 'dislike', 'sentiment'],
+  flag_content: ['flag', 'report', 'inappropriate', 'harmful', 'abuse', 'moderation'],
+  edit_content: ['edit', 'modify', 'refine', 'rewrite', 'tweak'],
+  export_download: ['export', 'download', 'share', 'copy', 'csv', 'json'],
+  start_process: ['start', 'begin', 'initiate', 'launch', 'trigger', 'run'],
+  stop_process: ['stop', 'cancel', 'abort', 'pause', 'halt', 'kill'],
+  compare_options: ['compare', 'side by side', 'diff', 'options', 'alternatives'],
+  annotate: ['annotate', 'highlight', 'mark', 'comment', 'label'],
+}
+
+const CONSTRAINT_KEYWORDS = {
+  privacy_preserving: ['privacy', 'gdpr', 'ccpa', 'personal data', 'pii'],
+  human_verification: ['human review', 'manual check', 'approval required', 'hitl'],
+  content_safety: ['safety', 'harmful', 'toxic', 'offensive', 'moderation'],
+  cost_budget: ['cost', 'budget', 'expensive', 'spending', 'billing'],
+  latency_budget: ['latency', 'speed', 'fast', 'slow', 'real-time', 'responsive'],
+  confidence_threshold: ['confidence', 'threshold', 'certainty', 'accuracy'],
+  audit_logging: ['audit', 'log', 'trace', 'compliance', 'record'],
+  autonomous_execution: ['autonomous', 'automatic', 'unattended', 'self-service'],
+  data_provenance: ['provenance', 'source', 'attribution', 'citation', 'origin'],
+  tone_voice: ['tone', 'voice', 'brand', 'personality', 'style'],
+}
+
+function detectHumanTasks(description) {
+  const lower = description.toLowerCase()
+  const matched = []
+  for (const [key, keywords] of Object.entries(TASK_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (lower.includes(kw)) {
+        matched.push(key)
+        break
+      }
+    }
+  }
+  return [...new Set(matched)]
+}
+
+function detectConstraints(description) {
+  const lower = description.toLowerCase()
+  const matched = []
+  for (const [key, keywords] of Object.entries(CONSTRAINT_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (lower.includes(kw)) {
+        matched.push(key)
+        break
+      }
+    }
+  }
+  return [...new Set(matched)]
+}
+
 // ── Design Principles Tools ──
 
 function searchDesignEntries(query) {
@@ -637,8 +753,8 @@ server.tool(
 // Tool 10: Get a design section (taxonomy, governance, rollout, metrics, framing)
 server.tool(
   'get_design_section',
-  'Get a full section from the AI Design Principles document: autonomy taxonomy, governance (ethics council), phased rollout, metrics framework, framing, cross-reference table, or anti-pattern (agentic sludge).',
-  { section: z.string().describe('Section to retrieve — e.g. "taxonomy", "governance", "rollout", "metrics", "framing", "cross-reference", "sludge", "anti-pattern", "lifecycle"') },
+  'Get a full section from the AI Design Principles document: autonomy taxonomy, governance (ethics council), phased rollout, metrics framework, framing, cross-reference table, anti-pattern (agentic sludge), human tasks, constraints, touchpoints, AI tasks by autonomy level, or Atlas framework.',
+  { section: z.string().describe('Section to retrieve — e.g. "taxonomy", "governance", "rollout", "metrics", "framing", "cross-reference", "sludge", "human tasks", "constraints", "touchpoints", "ai tasks", "atlas", "lifecycle"') },
   async ({ section }) => {
     if (designEntries.length === 0) {
       return { content: [{ type: 'text', text: 'Design principles index not found. Run: node build-design-index.js' }] }
@@ -689,6 +805,32 @@ server.tool(
       if (entry) return { content: [{ type: 'text', text: entry.content }] }
     }
 
+    if (lower.includes('human task') || lower.includes('human tasks')) {
+      const entry = designEntries.find(e => e.name.includes('Human Task Vocabulary'))
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    if (lower.includes('constraint') || lower.includes('constraints')) {
+      const entry = designEntries.find(e => e.name.includes('Constraint Taxonomy'))
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    if (lower.includes('touchpoint') || lower.includes('touchpoints')) {
+      // Touchpoints are inside Principle 6 content, search for it
+      const entry = designEntries.find(e => e.type === 'principle' && e.number === 6)
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    if (lower.includes('atlas')) {
+      const entry = designEntries.find(e => e.name.includes('AI Interaction Atlas'))
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    if (lower.includes('ai task') || lower.includes('ai tasks') || lower.includes('autonomy level')) {
+      const entry = designEntries.find(e => e.name.includes('AI Tasks by'))
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
     if (lower.includes('lifecycle') || lower.includes('life cycle') || lower.includes('overview')) {
       const entry = designEntries.find(e => e.name.includes('Lifecycle Overview'))
       if (entry) return { content: [{ type: 'text', text: entry.content }] }
@@ -704,11 +846,134 @@ server.tool(
     const available = [
       'taxonomy / autonomy', 'framing / intent / quality',
       'governance / ethics council', 'rollout / phases',
-      'metrics', 'sludge / anti-pattern', 'lifecycle',
+      'metrics', 'constraints', 'human tasks', 'touchpoints',
+      'ai tasks / autonomy level', 'atlas',
+      'sludge / anti-pattern', 'lifecycle',
       'cross-reference', 'frameworks', 'sources',
     ].join(', ')
 
     return { content: [{ type: 'text', text: `No section matching "${section}" found. Available sections: ${available}` }] }
+  },
+)
+
+// Tool 11: Unified design recommendation
+server.tool(
+  'recommend_design',
+  'Given a workflow or feature description, recommend design principles, UX patterns, human tasks, constraints, AND engineering patterns. Combines design and engineering guidance into a unified recommendation. Best for product/UX teams scoping agentic features.',
+  {
+    description: z.string().describe('Describe the workflow or feature. E.g. "a scheduling agent that books meetings", "a code review bot that comments on PRs", "a document summarizer with user feedback"'),
+    focus: z.enum(['design', 'engineering', 'both']).optional().describe('Focus on design principles, engineering patterns, or both. Default: both'),
+  },
+  async ({ description, focus = 'both' }) => {
+    const lines = ['# Design & Engineering Recommendation\n']
+    lines.push(`**For:** ${description}\n`)
+
+    // Detect human tasks
+    const matchedTasks = detectHumanTasks(description)
+    if (matchedTasks.length > 0 && focus !== 'engineering') {
+      lines.push('## Human Tasks Involved\n')
+      lines.push('| Task | Phase | UX Pattern | Design Principle |')
+      lines.push('|------|-------|-----------|-----------------|')
+      for (const key of matchedTasks) {
+        const task = HUMAN_TASKS[key]
+        if (!task) continue
+        const principles = task.principles.map(n => `P${n}`).join(', ')
+        lines.push(`| ${task.name} | ${task.phase} | ${task.uxPattern || '—'} | ${principles} |`)
+      }
+      lines.push('')
+    }
+
+    // Detect constraints
+    const matchedConstraints = detectConstraints(description)
+    if (matchedConstraints.length > 0 && focus !== 'engineering') {
+      lines.push('## Applicable Constraints\n')
+      lines.push('| Constraint | Category | Playbook Pattern |')
+      lines.push('|-----------|----------|-----------------|')
+      for (const key of matchedConstraints) {
+        const constraint = CONSTRAINTS[key]
+        if (!constraint) continue
+        const pbPatterns = constraint.playbook.length > 0 ? constraint.playbook.map(n => `Pattern ${n}`).join(', ') : '—'
+        lines.push(`| ${constraint.name} | ${constraint.category} | ${pbPatterns} |`)
+      }
+      lines.push('')
+    }
+
+    // Collect unique principles from tasks + constraints
+    if (focus !== 'engineering') {
+      const principleSet = new Set()
+      for (const key of matchedTasks) {
+        const task = HUMAN_TASKS[key]
+        if (task) task.principles.forEach(p => principleSet.add(p))
+      }
+      for (const key of matchedConstraints) {
+        const constraint = CONSTRAINTS[key]
+        if (constraint) constraint.principles.forEach(p => principleSet.add(p))
+      }
+
+      if (principleSet.size > 0) {
+        const sorted = [...principleSet].sort((a, b) => a - b)
+        lines.push('## Design Principles to Implement\n')
+        for (const num of sorted) {
+          const entry = designEntries.find(e => e.type === 'principle' && e.number === num)
+          if (entry) {
+            lines.push(`- **Principle ${num}: ${entry.name}**`)
+          }
+        }
+        lines.push('')
+        lines.push('Use `get_design_principle(N)` to read the full principle.\n')
+      }
+
+      // Collect unique UX patterns
+      const patternSet = new Set()
+      for (const key of matchedTasks) {
+        const task = HUMAN_TASKS[key]
+        if (task && task.uxPattern) patternSet.add(task.uxPattern)
+      }
+
+      if (patternSet.size > 0) {
+        const sorted = [...patternSet].sort()
+        lines.push('## UX Patterns to Implement\n')
+        for (const p of sorted) {
+          const num = parseInt(p.replace('P', ''))
+          const entry = designEntries.find(e => e.type === 'ux-pattern' && e.number === num)
+          if (entry) {
+            lines.push(`- **${p}: ${entry.name}**`)
+          }
+        }
+        lines.push('')
+        lines.push('Use `get_ux_pattern(N)` to read the full pattern.\n')
+      }
+    }
+
+    // Engineering patterns (reuse existing logic)
+    if (focus !== 'design') {
+      const projectType = detectProjectType(description)
+      if (projectType) {
+        const blueprint = PROJECT_BLUEPRINTS[projectType]
+        lines.push(`## Engineering Patterns (${blueprint.name})\n`)
+        const phaseCount = 2
+        for (let i = 0; i < Math.min(phaseCount, blueprint.phases.length); i++) {
+          const phase = blueprint.phases[i]
+          const priority = i === 0 ? 'START HERE' : 'Add next'
+          lines.push(`### Phase ${i + 1}: ${phase.name} (${priority})`)
+          lines.push(`**Why**: ${phase.why}\n`)
+          for (const num of phase.patterns) {
+            const p = patterns.find(x => x.pattern === num)
+            if (p) lines.push(`- Pattern ${num}: ${p.name}`)
+          }
+          lines.push('')
+        }
+        lines.push('Use `get_pattern(N)` to read full implementation details.\n')
+      }
+    }
+
+    if (lines.length <= 3) {
+      lines.push('I couldn\'t detect specific human tasks or constraints from your description. Try being more specific about what users will do (e.g., "users review and approve", "export results") or what constraints apply (e.g., "privacy requirements", "real-time latency").')
+      lines.push('')
+      lines.push('Or use `search_design("your keyword")` and `search_patterns("your keyword")` for targeted searches.')
+    }
+
+    return { content: [{ type: 'text', text: lines.join('\n') }] }
   },
 )
 

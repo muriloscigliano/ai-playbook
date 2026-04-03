@@ -1,7 +1,7 @@
 {
   "name": "ai-playbook-mcp",
-  "version": "1.0.0",
-  "description": "MCP server for AI Agent Patterns Playbook — search and retrieve patterns without blowing out context",
+  "version": "2.1.0",
+  "description": "MCP server for AI Agent Patterns Playbook — search patterns, design principles, and Atlas interaction vocabularies without blowing out context",
   "type": "module",
   "main": "server.js",
   "bin": {
@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build-index": "node build-index.js"
+    "build-index": "node build-index.js",
+    "build-design-index": "node build-design-index.js",
+    "build": "node build-index.js && node build-design-index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",

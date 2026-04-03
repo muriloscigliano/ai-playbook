@@ -72,6 +72,9 @@ Not patterns — this is the **build guide**: how to combine patterns into a pro
 | **Autonomy Taxonomy** | 4 levels: Observe & Suggest → Plan & Propose → Act with Confirmation → Act Autonomously |
 | **17 Design Principles** | Cognition (preserve struggle, metacognition), Interfaces (adaptive, generative), Agency (consent, negotiation), Accountability (power, exit rights) |
 | **7 UX Patterns** | Intent Preview, Autonomy Dial, Explainable Rationale, Confidence Signal, Action Audit & Undo, Escalation Pathway, Empathic Error Recovery |
+| **Human Task Vocabulary** | 21 human tasks mapped to UX patterns and autonomy levels (from AI Interaction Atlas) |
+| **Constraint Taxonomy** | 37 constraints across 8 categories mapped to principles, playbook patterns, and enforcement types |
+| **Touchpoint Vocabulary** | 37 interaction surfaces across 6 categories (screen, voice, spatial, physical, etc.) |
 | **Governance** | Ethics Council, 3-phase rollout (safety → calibrated autonomy → delegation), metrics framework |
 | **Practitioner Voices** | 15+ designers from CMU, Adobe, Smashing Magazine, Big Medium, Obsidian, Mule Design |
 
@@ -111,7 +114,7 @@ git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
 ## MCP Server (Recommended)
 
-The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 170KB+ files**. 10 tools, zero context waste.
+The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 170KB+ files**. 11 tools, zero context waste.
 
 ### Setup
 
@@ -155,14 +158,15 @@ node build-design-index.js
 | `list_patterns` | `"safety"` (optional) | All patterns in a Part, one-line each | Browsing what's available |
 | `get_build_guide` | `"phase 1"` (optional) | Build guide section or decision trees | Planning your architecture |
 
-**Design Principles (4 tools):**
+**Design Principles (5 tools):**
 
 | Tool | Input | Output | Best for |
 |------|-------|--------|----------|
 | `get_design_principle` | `3` | Full principle (problem, guidance, examples, practitioner perspectives) | Implementing a specific design principle |
 | `get_ux_pattern` | `1` | Full UX pattern (anatomy, metrics, examples, playbook connections) | Implementing agentic UX (Intent Preview, Autonomy Dial, etc.) |
 | `search_design` | `"trust"` | Top 10 matching design entries (principles, patterns, governance) | Finding relevant design guidance by topic |
-| `get_design_section` | `"taxonomy"` | Full section (taxonomy, governance, rollout, metrics, framing) | Reading governance frameworks or autonomy taxonomy |
+| `get_design_section` | `"taxonomy"` | Full section (taxonomy, governance, rollout, metrics, human tasks, constraints, etc.) | Reading governance frameworks, autonomy taxonomy, or Atlas vocabularies |
+| `recommend_design` | `"a scheduling agent"` | Unified recommendation: human tasks + constraints + design principles + UX patterns + engineering patterns | **Start here** for product/UX teams scoping agentic features |
 
 ### How a beginner uses it
 
@@ -196,18 +200,22 @@ Agent calls: get_pattern(46)
 ### How to use design principles
 
 ```
-User: "How should we handle user trust in our scheduling agent?"
+User: "Design a scheduling agent that books meetings for our team"
     ↓
-Agent calls: search_design("trust autonomy scheduling")
-    → Returns: Principle 3 (Transparent Thinking Partner), P2 (Autonomy Dial),
-      P4 (Confidence Signal), Phased Rollout
+Agent calls: recommend_design("scheduling agent that books meetings")
+    → Returns unified recommendation:
+      Human Tasks: Configure System, Review & Approve, Start Process, Stop Process
+      Constraints: Privacy Preserving, Latency Budget, Autonomous Execution
+      Design Principles: P9, P11, P12
+      UX Patterns: P1 (Intent Preview), P2 (Autonomy Dial), P6 (Escalation)
+      Engineering: Patterns 44, 9, 17, 6 (Phase 1) + 23, 24, 7 (Phase 2)
     ↓
 Agent calls: get_ux_pattern(2)
     → Returns: Full Autonomy Dial pattern — per-task autonomy settings,
       anatomy, metrics, examples
     ↓
-Agent calls: get_design_section("rollout")
-    → Returns: 3-phase rollout with exit criteria for each phase
+Agent calls: get_design_section("constraints")
+    → Returns: Full constraint taxonomy with 37 constraints across 8 categories
 ```
 
 ### Rebuild after updates
@@ -264,7 +272,7 @@ git pull
 
 ## Sources
 
-Built from analysis of 10+ open-source agent frameworks, 30+ academic papers, production engineering guides, and 15+ design practitioner perspectives. Full source lists in [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md#87-sources--research-papers) and [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md#sources--attribution).
+Built from analysis of 10+ open-source agent frameworks, 30+ academic papers, production engineering guides, 15+ design practitioner perspectives, and the [AI Interaction Atlas](https://ai-interaction.com/) (quietloudlab, Apache 2.0). Full source lists in [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md#87-sources--research-papers) and [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md#sources--attribution).
 
 ---
 

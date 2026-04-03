@@ -116,7 +116,7 @@ function parseDesignPrinciples() {
     // Match lifecycle/governance subsections: "### Pre-Action: Establishing Intent"
     // "### Agentic AI Ethics Council", "### Phased Implementation Roadmap", "### Metrics Framework"
     // "### Anti-Pattern: Agentic Sludge"
-    const subMatch = line.match(/^### ((?:Pre-Action|In-Action|Post-Action|Repair|Anti-Pattern|Lifecycle|Agentic AI Ethics|Phased Implementation|Metrics Framework|Level \d).+)$/)
+    const subMatch = line.match(/^### ((?:Pre-Action|In-Action|Post-Action|Repair|Anti-Pattern|Lifecycle|Agentic AI Ethics|Phased Implementation|Metrics Framework|Constraint Taxonomy|Human Task Vocabulary|AI Tasks by|Level \d).*)$/)
     if (subMatch) {
       if (currentEntry) {
         currentEntry.content = entryLines.join('\n').trim()
@@ -126,11 +126,12 @@ function parseDesignPrinciples() {
 
       const name = subMatch[1].trim()
       const isAntiPattern = name.startsWith('Anti-Pattern')
-      const isGovernance = name.startsWith('Agentic AI Ethics') || name.startsWith('Phased Implementation') || name.startsWith('Metrics Framework')
+      const isGovernance = name.startsWith('Agentic AI Ethics') || name.startsWith('Phased Implementation') || name.startsWith('Metrics Framework') || name.startsWith('Constraint Taxonomy')
+      const isVocabulary = name.startsWith('Human Task Vocabulary') || name.startsWith('AI Tasks by')
       const isTaxonomy = name.startsWith('Level')
 
       currentEntry = {
-        type: isAntiPattern ? 'anti-pattern' : isGovernance ? 'governance' : isTaxonomy ? 'taxonomy-level' : 'lifecycle',
+        type: isAntiPattern ? 'anti-pattern' : isVocabulary ? 'vocabulary' : isGovernance ? 'governance' : isTaxonomy ? 'taxonomy-level' : 'lifecycle',
         id: slugify(name),
         name,
         theme: isGovernance ? 'Governance' : isTaxonomy ? 'Autonomy Taxonomy' : 'UX Patterns',
@@ -220,11 +221,13 @@ const governance = entries.filter(e => e.type === 'governance')
 const antiPatterns = entries.filter(e => e.type === 'anti-pattern')
 const taxonomy = entries.filter(e => e.type === 'taxonomy-level')
 const lifecycle = entries.filter(e => e.type === 'lifecycle')
+const vocabulary = entries.filter(e => e.type === 'vocabulary')
 
 console.log(`  ${principles.length} design principles`)
 console.log(`  ${uxPatterns.length} UX patterns`)
 console.log(`  ${sections.length} top-level sections`)
 console.log(`  ${governance.length} governance entries`)
+console.log(`  ${vocabulary.length} vocabulary entries`)
 console.log(`  ${antiPatterns.length} anti-patterns`)
 console.log(`  ${taxonomy.length} taxonomy levels`)
 console.log(`  ${lifecycle.length} lifecycle phases`)

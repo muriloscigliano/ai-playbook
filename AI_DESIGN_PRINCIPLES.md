@@ -3,7 +3,7 @@
 > Companion to the [AI Agent Patterns Playbook](AI_AGENT_PATTERNS_PLAYBOOK.md).
 > 17 strategic design principles + 7 UX patterns + governance framework for building human-centered AI products.
 >
-> **v1.0 — April 2026**: Synthesized from Carnegie Mellon's UI for AI Lab, practitioner research, and industry frameworks. Cross-referenced to the playbook's 78 technical patterns.
+> **v1.1 — April 2026**: Synthesized from Carnegie Mellon's UI for AI Lab, practitioner research, industry frameworks, and the AI Interaction Atlas. Cross-referenced to the playbook's 78 technical patterns. v1.1 adds Atlas interaction vocabularies (human tasks, constraints, touchpoints, AI task-to-autonomy mapping).
 
 ---
 
@@ -35,6 +35,7 @@
     - [Principle 17: Design Exit as Sacred Right](#principle-17-design-exit-as-sacred-right)
 - [Part B: UX Patterns for Agentic Systems](#part-b-ux-patterns-for-agentic-systems)
   - [Lifecycle Overview](#lifecycle-overview)
+  - [Human Task Vocabulary](#human-task-vocabulary)
   - [Pre-Action: Establishing Intent](#pre-action-establishing-intent)
     - [P1. Intent Preview (Plan Summary)](#p1-intent-preview-plan-summary)
     - [P2. Autonomy Dial (Progressive Authorization)](#p2-autonomy-dial-progressive-authorization)
@@ -52,6 +53,7 @@
   - [Agentic AI Ethics Council](#agentic-ai-ethics-council)
   - [Phased Implementation Roadmap](#phased-implementation-roadmap)
   - [Metrics Framework](#metrics-framework)
+  - [Constraint Taxonomy](#constraint-taxonomy)
 - [Cross-Reference: Principles → Patterns → Taxonomy → Playbook](#cross-reference-principles--patterns--taxonomy--playbook)
 - [Supplementary Frameworks](#supplementary-frameworks)
 - [Sources & Attribution](#sources--attribution)
@@ -200,6 +202,30 @@ How much should an AI agent do on its own? The answer is not binary (manual vs. 
 **Risk level:** High. The agent acts without real-time human oversight. Trust is earned through transparent history and reliable escalation, not assumed through capability.
 
 **Playbook connection:** [Pattern 64 (Multi-Layer Permissions)](AI_AGENT_PATTERNS_PLAYBOOK.md) — the 6-layer permission system that governs what an autonomous agent can do.
+
+### AI Tasks by Default Autonomy Level
+
+The AI Interaction Atlas defines 23 AI tasks. Each defaults to an autonomy level based on its risk profile and reversibility. Teams should use this as a starting point and adjust based on domain-specific risk assessment.
+
+**Source:** AI Interaction Atlas (ai-interaction.com, Apache 2.0, by quietloudlab). Mapped to this document's autonomy taxonomy.
+
+| Default Level | AI Tasks | Rationale |
+|--------------|----------|-----------|
+| **L1: Observe & Suggest** | Detect, Monitor, Estimate, Classify | Observation-only tasks — the AI identifies and categorizes but takes no action. Low risk, high value as ambient awareness. |
+| **L2: Plan & Propose** | Forecast, Rank, Match, Explain, Plan, Retrieve, Segment | Analysis and recommendation tasks — the AI evaluates, ranks, or retrieves but the human decides what to do with the results. |
+| **L3: Act with Confirmation** | Generate, Transform, Translate, Synthesize, Simulate, Verify | Content creation and transformation tasks — the AI produces artifacts that should be reviewed before delivery. Irreversible once published. |
+| **L4: Act Autonomously** | Adapt, Act, Explore, Cluster, Represent, Regress, Extract | Operational tasks within well-defined boundaries — data processing, learning from feedback, and executing within rules. |
+
+**Important:** These defaults assume general-purpose use. Domain-specific risk shifts tasks between levels:
+
+| AI Task | General Default | High-Stakes Domain | Low-Stakes Domain |
+|---------|----------------|-------------------|-------------------|
+| Generate | L3 | L2 (medical summaries — human must review) | L4 (auto-reply templates matching known patterns) |
+| Classify | L1 | L3 (content moderation — consequences for creators) | L4 (email spam filtering) |
+| Act | L4 | L2 (robotics — physical safety) | L4 (calendar rescheduling within rules) |
+| Verify | L3 | L2 (compliance audits — legal liability) | L4 (spell-check) |
+
+---
 
 ### Taxonomy Diagram
 
@@ -583,6 +609,23 @@ Friedman's five-area framework provides the most comprehensive vocabulary for de
 - **In-Tool AI:** AI integrated into Slack, Teams, Jira, GitHub — where actual work happens. "AI-second, not AI-first."
 
 > **Brad Frost** (cited by Friedman): "Chatbot UIs are weak sauce. There's so much potential to improve the UX of AI." The chat interface is the easiest AI UX to build and the worst to use. Friedman's vocabulary provides the alternatives.
+
+**Touchpoint Vocabulary (Where Interactions Happen):**
+
+Friedman's vocabulary defines *how* users interact. The touchpoint taxonomy defines *where* — the physical and digital surfaces through which agentic interactions occur. Each UX pattern (P1-P7) manifests differently depending on the touchpoint.
+
+**Source:** AI Interaction Atlas (ai-interaction.com, Apache 2.0, by quietloudlab).
+
+| Category | Touchpoints | Design Implications | Primary Principle |
+|----------|------------|--------------------|-----------------| 
+| **Screen Interface** (14) | Desktop App, Mobile App, Web Dashboard, Embedded Widget, Kiosk, Smartwatch, Overlay HUD, Text Field, Button, Selection Control, Slider/Dial, File Picker, Drag & Drop Zone, Link | Full visual richness — use Task Builders, Style Lenses, Precision Knobs. P1 (Intent Preview) is a visual plan; P5 (Action Audit) is a timeline view. | Principle 6, 8 |
+| **Conversational** (4) | Chat Interface, SMS/Text, Email, Avatar/Character | Text-dominant — the modality our principles argue we should move *beyond*. When constrained to chat, maximize P3 (Rationale) and P4 (Confidence Signal) in-line. | Principle 6 (move beyond) |
+| **Voice & Audio** (5) | Voice Interface, Spatial Audio, Microphone, Headphones, Speaker | No visual affordances — P1 (Intent Preview) becomes a verbal summary; P4 (Confidence Signal) becomes tone and hedging language. Escalation (P6) must be voice-activated. | Principle 7 |
+| **Spatial Computing** (5) | VR Headset, Mixed Reality, AR Glasses, Mobile AR, 3D Space | Spatial organization replaces linear flows. P5 (Action Audit) becomes a spatial history. Principle 7 (Space-Time) is native here. | Principle 7, 8 |
+| **Technical** (3) | Public API, CLI/Terminal, Document/Report | Developer-facing — P3 (Rationale) becomes structured metadata (JSON); P4 (Confidence) becomes a numeric field. Pattern 76 (Bridge) connects these to user-facing surfaces. | Pattern 76 |
+| **Physical Devices** (6) | IoT Sensor, Robot, Smart Appliance, Vehicle Interface, Haptic Device, Ambient Display | Physical consequences — L3/L4 actions have real-world effects. P1 (Intent Preview) is critical before any physical action. Escalation (P6) may require hardware kill switches. | Principle 13, 15 |
+
+**Design implication:** When implementing any UX pattern (P1-P7), first ask "which touchpoints will this appear on?" Then adapt the pattern's anatomy to the touchpoint's constraints. A Confidence Signal on a dashboard is a color-coded bar; on a voice interface it is a verbal qualifier ("I'm fairly confident..."); on an IoT sensor it is a LED color.
 
 **Playbook connection:** [Pattern 44 (Model Loop)](AI_AGENT_PATTERNS_PLAYBOOK.md) — the technical core of the iterative loop. Adaptive interfaces are the user-facing expression of the model loop, providing rich controls (Precision Knobs, Modifiers, Contextual Prompts) as the control surface for each iteration.
 
@@ -1302,6 +1345,70 @@ P1 (Intent Preview) → P3 (Rationale) → P5 (Audit)
   The plan (P1) becomes the rationale (P3) becomes the record (P5)
   — a single thread of accountability across the lifecycle
 ```
+
+---
+
+### Human Task Vocabulary
+
+The UX patterns below (P1-P7) reference human actions — reviewing, approving, configuring, providing feedback — but never formally enumerate them. This vocabulary defines 21 distinct human tasks that occur when interacting with agentic AI systems, organized by interaction phase. Each task maps to the UX patterns and principles that govern it.
+
+**Source:** AI Interaction Atlas (ai-interaction.com, Apache 2.0, by quietloudlab). Adapted and mapped to this document's lifecycle, UX patterns, and autonomy taxonomy.
+
+#### Input & Authorization Tasks
+
+These tasks occur at the beginning of interaction — the human provides input, grants permissions, or establishes the conditions under which the agent operates.
+
+| Human Task | What the Human Does | Lifecycle Phase | Primary UX Pattern | Autonomy Levels | Principle |
+|-----------|--------------------|-----------------|--------------------|-----------------|-----------|
+| **Authenticate** | Proves identity to the system (password, biometric, SSO) | Pre-Action | P2 (Autonomy Dial — access gate) | All | P11 (Consent) |
+| **Grant / Revoke Consent** | Permits or denies data collection, processing, or agent authority | Pre-Action | P2 (Autonomy Dial) | All | P11 (Consent), P17 (Exit) |
+| **Connect Integration** | Links external account or data source (OAuth, API key, device pairing) | Pre-Action | P2 (Autonomy Dial — scope expansion) | All | P11 (Consent) |
+| **Upload File** | Provides digital assets (drag-and-drop, camera capture, paste, URL import) | Pre-Action | P1 (Intent Preview — input for plan) | L1-L3 | P6 (Adaptive Interfaces) |
+| **Type Input** | Enters text data manually (with autocomplete, template fill, or voice dictation) | Pre-Action | P1 (Intent Preview — express intent) | L1-L3 | P2 (Metacognition) |
+| **Voice Command** | Speaks verbal command or query (wake word, push-to-talk, continuous) | Pre-Action | P1 (Intent Preview) | L1-L3 | P6 (Adaptive Interfaces) |
+| **Gesture Input** | Performs physical gesture (hand tracking, head nod, controller motion) | Pre-Action | P1 (Intent Preview) | L2-L3 | P6 (Adaptive Interfaces) |
+| **Navigate Space** | Moves through physical or virtual 3D environment | Pre-Action | — | L1-L2 | P7 (Space-Time) |
+| **Adjust Control** | Continuously adjusts a control — slider, knob, dial (Friedman's Precision Knobs) | In-Action | P2 (Autonomy Dial), P4 (Confidence — threshold) | L2-L3 | P6 (Adaptive Interfaces) |
+| **Configure System** | Defines system parameters, preferences, rules, and thresholds | Pre-Action | P2 (Autonomy Dial — the primary Configure task) | All | P11 (Consent), P12 (Negotiate Agency) |
+
+#### Control & Decision Tasks
+
+These tasks occur during interaction — the human selects, decides, starts, or stops agent behavior.
+
+| Human Task | What the Human Does | Lifecycle Phase | Primary UX Pattern | Autonomy Levels | Principle |
+|-----------|--------------------|-----------------|--------------------|-----------------|-----------|
+| **Select Option** | Chooses from predefined choices without strong commitment (dropdown, checkbox) | In-Action | P1 (Intent Preview — modify plan steps) | L2-L3 | P12 (Negotiate Agency) |
+| **Choose Winner** | Picks one option as the final choice with commitment (approve one of several) | In-Action | P4 (Confidence Signal — ranked options) | L2-L3 | P4 (Creative Interpretation) |
+| **Start Process** | Initiates a workflow (button click, voice command, gesture, scheduled trigger) | Pre-Action | P1 (Intent Preview — "Proceed") | L2-L3 | P12 (Negotiate Agency) |
+| **Stop Process** | Interrupts a running workflow (emergency stop, pause, cancel, abort) | In-Action | P6 (Escalation — human-initiated) | All | P9 (Enhance Not Replace) |
+| **Compare Options** | Evaluates multiple items side-by-side (diff, A/B, variant review) | In-Action | P4 (Confidence Signal — multi-option) | L2-L3 | P4 (Creative Interpretation) |
+| **Organize & Label** | Arranges items into groups, applies tags (card sorting, taxonomy editing) | Post-Action | P5 (Action Audit — categorize history) | L1-L2 | P1 (Preserve Struggle) |
+
+#### Evaluation & Output Tasks
+
+These tasks occur after agent action — the human reviews, validates, provides feedback, or takes output.
+
+| Human Task | What the Human Does | Lifecycle Phase | Primary UX Pattern | Autonomy Levels | Principle |
+|-----------|--------------------|-----------------|--------------------|-----------------|-----------|
+| **Review & Approve** | Validates accuracy of system output (approve, reject, request changes, escalate) | Post-Action | P1 (Intent Preview — approval gate) | L2-L3 | P13 (Accountability) |
+| **Validate Data** | Checks data quality and completeness (spot check, quality audit) | Post-Action | P5 (Action Audit — data verification) | L3-L4 | P3 (Transparent Thinking Partner) |
+| **Annotate & Mark Up** | Adds visual/spatial annotations (bounding boxes, highlights, spatial markup) | Post-Action | P3 (Rationale — human-added context) | L1-L3 | P1 (Preserve Struggle) |
+| **Provide Feedback** | Provides explicit quality signal (star rating, thumbs up/down, sentiment) | Post-Action | P7 (Error Recovery — feedback channel) | All | P9 (Enhance Not Replace) |
+| **Flag Content** | Reports problematic content (report issue, mark inappropriate, escalate) | Post-Action | P6 (Escalation — user-triggered) | All | P15 (Guardrails) |
+| **Edit Content** | Modifies system-generated content (refine, rewrite, tweak, format) | Post-Action | P1 (Intent Preview — "Edit Plan") | L2-L3 | P4 (Creative Interpretation) |
+| **Export / Download** | Takes artifact out of system (download, export CSV/JSON, copy, share link) | Post-Action | — (architectural — data portability) | All | P17 (Exit as Sacred Right) |
+
+#### How to Use This Vocabulary
+
+When designing an agentic interaction, map the human tasks that will occur at each stage:
+
+1. **During scoping:** List which human tasks your system requires. A scheduling agent needs: Configure System, Start Process, Review & Approve, Stop Process, Provide Feedback. A code review agent needs: Upload File, Review & Approve, Annotate, Edit Content, Flag Content.
+
+2. **During pattern selection:** Each human task points to its primary UX pattern. If your workflow includes Review & Approve, you need P1 (Intent Preview). If it includes Configure System, you need P2 (Autonomy Dial).
+
+3. **During autonomy design:** Human tasks at L4 (Act Autonomously) should be minimal — the agent acts, the human reviews history. Human tasks at L2 (Plan & Propose) are maximal — the human is actively involved in every decision.
+
+4. **During touchpoint adaptation:** The same human task manifests differently across touchpoints. "Review & Approve" on a dashboard is a button click; on a voice interface it is "approved" or "rejected"; on a mobile notification it is a swipe.
 
 ---
 
@@ -2256,23 +2363,124 @@ The metrics framework should be surfaced through dashboards appropriate to each 
 
 ---
 
+### Constraint Taxonomy
+
+Constraints are the enforceable boundaries of agentic behavior. The governance structures above (Ethics Council, Rollout Phases, Metrics) define *who decides* and *how to measure*. Constraints define *what cannot be violated* — the hard and soft limits that agents operate within.
+
+**Source:** AI Interaction Atlas (ai-interaction.com, Apache 2.0, by quietloudlab). Organized into 8 categories, mapped to this document's principles and the playbook's technical patterns.
+
+#### Quality & Safety Constraints
+
+| Constraint | What It Enforces | Principle | Playbook Pattern | Enforcement |
+|-----------|-----------------|-----------|-----------------|-------------|
+| **Privacy Preserving** | Personal data handling complies with policy (GDPR, CCPA, etc.) | P11, P17 | Pattern 64 (Permissions) | Automated + Policy |
+| **Human Verification** | Outputs above risk threshold require human review before action | P13 | Pattern 20 (Suspend/Resume) | Automated gate |
+| **Authentication Required** | Agent actions are tied to verified identity | P11 | Pattern 64 (Permissions) | Automated |
+| **Role-Based Access** | Different users have different agent authority levels | P16 | Pattern 64 (Permissions) | Automated |
+| **Content Safety Policy** | Output does not contain harmful, offensive, or misleading content | P15 | Pattern 50 (Guardrails) | Automated + Council |
+| **Data Retention** | Data is kept only for the specified period, then deleted | P17 | Pattern 56 (Storage) | Policy + Automated |
+| **Audit Logging** | Every agent action is logged with full provenance | P13 | Pattern 53 (Observability) | Automated |
+| **User Consent** | Agent cannot access data or perform actions without explicit user consent | P11 | Pattern 64 (Permissions) | Automated gate |
+| **Evaluation Coverage** | Model outputs are tested against golden datasets before deployment | P10 | Pattern 54 (Golden Dataset) | CI/CD |
+| **Encryption Required** | Data at rest and in transit is encrypted | P16 | Pattern 56 (Storage) | Automated |
+
+#### Performance & Resource Constraints
+
+| Constraint | What It Enforces | Principle | Playbook Pattern | Enforcement |
+|-----------|-----------------|-----------|-----------------|-------------|
+| **Latency Budget** | Response time stays within defined threshold (e.g., <2s for interactive) | P6 | Pattern 65 (Speculative Execution) | Automated |
+| **Rate Limit** | Maximum requests per time window to prevent abuse and control costs | P15 | Pattern 58 (Circuit Breaker) | Automated |
+| **Cost Budget** | Per-session or per-task spending does not exceed defined ceiling | P9 | Pattern 71 (Runtime Cost Gating) | Automated |
+| **Compute Budget** | GPU/CPU allocation stays within resource limits | P9 | Pattern 71 (Cost Gating) | Automated |
+| **Caching Policy** | Repeated queries are served from cache when semantically equivalent | P9 | Pattern 47 (Semantic Caching) | Automated |
+
+#### Model & Technical Constraints
+
+| Constraint | What It Enforces | Principle | Playbook Pattern | Enforcement |
+|-----------|-----------------|-----------|-----------------|-------------|
+| **Confidence Threshold** | Actions below confidence level require human confirmation | P10 | Pattern 50 (Guardrails) | Automated + P4 |
+| **Context Window** | Total token usage stays within model limits | P6 | Pattern 7 (Compaction), 68 (Reactive) | Automated |
+| **Quality Threshold** | Output quality score must exceed minimum before delivery | P10 | Pattern 12 (Self-Refine) | Automated |
+| **Model Portability** | System works across multiple model providers without lock-in | P17 | Pattern 19 (Schema Compat) | Architecture |
+| **Few-Shot Examples** | Minimum number of examples required for reliable task performance | P10 | Pattern 6 (Context Engineering) | Policy |
+
+#### UX & Interaction Constraints
+
+| Constraint | What It Enforces | Principle | Playbook Pattern | Enforcement |
+|-----------|-----------------|-----------|-----------------|-------------|
+| **Tone & Voice** | Agent communication matches brand and context guidelines | P5 | Pattern 52 (Constitutional AI) | Automated |
+| **Error Handling Strategy** | Errors are handled gracefully with user-facing recovery paths | P3, P10 | Pattern 50 (Guardrails) | P7 (Error Recovery) |
+| **Streaming Mode** | Long-running tasks show incremental progress, not blocking wait | P6 | Pattern 66 (Streaming Tools) | Automated |
+| **Localization Requirements** | Output adapts to user's language, region, and cultural context | P14 | — | Policy |
+| **Accessibility Compliance** | Generated interfaces meet WCAG standards | P8 | — | Automated + Review |
+
+#### Data & Context Constraints
+
+| Constraint | What It Enforces | Principle | Playbook Pattern | Enforcement |
+|-----------|-----------------|-----------|-----------------|-------------|
+| **Output Format** | Agent output conforms to specified structure (JSON, markdown, etc.) | P6 | Pattern 49 (Structured Outputs) | Automated |
+| **Context Scope Limit** | Agent only accesses data within defined scope boundaries | P11, P16 | Pattern 64 (Permissions) | Automated |
+
+#### Execution Behavior Constraints
+
+| Constraint | What It Enforces | Principle | Playbook Pattern | Enforcement |
+|-----------|-----------------|-----------|-----------------|-------------|
+| **Autonomous Execution** | Whether the agent may act without per-action human approval | P12 | P2 (Autonomy Dial) | Policy + Automated |
+| **Parallel Execution** | Whether multiple agent tasks may run simultaneously | P9 | Pattern 66 (Streaming Tools) | Architecture |
+| **Timeout Limit** | Maximum duration for any single agent operation | P9 | Pattern 44 (Model Loop) | Automated |
+
+#### Code Philosophy Constraints
+
+| Constraint | What It Enforces | Principle | Playbook Pattern | Enforcement |
+|-----------|-----------------|-----------|-----------------|-------------|
+| **Minimal Changes** | Agent modifications to code or data are scoped to minimum necessary | P9 | Pattern 21 (ACI Design) | Policy |
+| **Code Style Adherence** | Generated code matches project conventions | P6 | Pattern 69 (Hierarchical Memory) | Automated |
+| **Backward Compatibility** | Agent actions do not break existing functionality | P15 | Pattern 54 (Golden Dataset) | CI/CD |
+
+#### Attribution Constraints
+
+| Constraint | What It Enforces | Principle | Playbook Pattern | Enforcement |
+|-----------|-----------------|-----------|-----------------|-------------|
+| **Attribution Required** | AI-generated content is disclosed as such | P13 | — | Policy |
+| **Data Provenance** | Source of data used in decisions is traceable and documented | P3, P13 | Pattern 53 (Observability) | Automated |
+| **Source Citation** | Claims and recommendations cite their data sources | P3, P10 | P3 (Explainable Rationale) | Automated |
+
+#### Constraint Enforcement Matrix
+
+This matrix maps each constraint category to its enforcement mechanisms and the rollout phase where it should be deployed:
+
+| Category | Automated Check | Human Review | Council Oversight | Rollout Phase |
+|----------|----------------|-------------|-------------------|---------------|
+| **Quality & Safety** | Pattern 50, 54 | Monthly audit | Quarterly review | Phase 1 (Foundational Safety) |
+| **Performance & Resource** | Pattern 71, 58 | Ad-hoc | — | Phase 1 |
+| **Model & Technical** | Pattern 7, 12, 50 | Per-release | — | Phase 1 |
+| **UX & Interaction** | Pattern 52 | User testing | Quarterly review | Phase 2 (Calibrated Autonomy) |
+| **Data & Context** | Pattern 49, 64 | Per-feature | Ad-hoc | Phase 1 |
+| **Execution Behavior** | P2, Pattern 44 | Per-task-type | Phase transitions | Phase 2-3 |
+| **Code Philosophy** | Pattern 54, 69 | Code review | — | Phase 1 |
+| **Attribution** | Pattern 53 | Spot checks | Quarterly review | Phase 2 |
+
+**How to use this taxonomy:** During the Ethics Council's Agent Risk Register review, assess each agent capability against applicable constraints. If a capability violates a constraint, it either needs a mitigation (automated check, human review gate) or must not be deployed. The Enforcement Matrix shows where each category's checks belong in the phased rollout.
+
+---
+
 ## Cross-Reference: Principles → Patterns → Taxonomy → Playbook
 
 This table maps the relationships between Part A principles, Part B patterns, Autonomy Taxonomy levels, and the playbook's technical patterns. Use it to trace from design intent (principles) through interaction design (patterns) to implementation (playbook).
 
-| CMU Design Principle | UX Pattern | Autonomy Level | Playbook Pattern |
-|---------------------|------------|----------------|-----------------|
-| P12: Negotiate Agency Moment-by-Moment | P1 Intent Preview | L2-L3 | Pattern 20 (Suspend/Resume), Pattern 44 (Model Loop) |
-| P11: Design Consent as Continuous | P2 Autonomy Dial | All | Pattern 64 (Multi-Layer Permissions), Pattern 70 (Denial Tracking) |
-| P3: Design AI as Transparent Thinking Partner | P3 Explainable Rationale | L3-L4 | Pattern 52 (Constitutional AI), Pattern 53 (Observability) |
-| P10: Design to Communicate Limitations | P4 Confidence Signal | L2-L3 | Pattern 50 (Guardrails) |
-| P13: Make Accountability Visible | P5 Action Audit & Undo | All | Pattern 53 (Observability), Pattern 77 (Shell Hooks) |
-| P9: Enhance Human Work, Not Replace | P6 Escalation Pathway | L3-L4 | Pattern 20 (Suspend/Resume) |
-| P10: Communicate Current Reality of AI | P7 Empathic Error Recovery | All | Pattern 50 (Guardrails), Pattern 53 (Observability) |
-| P1: Preserve Struggle When Delegation Is Effortless | P2 Autonomy Dial (low settings) | L1 | Pattern 44 (Model Loop) |
-| P16: Make Power Legible in Infrastructure | P5 Action Audit & Undo | L4 | Pattern 64 (Multi-Layer Permissions) |
-| P17: Design Exit as Sacred Right | *(architectural — data portability)* | All | Pattern 76 (Bridge Pattern) |
-| P15: Establish Guardrails to Prevent Misuse | Anti: Agentic Sludge | All | Pattern 52 (Constitutional AI) |
+| CMU Design Principle | UX Pattern | Autonomy Level | Playbook Pattern | Relation |
+|---------------------|------------|----------------|-----------------|----------|
+| P12: Negotiate Agency Moment-by-Moment | P1 Intent Preview | L2-L3 | Pattern 20 (Suspend/Resume), Pattern 44 (Model Loop) | enables |
+| P11: Design Consent as Continuous | P2 Autonomy Dial | All | Pattern 64 (Multi-Layer Permissions), Pattern 70 (Denial Tracking) | requires |
+| P3: Design AI as Transparent Thinking Partner | P3 Explainable Rationale | L3-L4 | Pattern 52 (Constitutional AI), Pattern 53 (Observability) | enables |
+| P10: Design to Communicate Limitations | P4 Confidence Signal | L2-L3 | Pattern 50 (Guardrails) | measured_by |
+| P13: Make Accountability Visible | P5 Action Audit & Undo | All | Pattern 53 (Observability), Pattern 77 (Shell Hooks) | requires |
+| P9: Enhance Human Work, Not Replace | P6 Escalation Pathway | L3-L4 | Pattern 20 (Suspend/Resume) | enables |
+| P10: Communicate Current Reality of AI | P7 Empathic Error Recovery | All | Pattern 50 (Guardrails), Pattern 53 (Observability) | triggers |
+| P1: Preserve Struggle When Delegation Is Effortless | P2 Autonomy Dial (low settings) | L1 | Pattern 44 (Model Loop) | conflicts_with (high autonomy) |
+| P16: Make Power Legible in Infrastructure | P5 Action Audit & Undo | L4 | Pattern 64 (Multi-Layer Permissions) | requires |
+| P17: Design Exit as Sacred Right | *(architectural — data portability)* | All | Pattern 76 (Bridge Pattern) | enables |
+| P15: Establish Guardrails to Prevent Misuse | Anti: Agentic Sludge | All | Pattern 52 (Constitutional AI) | prevents |
 
 **How to read this table:** Start from any column. If you know which design principle you want to implement, read right to find the UX pattern and playbook pattern. If you know which playbook pattern you are implementing, read left to understand its design intent. If you are designing for a specific autonomy level, filter the table to that level.
 
@@ -2295,11 +2503,40 @@ This secondary table maps Friedman's interaction pattern vocabulary (Part A, Pri
 | Quiet AI / Daemons | All | P2 Autonomy Dial (L4 background tasks) | Pattern 73 (Session Backgrounding) |
 | In-Tool AI | Integration | All patterns in-situ | Pattern 76 (Bridge Pattern) |
 
+### Atlas Vocabulary → Principles → UX Patterns → Playbook
+
+This table maps the AI Interaction Atlas's human task and constraint vocabularies to this document's design framework. Use it to go from a specific interaction element to the relevant design guidance.
+
+| Atlas Element | Type | Principle | UX Pattern | Playbook Pattern | Relation |
+|--------------|------|-----------|-----------|-----------------|----------|
+| Authenticate | Human Task | P11 (Consent) | P2 (Autonomy Dial) | Pattern 64 (Permissions) | enables |
+| Grant / Revoke Consent | Human Task | P11 (Consent), P17 (Exit) | P2 (Autonomy Dial) | Pattern 64, 70 | enables |
+| Review & Approve | Human Task | P12 (Negotiate Agency), P13 (Accountability) | P1 (Intent Preview) | Pattern 20 (Suspend/Resume) | requires |
+| Provide Feedback | Human Task | P9 (Enhance Not Replace) | P7 (Error Recovery) | Pattern 53 (Observability) | triggers |
+| Flag Content | Human Task | P15 (Guardrails) | P6 (Escalation) | Pattern 50 (Guardrails) | triggers |
+| Configure System | Human Task | P11 (Consent), P12 (Negotiate Agency) | P2 (Autonomy Dial) | Pattern 64 (Permissions) | enables |
+| Edit Content | Human Task | P4 (Creative Interpretation) | P1 (Intent Preview) | Pattern 44 (Model Loop) | enables |
+| Export / Download | Human Task | P17 (Exit as Sacred Right) | — | Pattern 76 (Bridge) | enables |
+| Stop Process | Human Task | P9 (Enhance Not Replace) | P6 (Escalation) | Pattern 20 (Suspend/Resume) | triggers |
+| Compare Options | Human Task | P4 (Creative Interpretation) | P4 (Confidence Signal) | — | enables |
+| Privacy Preserving | Constraint | P11 (Consent), P17 (Exit) | P2 (Autonomy Dial) | Pattern 64 (Permissions) | requires |
+| Human Verification | Constraint | P13 (Accountability) | P1 (Intent Preview) | Pattern 20 (Suspend/Resume) | requires |
+| Cost Budget | Constraint | P9 (Enhance Not Replace) | — | Pattern 71 (Cost Gating) | measured_by |
+| Confidence Threshold | Constraint | P10 (Communicate Limitations) | P4 (Confidence Signal) | Pattern 50 (Guardrails) | measured_by |
+| Content Safety Policy | Constraint | P15 (Guardrails) | Anti: Agentic Sludge | Pattern 50, 52 | prevents |
+| Audit Logging | Constraint | P13 (Accountability) | P5 (Action Audit) | Pattern 53 (Observability) | requires |
+| Latency Budget | Constraint | P6 (Adaptive Interfaces) | — | Pattern 65 (Speculative Execution) | measured_by |
+| Attribution Required | Constraint | P13 (Accountability) | P3 (Explainable Rationale) | — | requires |
+| Data Provenance | Constraint | P3 (Transparent Thinking Partner) | P3 (Explainable Rationale) | Pattern 53 (Observability) | enables |
+| Autonomous Execution | Constraint | P12 (Negotiate Agency) | P2 (Autonomy Dial) | Pattern 64 (Permissions) | enables |
+
+**Relation types:** `enables` (makes possible), `requires` (must have), `measured_by` (quantified through), `triggers` (initiates), `prevents` (guards against), `conflicts_with` (tension to navigate).
+
 ---
 
 ## Supplementary Frameworks
 
-Three industry frameworks that complement the principles and patterns in this document. Presented as reference sidebars — not primary content, but useful for teams working within these ecosystems.
+Four industry frameworks and one interaction taxonomy that complement the principles and patterns in this document. Presented as reference sidebars — not primary content, but useful for teams working within these ecosystems.
 
 ---
 
@@ -2421,6 +2658,27 @@ These resources are not primary sources for this document but provide additional
 
 ---
 
+### AI Interaction Atlas (quietloudlab)
+
+**Framework:** A comprehensive interaction taxonomy for AI-powered products, organized across 4 architectural layers (Inbound/Sensing → Internal/Reasoning → Outbound/Expressing → Interactive/Acting) and 6 dimensions:
+
+- **AI Tasks (23):** What the AI does — Detect, Extract, Classify, Generate, Transform, Plan, Act, Adapt, and 15 more. Each task has maturity level, latency profile, data requirements, and human oversight level.
+- **Human Tasks (21):** What humans do — Authenticate, Grant Consent, Review & Approve, Provide Feedback, Flag Content, Export, and 15 more. Each task has defined inputs, outputs, and variants.
+- **System Tasks (22):** What infrastructure does — CRUD operations, orchestration, caching, monitoring, notifications, and logging. The glue between human and AI tasks.
+- **Data Artifacts (48):** What flows between components — text, visual, audio, structured, and system artifacts across 7 categories.
+- **Constraints (37):** What boundaries must hold — quality & safety, performance, model & technical, UX, data, execution behavior, code philosophy, and attribution constraints across 8 categories.
+- **Touchpoints (37):** Where interactions happen — screen interfaces, conversational, voice & audio, spatial computing, technical endpoints, and physical devices across 6 categories.
+
+**Key insight for this document:** The Atlas provides the *nouns* that this document's principles and patterns operate on. Where this document says "the user should review the agent's plan" (Principle 12, P1 Intent Preview), the Atlas specifies that "Review & Approve" is a distinct human task with defined inputs, outputs, and variants. This precision strengthens implementation guidance.
+
+**Integration into this document:** Human Task Vocabulary (Part B), Constraint Taxonomy (Part C), Touchpoint Vocabulary (Principle 6), AI Tasks by Autonomy Level (Taxonomy section), and typed cross-references (Cross-Reference tables) draw from the Atlas. See each section for specific mappings.
+
+**Complementary to our approach:** The Atlas provides wide coverage (200 definitions) at elevator-pitch depth. This document provides deep coverage (17 principles + 7 patterns + governance) at implementation depth. Together they form a complete design system: the Atlas for scoping and communicating, this document for designing and building.
+
+**Source:** Brandon Harwood, [AI Interaction Atlas](https://ai-interaction.com/) (quietloudlab, Apache 2.0 License); [GitHub](https://github.com/quietloudlab/ai-interaction-atlas).
+
+---
+
 ## Sources & Attribution
 
 ### Primary Sources
@@ -2461,6 +2719,7 @@ These resources are not primary sources for this document but provide additional
 25. **Microsoft Design** — [UX Design for Agents](https://microsoft.design/articles/ux-design-for-agents/) (2025)
 26. **Google PAIR** — [People + AI Guidebook](https://pair.withgoogle.com/guidebook) (3rd edition)
 27. **Anthropic** — [Building Effective Agents](https://www.anthropic.com/research/building-effective-agents) (2024); [Effective Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents); [Effective Harnesses for Long-Running Agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
+28. **AI Interaction Atlas** — [AI Interaction Atlas](https://ai-interaction.com/) (Brandon Harwood, quietloudlab, Apache 2.0); [GitHub](https://github.com/quietloudlab/ai-interaction-atlas)
 
 ### Referenced in Playbook Cross-References
 
