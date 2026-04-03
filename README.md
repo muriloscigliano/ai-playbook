@@ -1,6 +1,7 @@
 # AI Agent Patterns Playbook
 
-> **78 production-ready patterns + design principles** for building AI-first products — from agent loops and tool design to multi-agent orchestration, memory systems, production hardening, and human-centered AI design.
+> **78 engineering patterns + 17 design principles + structured data layer** for building AI-first products.
+> From agent loops and tool design to multi-agent orchestration, human-centered UX, and production hardening.
 
 ---
 
@@ -8,12 +9,15 @@
 
 | File | What | When to Use |
 |------|------|------------|
-| [`PATTERN_INDEX.md`](PATTERN_INDEX.md) | One-line summary of all 78 patterns | Finding the right pattern |
+| [`PATTERN_INDEX.md`](PATTERN_INDEX.md) | One-line summary of all 78 patterns | Quick pattern lookup |
 | [`AI_FIRST_BUILD_GUIDE.md`](AI_FIRST_BUILD_GUIDE.md) | Decision trees + 5-phase build plan | Starting a feature or project |
 | [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md) | Full reference (78 patterns, 4500+ lines) | Deep implementation details |
-| [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 7 UX patterns + governance for agentic AI | Designing interactions, UX reviews, product framing, governance |
+| [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 7 UX patterns + governance | Designing interactions, UX reviews, governance |
+| [`data/`](data/) | Structured data layer (125 files, npm package) | Programmatic access, building tools, web UIs |
 
-## Patterns Overview
+---
+
+## Engineering Patterns (78)
 
 ### Part I-XII: Framework & Academic Patterns (1-62)
 
@@ -30,9 +34,9 @@
 | **Safety** | 50-55 | Guardrails, injection defense, observability, evals |
 | **Infrastructure** | 56-62 | Storage, circuit breaker, A2A, MCP, hooks |
 
-### Part XIII: Production-Hardened Patterns (63-78) — NEW
+### Part XIII: Production-Hardened Patterns (63-78)
 
-16 patterns derived from **real-world experience** building and operating production AI agent systems at scale:
+16 patterns from real-world production AI agent systems:
 
 | # | Pattern | What It Solves |
 |---|---------|---------------|
@@ -55,28 +59,89 @@
 
 ### Part XIV: AI-First Product Blueprint
 
-Not patterns — this is the **build guide**: how to combine patterns into a product.
+The **build guide** — how to combine patterns into a product:
 
 - Complete 3-layer architecture diagram
 - 5-phase implementation roadmap (Week 1 to Week 9+)
 - Decision trees for agent loop, memory, safety, cost, speed
 - Production checklist (30+ items)
 
-### AI Design Principles (companion document)
+---
 
-17 design principles + 7 UX patterns + governance framework for building **human-centered** agentic AI. Cross-referenced to all 78 technical patterns.
+## Design Principles & UX Patterns
+
+17 strategic design principles + 7 UX patterns + governance framework for human-centered agentic AI. Cross-referenced to all 78 engineering patterns.
 
 | Section | What's Covered |
 |---------|---------------|
 | **Framing** | Quality as downstream of intent, not tooling |
 | **Autonomy Taxonomy** | 4 levels: Observe & Suggest → Plan & Propose → Act with Confirmation → Act Autonomously |
-| **17 Design Principles** | Cognition (preserve struggle, metacognition), Interfaces (adaptive, generative), Agency (consent, negotiation), Accountability (power, exit rights) |
+| **17 Design Principles** | Cognition, interfaces, agency, accountability — with practitioner perspectives from 15+ designers |
 | **7 UX Patterns** | Intent Preview, Autonomy Dial, Explainable Rationale, Confidence Signal, Action Audit & Undo, Escalation Pathway, Empathic Error Recovery |
-| **Human Task Vocabulary** | 21 human tasks mapped to UX patterns and autonomy levels (from AI Interaction Atlas) |
-| **Constraint Taxonomy** | 37 constraints across 8 categories mapped to principles, playbook patterns, and enforcement types |
-| **Touchpoint Vocabulary** | 37 interaction surfaces across 6 categories (screen, voice, spatial, physical, etc.) |
-| **Governance** | Ethics Council, 3-phase rollout (safety → calibrated autonomy → delegation), metrics framework |
-| **Practitioner Voices** | 15+ designers from CMU, Adobe, Smashing Magazine, Big Medium, Obsidian, Mule Design |
+| **Human Task Vocabulary** | 21 human tasks mapped to UX patterns and autonomy levels |
+| **Constraint Taxonomy** | 37 constraints across 8 categories with enforcement matrix |
+| **Touchpoint Vocabulary** | 37 interaction surfaces across 6 categories |
+| **Governance** | Ethics Council, 3-phase rollout, metrics framework |
+
+Sources include Carnegie Mellon's UI for AI Lab, the [AI Interaction Atlas](https://ai-interaction.com/) (quietloudlab, Apache 2.0), and practitioner research from Adobe, Smashing Magazine, Big Medium, Obsidian, and Mule Design.
+
+---
+
+## Structured Data Layer
+
+The `data/` directory is a structured, programmatic data layer — the source of truth for metadata, vocabulary, taxonomy, and relations. Importable as an npm package.
+
+```js
+// From the repo
+import { patterns, humanTasks, constraints, getRelationsFor } from './data/index.js'
+
+// Or as npm package (when published)
+import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playbook'
+```
+
+### What's exported
+
+| Export | Count | What |
+|--------|-------|------|
+| `patterns` / `patternsByNumber` / `patternsBySlug` | 78 | Pattern metadata (id, name, part, problem, solution, keywords) |
+| `principles` / `principlesByNumber` | 17 | Design principle metadata (theme, summary, related patterns) |
+| `uxPatterns` / `uxPatternsByNumber` | 7 | UX pattern metadata (lifecycle phase, autonomy levels) |
+| `humanTasks` | 23 | Human task vocabulary with UX pattern + principle mappings |
+| `constraints` / `constraintCategories` | 36 | Constraint taxonomy with enforcement types |
+| `touchpoints` | 37 | Interaction surface vocabulary |
+| `aiTasks` | 24 | AI tasks with default autonomy levels |
+| `allRelations` | 98 | Typed relations (`requires`, `enhances`, `alternative`, `implements`, `conflicts`) |
+| `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
+| `projectBlueprints` | 6 | Phased pattern plans by project type |
+| `problemDiagnoses` | 10 | Problem-to-pattern fix mappings |
+| `detectProjectType(desc)` | — | Keyword-based project type detection |
+| `detectHumanTasks(desc)` | — | Keyword-based human task detection |
+| `detectConstraints(desc)` | — | Keyword-based constraint detection |
+| `getRelationsFor(id)` | — | Query typed relations by entity ID |
+| `getRelatedIds(id, type?)` | — | Get related entity IDs, optionally filtered |
+
+### Directory structure
+
+```
+data/
+├── index.js                    # Main entry — re-exports everything
+├── package.json                # @muriloscigliano/ai-playbook
+├── patterns/                   # 78 pattern metadata files + _index.js
+├── principles/                 # 17 principle metadata files + _index.js
+├── ux-patterns/                # 7 UX pattern metadata files + _index.js
+├── vocabulary/
+│   ├── human-tasks.js          # 23 human tasks
+│   ├── constraints.js          # 36 constraints in 8 categories
+│   ├── touchpoints.js          # 37 touchpoints in 6 categories
+│   └── ai-tasks.js             # 24 AI tasks by autonomy level
+├── recommendations/
+│   ├── project-blueprints.js   # 6 project types with phased patterns
+│   └── problem-diagnoses.js    # 10 problem-to-pattern mappings
+├── relations/                  # 98 typed relations + query helpers
+├── taxonomy/                   # 4 autonomy levels
+├── helpers/                    # search + detect utilities
+└── scripts/                    # migration scripts (generate-patterns.js, etc.)
+```
 
 ---
 
@@ -114,7 +179,7 @@ git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
 ## MCP Server (Recommended)
 
-The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 170KB+ files**. 11 tools, zero context waste.
+The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 380KB+ of files**. 11 tools, zero context waste.
 
 ### Setup
 
@@ -151,10 +216,10 @@ node build-design-index.js
 
 | Tool | Input | Output | Best for |
 |------|-------|--------|----------|
-| `recommend_patterns` | `"a customer support chatbot"` | Phased plan with the right patterns for your project | **Start here** — don't know which patterns you need |
-| `diagnose_agent` | `"my agent is too slow and forgets context"` | Prioritized fixes matched to your problem | Agent already built but has issues |
-| `search_patterns` | `"memory"` | Top 10 matching patterns (name + problem summary) | Know the topic, need the right pattern |
-| `get_pattern` | `23` | Full pattern content (problem, solution, pseudocode, rules) | Ready to implement a specific pattern |
+| `recommend_patterns` | `"a customer support chatbot"` | Phased plan with the right patterns | **Start here** — don't know which patterns you need |
+| `diagnose_agent` | `"too slow and forgets context"` | Prioritized fixes matched to your problem | Agent already built but has issues |
+| `search_patterns` | `"memory"` | Top 10 matching patterns | Know the topic, need the right pattern |
+| `get_pattern` | `23` | Full pattern content (problem, solution, pseudocode) | Ready to implement a specific pattern |
 | `list_patterns` | `"safety"` (optional) | All patterns in a Part, one-line each | Browsing what's available |
 | `get_build_guide` | `"phase 1"` (optional) | Build guide section or decision trees | Planning your architecture |
 
@@ -162,108 +227,63 @@ node build-design-index.js
 
 | Tool | Input | Output | Best for |
 |------|-------|--------|----------|
-| `get_design_principle` | `3` | Full principle (problem, guidance, examples, practitioner perspectives) | Implementing a specific design principle |
-| `get_ux_pattern` | `1` | Full UX pattern (anatomy, metrics, examples, playbook connections) | Implementing agentic UX (Intent Preview, Autonomy Dial, etc.) |
-| `search_design` | `"trust"` | Top 10 matching design entries (principles, patterns, governance) | Finding relevant design guidance by topic |
-| `get_design_section` | `"taxonomy"` | Full section (taxonomy, governance, rollout, metrics, human tasks, constraints, etc.) | Reading governance frameworks, autonomy taxonomy, or Atlas vocabularies |
-| `recommend_design` | `"a scheduling agent"` | Unified recommendation: human tasks + constraints + design principles + UX patterns + engineering patterns | **Start here** for product/UX teams scoping agentic features |
+| `recommend_design` | `"a scheduling agent"` | Human tasks + constraints + principles + UX patterns + engineering patterns | **Start here** for product/UX teams |
+| `get_design_principle` | `3` | Full principle (problem, guidance, examples, practitioner voices) | Implementing a specific design principle |
+| `get_ux_pattern` | `1` | Full UX pattern (anatomy, metrics, examples) | Implementing agentic UX |
+| `search_design` | `"trust"` | Top 10 matching design entries | Finding relevant design guidance |
+| `get_design_section` | `"constraints"` | Full section (taxonomy, governance, human tasks, etc.) | Reading frameworks or vocabularies |
 
-### How a beginner uses it
+### Example: Build a new agent
 
 ```
 User: "I want to build a chatbot for customer support"
     ↓
 Agent calls: recommend_patterns("customer support chatbot", level="beginner")
-    → Returns: Phase 1 (Core: patterns 44, 9, 6, 49) + Phase 2 (Memory: 23, 24, 7)
-    → "Focus ONLY on Phase 1. Get that working before adding anything else."
+    → Phase 1 (Core: patterns 44, 9, 6, 49) + Phase 2 (Memory: 23, 24, 7)
     ↓
 Agent calls: get_pattern(44)
-    → Returns: Full Agentic Model Loop pattern with pseudocode
+    → Full Agentic Model Loop pattern with pseudocode
     ↓
 Agent implements the core loop, then adds memory when ready
 ```
 
-### How to fix a problem
+### Example: Design an agentic feature
 
 ```
-User: "My agent is too expensive and it forgets what I said"
-    ↓
-Agent calls: diagnose_agent("too expensive and forgets context")
-    → Returns: 2 diagnoses with prioritized pattern fixes
-    → Cost: Model Routing (46) first, then Semantic Caching (47)
-    → Memory: Working Memory (23) first, then Context Compaction (7)
-    ↓
-Agent calls: get_pattern(46)
-    → Returns: Full Model Routing pattern — 87% cost reduction
-```
-
-### How to use design principles
-
-```
-User: "Design a scheduling agent that books meetings for our team"
+User: "Design a scheduling agent that books meetings"
     ↓
 Agent calls: recommend_design("scheduling agent that books meetings")
-    → Returns unified recommendation:
-      Human Tasks: Configure System, Review & Approve, Start Process, Stop Process
-      Constraints: Privacy Preserving, Latency Budget, Autonomous Execution
-      Design Principles: P9, P11, P12
-      UX Patterns: P1 (Intent Preview), P2 (Autonomy Dial), P6 (Escalation)
-      Engineering: Patterns 44, 9, 17, 6 (Phase 1) + 23, 24, 7 (Phase 2)
+    → Human Tasks: Configure System, Review & Approve, Start/Stop Process
+    → Constraints: Privacy Preserving, Latency Budget, Autonomous Execution
+    → Design Principles: P9, P11, P12
+    → UX Patterns: P1 (Intent Preview), P2 (Autonomy Dial), P6 (Escalation)
+    → Engineering: Patterns 44, 9, 17, 6 (Phase 1)
     ↓
 Agent calls: get_ux_pattern(2)
-    → Returns: Full Autonomy Dial pattern — per-task autonomy settings,
-      anatomy, metrics, examples
+    → Full Autonomy Dial pattern with anatomy, metrics, examples
+```
+
+### Example: Fix a problem
+
+```
+User: "My agent is too expensive and forgets what I said"
     ↓
-Agent calls: get_design_section("constraints")
-    → Returns: Full constraint taxonomy with 37 constraints across 8 categories
+Agent calls: diagnose_agent("too expensive and forgets context")
+    → Cost: Model Routing (46) first, then Semantic Caching (47)
+    → Memory: Working Memory (23) first, then Context Compaction (7)
 ```
 
 ### Rebuild after updates
 
-When you update the playbook or design principles, rebuild the indexes:
 ```bash
 cd ~/.ai-playbook/mcp-server && node build-index.js && node build-design-index.js
 ```
 
 ---
 
-## Structured Data Layer (npm package)
-
-The playbook includes a structured data layer at `data/` — the source of truth for metadata, vocabulary, taxonomy, and relations. Importable as an npm package.
-
-```bash
-# From the repo
-import { patterns, humanTasks, constraints, getRelationsFor } from './data/index.js'
-
-# Or install as npm package (when published)
-npm install @muriloscigliano/ai-playbook
-import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playbook'
-```
-
-### What's in the data layer
-
-| Export | Count | What |
-|--------|-------|------|
-| `patterns` | 78 | Pattern metadata (id, name, part, problem, solution, keywords) |
-| `principles` | 17 | Design principle metadata |
-| `uxPatterns` | 7 | UX pattern metadata |
-| `humanTasks` | 21+ | Human task vocabulary with UX pattern + principle mappings |
-| `constraints` | 36+ | Constraint taxonomy with enforcement types |
-| `touchpoints` | 37 | Interaction surface vocabulary |
-| `aiTasks` | 24 | AI tasks with default autonomy levels |
-| `allRelations` | 98+ | Typed relations (requires, enhances, alternative, etc.) |
-| `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
-| `projectBlueprints` | 6 | Phased pattern plans by project type |
-| `problemDiagnoses` | 10 | Problem-to-pattern fix mappings |
-| `detectProjectType()` | — | Keyword-based project type detection |
-| `detectHumanTasks()` | — | Keyword-based human task detection |
-| `getRelationsFor()` | — | Query relations by entity ID |
-
----
-
 ## File-Based Usage (Alternative)
 
-If you prefer not to use MCP, the playbook also works as files your AI agent can grep:
+If you prefer not to use MCP, the playbook works as files your AI agent can grep:
 
 ```
 CLAUDE.md (always loaded, ~1KB)
@@ -276,19 +296,7 @@ When the agent needs a pattern:
     3. Reads ~80 lines of implementation details
     4. Implements the pattern
 
-Result: ~2KB loaded per conversation instead of ~170KB
-```
-
-### Example conversation
-
-```
-You: "Add memory to our agent so it remembers user preferences"
-
-Claude:
-  → Reads PATTERN_INDEX.md → finds Pattern 23 (Working Memory) and Pattern 25 (AUDN)
-  → Greps playbook for "## 24. Pattern 23:"
-  → Reads the implementation details
-  → Implements working memory with AUDN consolidation
+Result: ~2KB loaded per conversation instead of ~380KB
 ```
 
 ---
@@ -306,7 +314,11 @@ git pull
 
 ## Sources
 
-Built from analysis of 10+ open-source agent frameworks, 30+ academic papers, production engineering guides, 15+ design practitioner perspectives, and the [AI Interaction Atlas](https://ai-interaction.com/) (quietloudlab, Apache 2.0). Full source lists in [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md#87-sources--research-papers) and [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md#sources--attribution).
+Built from analysis of 10+ open-source agent frameworks, 30+ academic papers, production engineering guides, 15+ design practitioner perspectives, and the [AI Interaction Atlas](https://ai-interaction.com/) (quietloudlab, Apache 2.0).
+
+Full source lists:
+- Engineering patterns: [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md#87-sources--research-papers)
+- Design principles: [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md#sources--attribution)
 
 ---
 
