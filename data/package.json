@@ -1,0 +1,19 @@
+{
+  "name": "@muriloscigliano/ai-playbook",
+  "version": "1.0.0",
+  "description": "Structured data for the AI Agent Patterns Playbook — 78 patterns, 17 design principles, 7 UX patterns, vocabularies, and relations",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./patterns": "./patterns/_index.js",
+    "./principles": "./principles/_index.js",
+    "./ux-patterns": "./ux-patterns/_index.js",
+    "./vocabulary": "./vocabulary/index.js",
+    "./recommendations": "./recommendations/index.js",
+    "./relations": "./relations/_index.js",
+    "./taxonomy": "./taxonomy/autonomy-levels.js",
+    "./helpers": "./helpers/index.js"
+  },
+  "license": "MIT"
+}

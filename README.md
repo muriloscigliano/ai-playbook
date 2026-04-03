@@ -227,6 +227,40 @@ cd ~/.ai-playbook/mcp-server && node build-index.js && node build-design-index.j
 
 ---
 
+## Structured Data Layer (npm package)
+
+The playbook includes a structured data layer at `data/` — the source of truth for metadata, vocabulary, taxonomy, and relations. Importable as an npm package.
+
+```bash
+# From the repo
+import { patterns, humanTasks, constraints, getRelationsFor } from './data/index.js'
+
+# Or install as npm package (when published)
+npm install @muriloscigliano/ai-playbook
+import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playbook'
+```
+
+### What's in the data layer
+
+| Export | Count | What |
+|--------|-------|------|
+| `patterns` | 78 | Pattern metadata (id, name, part, problem, solution, keywords) |
+| `principles` | 17 | Design principle metadata |
+| `uxPatterns` | 7 | UX pattern metadata |
+| `humanTasks` | 21+ | Human task vocabulary with UX pattern + principle mappings |
+| `constraints` | 36+ | Constraint taxonomy with enforcement types |
+| `touchpoints` | 37 | Interaction surface vocabulary |
+| `aiTasks` | 24 | AI tasks with default autonomy levels |
+| `allRelations` | 98+ | Typed relations (requires, enhances, alternative, etc.) |
+| `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
+| `projectBlueprints` | 6 | Phased pattern plans by project type |
+| `problemDiagnoses` | 10 | Problem-to-pattern fix mappings |
+| `detectProjectType()` | — | Keyword-based project type detection |
+| `detectHumanTasks()` | — | Keyword-based human task detection |
+| `getRelationsFor()` | — | Query relations by entity ID |
+
+---
+
 ## File-Based Usage (Alternative)
 
 If you prefer not to use MCP, the playbook also works as files your AI agent can grep:

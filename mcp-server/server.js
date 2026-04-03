@@ -29,6 +29,16 @@ import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { z } from 'zod'
 
+// Import structured data layer
+import { projectBlueprints } from '../data/recommendations/project-blueprints.js'
+import { projectKeywords } from '../data/recommendations/project-keywords.js'
+import { problemDiagnoses } from '../data/recommendations/problem-diagnoses.js'
+import { problemKeywords } from '../data/recommendations/problem-keywords.js'
+import { humanTasks } from '../data/vocabulary/human-tasks.js'
+import { taskKeywords } from '../data/vocabulary/human-tasks.js'
+import { constraints, constraintCategories, constraintKeywords } from '../data/vocabulary/constraints.js'
+import { detectProjectType, detectProblems, detectHumanTasks, detectConstraints } from '../data/helpers/search.js'
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 // Load pre-built index
@@ -57,189 +67,7 @@ try {
   buildGuide = 'AI_FIRST_BUILD_GUIDE.md not found.'
 }
 
-// ── Recommendation Engine ──
-
-/**
- * Maps project types to the patterns they need, in priority order.
- * Each phase has: name, patterns (numbers), and why.
- */
-const PROJECT_BLUEPRINTS = {
-  chatbot: {
-    name: 'AI Chatbot / Conversational Agent',
-    phases: [
-      { name: 'Core', patterns: [44, 9, 6, 49], why: 'Agent loop + ReAct reasoning + context budget + structured outputs' },
-      { name: 'Memory', patterns: [23, 24, 7], why: 'Remember user context across turns and sessions' },
-      { name: 'Safety', patterns: [50, 51, 71], why: 'Input filtering, injection defense, cost limits' },
-      { name: 'Quality', patterns: [12, 53], why: 'Self-refine responses, track everything with spans' },
-      { name: 'Scale', patterns: [46, 47, 45], why: 'Route to cheap models, cache repeated queries, fallbacks' },
-    ],
-  },
-  coding_agent: {
-    name: 'AI Coding Agent / Developer Tool',
-    phases: [
-      { name: 'Core', patterns: [44, 9, 17, 21, 6], why: 'Agent loop + tools (read/write/search/execute) + context budget' },
-      { name: 'Safety', patterns: [64, 71, 20, 50], why: 'Permissions for file/bash ops, cost limits, human approval for destructive actions' },
-      { name: 'Context', patterns: [8, 7, 68, 78], why: 'Progressive disclosure, compaction, tool result budget' },
-      { name: 'Multi-Agent', patterns: [43, 66, 67, 72], why: 'Sub-agents for exploration, parallel tools, worktree isolation, file caching' },
-      { name: 'Production', patterns: [63, 74, 75, 76, 73], why: 'Deferred tools, skills, coordinator-worker, IDE bridge, session resume' },
-    ],
-  },
-  rag_app: {
-    name: 'RAG Application / Knowledge Base Q&A',
-    phases: [
-      { name: 'Core', patterns: [44, 17, 6, 49], why: 'Agent loop + tool registry + context budget + structured outputs' },
-      { name: 'Retrieval', patterns: [35, 31, 33], why: 'Start with Agentic RAG, add Corrective RAG, then Adaptive routing' },
-      { name: 'Advanced RAG', patterns: [30, 34, 32], why: 'RAPTOR for cross-section questions, GraphRAG for relationships, Self-RAG for precision' },
-      { name: 'Memory', patterns: [23, 24], why: 'Remember what user asked before, semantic recall across sessions' },
-      { name: 'Quality', patterns: [54, 55, 53], why: 'Golden datasets, LLM-as-judge, observability' },
-    ],
-  },
-  multi_agent: {
-    name: 'Multi-Agent System / Agent Team',
-    phases: [
-      { name: 'Core', patterns: [44, 9, 17, 6], why: 'Get a single agent working well first' },
-      { name: 'Orchestration', patterns: [36, 43, 37], why: 'Workflow patterns, sub-agents, agent-as-tool delegation' },
-      { name: 'Coordination', patterns: [75, 38, 39], why: 'Coordinator-worker, swarm handoffs, graph-based orchestration' },
-      { name: 'Safety', patterns: [64, 71, 70, 77], why: 'Permissions, cost gating, denial tracking, hooks' },
-      { name: 'Scale', patterns: [67, 66, 15, 73], why: 'Worktree isolation, parallel tools, LLM compiler, session persistence' },
-    ],
-  },
-  automation: {
-    name: 'Workflow Automation / Business Process Agent',
-    phases: [
-      { name: 'Core', patterns: [44, 14, 17, 49], why: 'Agent loop + plan-and-execute (predictable steps) + structured outputs' },
-      { name: 'Orchestration', patterns: [61, 48, 20], why: 'Event-driven flows, suspend/resume for async, human approval gates' },
-      { name: 'Safety', patterns: [50, 64, 71, 62], why: 'Guardrails, permissions, cost limits, execution hooks' },
-      { name: 'Memory', patterns: [23, 25], why: 'Working memory for state, AUDN to learn from past runs' },
-      { name: 'Reliability', patterns: [45, 58, 53, 54], why: 'Fallback chains, circuit breaker, observability, golden dataset tests' },
-    ],
-  },
-  api_agent: {
-    name: 'API/Tool Integration Agent',
-    phases: [
-      { name: 'Core', patterns: [44, 17, 21, 19, 6], why: 'Agent loop + tool registry + ACI design + schema compat + context budget' },
-      { name: 'Tool System', patterns: [18, 60, 63], why: 'Multi-source tools, MCP protocol, deferred loading' },
-      { name: 'Safety', patterns: [50, 20, 64, 71], why: 'Guardrails, suspend for approval, permissions, cost limits' },
-      { name: 'Reliability', patterns: [45, 58, 47], why: 'Fallback chains, circuit breaker, semantic caching' },
-      { name: 'Scale', patterns: [46, 15, 66], why: 'Model routing, parallel execution, streaming tools' },
-    ],
-  },
-}
-
-/**
- * Keywords that map to project types.
- */
-const PROJECT_KEYWORDS = {
-  chatbot: ['chat', 'chatbot', 'conversational', 'assistant', 'support', 'customer', 'helpdesk', 'dialogue'],
-  coding_agent: ['code', 'coding', 'developer', 'ide', 'programming', 'software', 'refactor', 'debug', 'cli'],
-  rag_app: ['rag', 'knowledge', 'search', 'document', 'qa', 'question', 'retrieval', 'wiki', 'docs'],
-  multi_agent: ['multi-agent', 'multi agent', 'team', 'crew', 'swarm', 'coordinate', 'agents', 'collaborate'],
-  automation: ['workflow', 'automate', 'automation', 'pipeline', 'process', 'business', 'task', 'orchestrat'],
-  api_agent: ['api', 'integration', 'tool', 'connect', 'webhook', 'service', 'endpoint', 'mcp'],
-}
-
-/**
- * Common problems and which patterns fix them.
- */
-const PROBLEM_DIAGNOSES = {
-  'too expensive': {
-    title: 'Cost is too high',
-    patterns: [46, 47, 63, 78, 71],
-    explanation: 'Route simple queries to cheap models (46), cache repeated queries (47), lazy-load tool schemas (63), replace old tool results (78), set hard budget limits (71).',
-  },
-  'too slow': {
-    title: 'Agent is too slow',
-    patterns: [66, 15, 65, 72, 63],
-    explanation: 'Run safe tools in parallel (66), parallelize independent plan steps (15), pre-compute likely results (65), cache file reads (72), defer tool loading (63).',
-  },
-  'hallucinate': {
-    title: 'Agent hallucinates or makes things up',
-    patterns: [13, 31, 32, 21, 49],
-    explanation: 'Use tool-verified self-correction (13), validate retrieval quality (31), let model decide when to retrieve (32), design tools with clear errors (21), constrain output format (49).',
-  },
-  'forgets': {
-    title: 'Agent forgets context or loses track',
-    patterns: [23, 7, 68, 24, 78],
-    explanation: 'Add structured working memory (23), compact old history (7), react to context state not just tokens (68), semantic recall for past conversations (24), budget tool results (78).',
-  },
-  'dangerous': {
-    title: 'Agent takes dangerous or unwanted actions',
-    patterns: [64, 20, 50, 70, 77],
-    explanation: 'Multi-layer permissions (64), suspend for human approval (20), input/output guardrails (50), escalate after repeated denials (70), shell hooks for external checks (77).',
-  },
-  'wrong tool': {
-    title: 'Agent picks wrong tools or bad parameters',
-    patterns: [21, 49, 17, 63, 22],
-    explanation: 'Redesign tools for agent consumption (21), structured outputs (49), validate inputs in pipeline (17), better tool descriptions via search hints (63), optimize prompts with DSPy (22).',
-  },
-  'complex task': {
-    title: 'Agent fails on complex multi-step tasks',
-    patterns: [14, 43, 75, 10, 11],
-    explanation: 'Separate planning from execution (14), delegate to sub-agents (43), coordinator-worker for parallel (75), learn from failures via Reflexion (10), explore multiple reasoning paths (11).',
-  },
-  'scale': {
-    title: 'Need to handle more users / higher load',
-    patterns: [47, 46, 45, 58, 56],
-    explanation: 'Semantic caching (47), route to cheapest capable model (46), fallback chains (45), circuit breaker on providers (58), composite storage (56).',
-  },
-  'no memory': {
-    title: 'Agent needs to remember across sessions',
-    patterns: [23, 24, 25, 69, 29],
-    explanation: 'Structured working memory (23), semantic recall via embeddings (24), AUDN consolidation to keep memory clean (25), hierarchical memory files (69), decay old memories (29).',
-  },
-  'testing': {
-    title: 'How to test non-deterministic agents',
-    patterns: [54, 55, 53, 13, 16],
-    explanation: 'Golden datasets in CI/CD (54), LLM-as-judge for subjective quality (55), observability spans for debugging (53), tool-verified correctness (13), majority voting for consistency (16).',
-  },
-}
-
-function detectProjectType(description) {
-  const lower = description.toLowerCase()
-  const scores = {}
-
-  for (const [type, keywords] of Object.entries(PROJECT_KEYWORDS)) {
-    scores[type] = 0
-    for (const kw of keywords) {
-      if (lower.includes(kw)) scores[type] += 1
-    }
-  }
-
-  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1])
-
-  // If no strong match, return null
-  if (sorted[0][1] === 0) return null
-  return sorted[0][0]
-}
-
-function detectProblems(description) {
-  const lower = description.toLowerCase()
-  const matches = []
-
-  const problemKeywords = {
-    'too expensive': ['expensive', 'cost', 'budget', 'money', 'tokens', 'pricing', 'cheap'],
-    'too slow': ['slow', 'latency', 'speed', 'fast', 'performance', 'timeout', 'waiting'],
-    'hallucinate': ['hallucinate', 'hallucination', 'wrong answer', 'makes up', 'inaccurate', 'incorrect', 'invents'],
-    'forgets': ['forget', 'loses context', 'lost track', 'doesn\'t remember', 'context window', 'memory', 'amnesia'],
-    'dangerous': ['dangerous', 'unsafe', 'destructive', 'permission', 'security', 'risk', 'delete', 'harmful'],
-    'wrong tool': ['wrong tool', 'bad parameters', 'hallucinate tool', 'tool error', 'invalid', 'misuse'],
-    'complex task': ['complex', 'multi-step', 'complicated', 'fails on', 'can\'t handle', 'long task', 'breaks down'],
-    'scale': ['scale', 'users', 'load', 'concurrent', 'production', 'traffic', 'throughput'],
-    'no memory': ['remember', 'memory', 'sessions', 'persist', 'between conversations', 'long-term', 'across sessions'],
-    'testing': ['test', 'evaluate', 'eval', 'benchmark', 'quality', 'regression', 'ci/cd', 'non-deterministic'],
-  }
-
-  for (const [problem, keywords] of Object.entries(problemKeywords)) {
-    for (const kw of keywords) {
-      if (lower.includes(kw)) {
-        matches.push(problem)
-        break
-      }
-    }
-  }
-
-  return matches
-}
+// ── Recommendation Engine (data imported from ../data/) ──
 
 function formatRecommendation(blueprint, level) {
   const lines = [`# Recommended Patterns for: ${blueprint.name}\n`]
@@ -284,7 +112,7 @@ function formatDiagnosis(problemKeys) {
   const lines = ['# Agent Diagnosis\n']
 
   for (const key of problemKeys) {
-    const diag = PROBLEM_DIAGNOSES[key]
+    const diag = problemDiagnoses[key]
     if (!diag) continue
 
     lines.push(`## Problem: ${diag.title}`)
@@ -417,7 +245,7 @@ server.tool(
       return { content: [{ type: 'text', text: generic }] }
     }
 
-    const blueprint = PROJECT_BLUEPRINTS[projectType]
+    const blueprint = projectBlueprints[projectType]
     const text = formatRecommendation(blueprint, level)
     return { content: [{ type: 'text', text }] }
   },
@@ -435,7 +263,7 @@ server.tool(
 
     if (matchedProblems.length === 0) {
       // Fallback: list all diagnosable problems
-      const available = Object.values(PROBLEM_DIAGNOSES)
+      const available = Object.values(problemDiagnoses)
         .map(d => `- "${d.title}"`)
         .join('\n')
 
@@ -533,120 +361,7 @@ server.tool(
   },
 )
 
-// ── Atlas Interaction Vocabulary ──
-
-const HUMAN_TASKS = {
-  authenticate: { name: 'Authenticate', phase: 'Pre-Action', uxPattern: 'P2', principles: [11], playbook: [64] },
-  grant_consent: { name: 'Grant / Revoke Consent', phase: 'Pre-Action', uxPattern: 'P2', principles: [11, 17], playbook: [64, 70] },
-  connect_integration: { name: 'Connect Integration', phase: 'Pre-Action', uxPattern: 'P2', principles: [11], playbook: [64] },
-  upload_file: { name: 'Upload File', phase: 'Pre-Action', uxPattern: 'P1', principles: [6], playbook: [] },
-  type_input: { name: 'Type Input', phase: 'Pre-Action', uxPattern: 'P1', principles: [2], playbook: [] },
-  voice_command: { name: 'Voice Command', phase: 'Pre-Action', uxPattern: 'P1', principles: [6], playbook: [] },
-  gesture_input: { name: 'Gesture Input', phase: 'Pre-Action', uxPattern: 'P1', principles: [6], playbook: [] },
-  navigate_space: { name: 'Navigate Space', phase: 'Pre-Action', uxPattern: null, principles: [7], playbook: [] },
-  adjust_control: { name: 'Adjust Control', phase: 'In-Action', uxPattern: 'P2', principles: [6], playbook: [] },
-  configure_system: { name: 'Configure System', phase: 'Pre-Action', uxPattern: 'P2', principles: [11, 12], playbook: [64] },
-  select_option: { name: 'Select Option', phase: 'In-Action', uxPattern: 'P1', principles: [12], playbook: [] },
-  choose_winner: { name: 'Choose Winner', phase: 'In-Action', uxPattern: 'P4', principles: [4], playbook: [] },
-  start_process: { name: 'Start Process', phase: 'Pre-Action', uxPattern: 'P1', principles: [12], playbook: [20] },
-  stop_process: { name: 'Stop Process', phase: 'In-Action', uxPattern: 'P6', principles: [9], playbook: [20] },
-  compare_options: { name: 'Compare Options', phase: 'In-Action', uxPattern: 'P4', principles: [4], playbook: [] },
-  organize_label: { name: 'Organize & Label', phase: 'Post-Action', uxPattern: 'P5', principles: [1], playbook: [] },
-  review_approve: { name: 'Review & Approve', phase: 'Post-Action', uxPattern: 'P1', principles: [12, 13], playbook: [20, 44] },
-  validate_data: { name: 'Validate Data', phase: 'Post-Action', uxPattern: 'P5', principles: [3], playbook: [] },
-  annotate: { name: 'Annotate & Mark Up', phase: 'Post-Action', uxPattern: 'P3', principles: [1], playbook: [] },
-  provide_feedback: { name: 'Provide Feedback', phase: 'Post-Action', uxPattern: 'P7', principles: [9, 12], playbook: [53] },
-  flag_content: { name: 'Flag Content', phase: 'Post-Action', uxPattern: 'P6', principles: [15], playbook: [50] },
-  edit_content: { name: 'Edit Content', phase: 'Post-Action', uxPattern: 'P1', principles: [4], playbook: [44] },
-  export_download: { name: 'Export / Download', phase: 'Post-Action', uxPattern: null, principles: [17], playbook: [76] },
-}
-
-const CONSTRAINT_CATEGORIES = {
-  quality_safety: { name: 'Quality & Safety', constraints: ['privacy_preserving', 'human_verification', 'auth_required', 'role_based_access', 'content_safety', 'data_retention', 'audit_logging', 'user_consent', 'eval_coverage', 'encryption'] },
-  performance: { name: 'Performance & Resource', constraints: ['latency_budget', 'rate_limit', 'cost_budget', 'compute_budget', 'caching_policy'] },
-  model_technical: { name: 'Model & Technical', constraints: ['confidence_threshold', 'context_window', 'quality_threshold', 'model_portability', 'few_shot'] },
-  ux_interaction: { name: 'UX & Interaction', constraints: ['tone_voice', 'error_handling', 'streaming_mode', 'localization', 'accessibility'] },
-  data_context: { name: 'Data & Context', constraints: ['output_format', 'context_scope'] },
-  execution: { name: 'Execution Behavior', constraints: ['autonomous_execution', 'parallel_execution', 'timeout_limit'] },
-  code_philosophy: { name: 'Code Philosophy', constraints: ['minimal_changes', 'code_style', 'backward_compat'] },
-  attribution: { name: 'Attribution', constraints: ['attribution_required', 'data_provenance', 'source_citation'] },
-}
-
-const CONSTRAINTS = {
-  privacy_preserving: { name: 'Privacy Preserving', category: 'Quality & Safety', principles: [11, 17], playbook: [64] },
-  human_verification: { name: 'Human Verification', category: 'Quality & Safety', principles: [13], playbook: [20] },
-  content_safety: { name: 'Content Safety', category: 'Quality & Safety', principles: [15], playbook: [50, 52] },
-  audit_logging: { name: 'Audit Logging', category: 'Quality & Safety', principles: [13], playbook: [53] },
-  user_consent: { name: 'User Consent', category: 'Quality & Safety', principles: [11], playbook: [64] },
-  cost_budget: { name: 'Cost Budget', category: 'Performance & Resource', principles: [9], playbook: [71] },
-  latency_budget: { name: 'Latency Budget', category: 'Performance & Resource', principles: [6], playbook: [65] },
-  confidence_threshold: { name: 'Confidence Threshold', category: 'Model & Technical', principles: [10], playbook: [50] },
-  context_window: { name: 'Context Window', category: 'Model & Technical', principles: [6], playbook: [7, 68] },
-  tone_voice: { name: 'Tone & Voice', category: 'UX & Interaction', principles: [5], playbook: [52] },
-  output_format: { name: 'Output Format', category: 'Data & Context', principles: [6], playbook: [49] },
-  autonomous_execution: { name: 'Autonomous Execution', category: 'Execution Behavior', principles: [12], playbook: [64] },
-  attribution_required: { name: 'Attribution Required', category: 'Attribution', principles: [13], playbook: [] },
-  data_provenance: { name: 'Data Provenance', category: 'Attribution', principles: [3, 13], playbook: [53] },
-}
-
-const TASK_KEYWORDS = {
-  authenticate: ['login', 'auth', 'identity', 'sign in', 'credentials', 'sso'],
-  grant_consent: ['consent', 'permission', 'authorize', 'allow', 'gdpr', 'privacy'],
-  upload_file: ['upload', 'file', 'document', 'attachment', 'import'],
-  type_input: ['input', 'type', 'text', 'prompt', 'query', 'search'],
-  voice_command: ['voice', 'speech', 'speak', 'audio', 'dictation', 'alexa', 'siri'],
-  configure_system: ['configure', 'settings', 'preferences', 'setup', 'customize', 'parameters'],
-  review_approve: ['review', 'approve', 'check', 'verify', 'confirm', 'validate'],
-  provide_feedback: ['feedback', 'rating', 'thumbs', 'like', 'dislike', 'sentiment'],
-  flag_content: ['flag', 'report', 'inappropriate', 'harmful', 'abuse', 'moderation'],
-  edit_content: ['edit', 'modify', 'refine', 'rewrite', 'tweak'],
-  export_download: ['export', 'download', 'share', 'copy', 'csv', 'json'],
-  start_process: ['start', 'begin', 'initiate', 'launch', 'trigger', 'run'],
-  stop_process: ['stop', 'cancel', 'abort', 'pause', 'halt', 'kill'],
-  compare_options: ['compare', 'side by side', 'diff', 'options', 'alternatives'],
-  annotate: ['annotate', 'highlight', 'mark', 'comment', 'label'],
-}
-
-const CONSTRAINT_KEYWORDS = {
-  privacy_preserving: ['privacy', 'gdpr', 'ccpa', 'personal data', 'pii'],
-  human_verification: ['human review', 'manual check', 'approval required', 'hitl'],
-  content_safety: ['safety', 'harmful', 'toxic', 'offensive', 'moderation'],
-  cost_budget: ['cost', 'budget', 'expensive', 'spending', 'billing'],
-  latency_budget: ['latency', 'speed', 'fast', 'slow', 'real-time', 'responsive'],
-  confidence_threshold: ['confidence', 'threshold', 'certainty', 'accuracy'],
-  audit_logging: ['audit', 'log', 'trace', 'compliance', 'record'],
-  autonomous_execution: ['autonomous', 'automatic', 'unattended', 'self-service'],
-  data_provenance: ['provenance', 'source', 'attribution', 'citation', 'origin'],
-  tone_voice: ['tone', 'voice', 'brand', 'personality', 'style'],
-}
-
-function detectHumanTasks(description) {
-  const lower = description.toLowerCase()
-  const matched = []
-  for (const [key, keywords] of Object.entries(TASK_KEYWORDS)) {
-    for (const kw of keywords) {
-      if (lower.includes(kw)) {
-        matched.push(key)
-        break
-      }
-    }
-  }
-  return [...new Set(matched)]
-}
-
-function detectConstraints(description) {
-  const lower = description.toLowerCase()
-  const matched = []
-  for (const [key, keywords] of Object.entries(CONSTRAINT_KEYWORDS)) {
-    for (const kw of keywords) {
-      if (lower.includes(kw)) {
-        matched.push(key)
-        break
-      }
-    }
-  }
-  return [...new Set(matched)]
-}
+// ── Atlas vocabulary + detect functions imported from ../data/ ──
 
 // ── Design Principles Tools ──
 
@@ -875,7 +590,7 @@ server.tool(
       lines.push('| Task | Phase | UX Pattern | Design Principle |')
       lines.push('|------|-------|-----------|-----------------|')
       for (const key of matchedTasks) {
-        const task = HUMAN_TASKS[key]
+        const task = humanTasks[key]
         if (!task) continue
         const principles = task.principles.map(n => `P${n}`).join(', ')
         lines.push(`| ${task.name} | ${task.phase} | ${task.uxPattern || '—'} | ${principles} |`)
@@ -890,7 +605,7 @@ server.tool(
       lines.push('| Constraint | Category | Playbook Pattern |')
       lines.push('|-----------|----------|-----------------|')
       for (const key of matchedConstraints) {
-        const constraint = CONSTRAINTS[key]
+        const constraint = constraints[key]
         if (!constraint) continue
         const pbPatterns = constraint.playbook.length > 0 ? constraint.playbook.map(n => `Pattern ${n}`).join(', ') : '—'
         lines.push(`| ${constraint.name} | ${constraint.category} | ${pbPatterns} |`)
@@ -902,11 +617,11 @@ server.tool(
     if (focus !== 'engineering') {
       const principleSet = new Set()
       for (const key of matchedTasks) {
-        const task = HUMAN_TASKS[key]
+        const task = humanTasks[key]
         if (task) task.principles.forEach(p => principleSet.add(p))
       }
       for (const key of matchedConstraints) {
-        const constraint = CONSTRAINTS[key]
+        const constraint = constraints[key]
         if (constraint) constraint.principles.forEach(p => principleSet.add(p))
       }
 
@@ -926,7 +641,7 @@ server.tool(
       // Collect unique UX patterns
       const patternSet = new Set()
       for (const key of matchedTasks) {
-        const task = HUMAN_TASKS[key]
+        const task = humanTasks[key]
         if (task && task.uxPattern) patternSet.add(task.uxPattern)
       }
 
@@ -949,7 +664,7 @@ server.tool(
     if (focus !== 'design') {
       const projectType = detectProjectType(description)
       if (projectType) {
-        const blueprint = PROJECT_BLUEPRINTS[projectType]
+        const blueprint = projectBlueprints[projectType]
         lines.push(`## Engineering Patterns (${blueprint.name})\n`)
         const phaseCount = 2
         for (let i = 0; i < Math.min(phaseCount, blueprint.phases.length); i++) {
