@@ -4429,3 +4429,14 @@ Use this checklist when starting a new AI agent project:
 
 **Production Patterns (63-78):**
 - Patterns addressing common production challenges: tool orchestration, permission systems, context budgets, multi-agent coordination, cost control, and session persistence
+
+### Design & HCI
+- [Design Principles for Future AI](https://medium.com/ui-for-ai/design-principles-for-future-ai-cebc9155745f) (Saffer & CMU UI for AI Team, 2026)
+- [The Future of AI is Relationships, not Intelligence](https://medium.com/ui-for-ai/the-future-of-ai-is-relationships-not-intelligence-26d35380012f) (Saffer, 2026)
+- [Beyond Generative: The Rise of Agentic AI](https://www.smashingmagazine.com/2026/01/beyond-generative-rise-agentic-ai-user-centric-design/) (Yocco, 2026)
+- [Designing For Agentic AI: Practical UX Patterns](https://www.smashingmagazine.com/2026/02/designing-agentic-ai-practical-ux-patterns/) (Yocco, 2026)
+- [Design Patterns for AI Interfaces](https://www.smashingmagazine.com/2025/07/design-patterns-ai-interfaces/) (Friedman, 2025)
+- [The Shape of Sentient Design](https://bigmedium.com/ideas/shape-of-sentient-design.html) (Clark & Kindred, Big Medium)
+- [The Prompt-Box Paradox](https://www.thirteen23.com/updates/the-prompt-box-paradox) (Cook, thirteen23, 2025)
+- [People + AI Guidebook](https://pair.withgoogle.com/guidebook) (Google PAIR)
+- [UX Design for Agents](https://microsoft.design/articles/ux-design-for-agents/) (Microsoft Design)

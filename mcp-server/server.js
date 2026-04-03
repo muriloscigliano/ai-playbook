@@ -3,16 +3,22 @@
 /**
  * AI Playbook MCP Server
  *
- * Provides 6 tools for retrieving patterns from the AI Agent Patterns Playbook
- * without loading the full 170KB file into context.
+ * Provides 10 tools for retrieving patterns and design principles from the
+ * AI Agent Patterns Playbook and AI Design Principles document.
  *
- * Tools:
+ * Engineering Patterns (6 tools):
  *   - recommend_patterns(description, level)  → "I'm building X" → phased plan
  *   - diagnose_agent(problem)                 → "My agent does Y wrong" → fixes
  *   - search_patterns(query)                  → Find patterns by keyword
  *   - get_pattern(number)                     → Get full content of a pattern
  *   - list_patterns(part?)                    → List all patterns by Part
  *   - get_build_guide(section?)               → Decision trees & phases
+ *
+ * Design Principles (4 tools):
+ *   - get_design_principle(number)            → Get full content of a design principle (1-17)
+ *   - get_ux_pattern(number)                  → Get full content of a UX pattern (1-7)
+ *   - search_design(query)                    → Search design principles, UX patterns, governance
+ *   - get_design_section(section)             → Get taxonomy, governance, rollout, metrics, or framing
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
@@ -31,6 +37,15 @@ try {
 } catch {
   console.error('patterns.json not found. Run: node build-index.js')
   process.exit(1)
+}
+
+// Load design principles index
+let designEntries
+try {
+  designEntries = JSON.parse(readFileSync(join(__dirname, 'design-principles.json'), 'utf-8'))
+} catch {
+  designEntries = []
+  // Design principles index is optional — server works without it
 }
 
 // Load build guide
@@ -353,7 +368,7 @@ function getBuildGuideSection(section) {
 
 const server = new McpServer({
   name: 'ai-playbook',
-  version: '1.0.0',
+  version: '2.0.0',
 })
 
 // Tool 1: Recommend patterns for a project (beginner-friendly)
@@ -514,6 +529,186 @@ server.tool(
   async ({ section }) => {
     const text = getBuildGuideSection(section)
     return { content: [{ type: 'text', text }] }
+  },
+)
+
+// ── Design Principles Tools ──
+
+function searchDesignEntries(query) {
+  const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 1)
+
+  return designEntries
+    .map(entry => {
+      let score = 0
+      for (const term of terms) {
+        if (entry.name.toLowerCase().includes(term)) score += 10
+        if (entry.summary.toLowerCase().includes(term)) score += 5
+        if (entry.theme.toLowerCase().includes(term)) score += 3
+        if (entry.keywords.some(k => k.includes(term))) score += 1
+        // Boost principles and UX patterns in search results
+        if (entry.type === 'principle' || entry.type === 'ux-pattern') score += 1
+      }
+      return { ...entry, score }
+    })
+    .filter(r => r.score > 0)
+    .sort((a, b) => b.score - a.score)
+}
+
+function formatDesignEntrySummary(entry) {
+  const typeLabel = {
+    'principle': 'Principle',
+    'ux-pattern': 'UX Pattern',
+    'section': 'Section',
+    'governance': 'Governance',
+    'anti-pattern': 'Anti-Pattern',
+    'taxonomy-level': 'Taxonomy',
+    'lifecycle': 'Lifecycle',
+  }[entry.type] || entry.type
+
+  const num = entry.number ? ` ${entry.number}` : ''
+  const summary = entry.summary ? `\n  ${entry.summary.slice(0, 200)}${entry.summary.length > 200 ? '...' : ''}` : ''
+  return `[${typeLabel}${num}] ${entry.name}${summary}`
+}
+
+// Tool 7: Get a specific design principle by number (1-17)
+server.tool(
+  'get_design_principle',
+  'Get the full content of a design principle by number (1-17). Includes: problem, design guidance, practitioner perspectives, examples, and playbook connections. From the AI Design Principles companion document.',
+  { number: z.number().min(1).max(17).describe('Principle number (1-17). E.g. 1 = Preserve Struggle, 3 = Transparent Thinking Partner, 9 = Enhance Not Replace, 17 = Design Exit as Sacred Right') },
+  async ({ number }) => {
+    if (designEntries.length === 0) {
+      return { content: [{ type: 'text', text: 'Design principles index not found. Run: node build-design-index.js' }] }
+    }
+
+    const entry = designEntries.find(e => e.type === 'principle' && e.number === number)
+    if (!entry) {
+      return { content: [{ type: 'text', text: `Design principle ${number} not found. Valid range: 1-17.` }] }
+    }
+
+    return { content: [{ type: 'text', text: entry.content }] }
+  },
+)
+
+// Tool 8: Get a specific UX pattern by number (1-7)
+server.tool(
+  'get_ux_pattern',
+  'Get the full content of an agentic UX pattern by number (1-7). Includes: lifecycle phase, autonomy levels, anatomy, metrics, examples, and playbook connections. P1=Intent Preview, P2=Autonomy Dial, P3=Explainable Rationale, P4=Confidence Signal, P5=Action Audit & Undo, P6=Escalation Pathway, P7=Empathic Error Recovery.',
+  { number: z.number().min(1).max(7).describe('UX pattern number (1-7)') },
+  async ({ number }) => {
+    if (designEntries.length === 0) {
+      return { content: [{ type: 'text', text: 'Design principles index not found. Run: node build-design-index.js' }] }
+    }
+
+    const entry = designEntries.find(e => e.type === 'ux-pattern' && e.number === number)
+    if (!entry) {
+      return { content: [{ type: 'text', text: `UX pattern ${number} not found. Valid range: 1-7.` }] }
+    }
+
+    return { content: [{ type: 'text', text: entry.content }] }
+  },
+)
+
+// Tool 9: Search design principles, UX patterns, and governance
+server.tool(
+  'search_design',
+  'Search AI design principles, UX patterns, autonomy taxonomy, and governance content. Returns matching summaries. Use get_design_principle or get_ux_pattern for full content.',
+  { query: z.string().describe('Search query — e.g. "trust", "transparency", "consent", "accountability", "error recovery", "autonomy", "metacognition", "sludge", "governance"') },
+  async ({ query }) => {
+    if (designEntries.length === 0) {
+      return { content: [{ type: 'text', text: 'Design principles index not found. Run: node build-design-index.js' }] }
+    }
+
+    const results = searchDesignEntries(query).slice(0, 10)
+
+    if (results.length === 0) {
+      return { content: [{ type: 'text', text: `No design entries found for "${query}". Try: "trust", "transparency", "consent", "autonomy", "error", "governance", "metrics", "sludge", "agency".` }] }
+    }
+
+    const text = results.map((r, i) => `${i + 1}. ${formatDesignEntrySummary(r)}`).join('\n\n')
+    return {
+      content: [{
+        type: 'text',
+        text: `Found ${results.length} design entries matching "${query}":\n\n${text}\n\nUse get_design_principle(N) or get_ux_pattern(N) to read full content.`,
+      }],
+    }
+  },
+)
+
+// Tool 10: Get a design section (taxonomy, governance, rollout, metrics, framing)
+server.tool(
+  'get_design_section',
+  'Get a full section from the AI Design Principles document: autonomy taxonomy, governance (ethics council), phased rollout, metrics framework, framing, cross-reference table, or anti-pattern (agentic sludge).',
+  { section: z.string().describe('Section to retrieve — e.g. "taxonomy", "governance", "rollout", "metrics", "framing", "cross-reference", "sludge", "anti-pattern", "lifecycle"') },
+  async ({ section }) => {
+    if (designEntries.length === 0) {
+      return { content: [{ type: 'text', text: 'Design principles index not found. Run: node build-design-index.js' }] }
+    }
+
+    const lower = section.toLowerCase()
+
+    // Map common queries to entry types/names
+    const sectionMap = {
+      'taxonomy': 'The Agentic Autonomy Taxonomy',
+      'autonomy': 'The Agentic Autonomy Taxonomy',
+      'framing': 'Framing: Quality Is Downstream of Intent',
+      'intent': 'Framing: Quality Is Downstream of Intent',
+      'quality': 'Framing: Quality Is Downstream of Intent',
+      'cross-reference': 'Cross-Reference: Principles',
+      'cross reference': 'Cross-Reference: Principles',
+      'supplementary': 'Supplementary Frameworks',
+      'frameworks': 'Supplementary Frameworks',
+      'sources': 'Sources & Attribution',
+    }
+
+    // Try exact section map first
+    for (const [key, name] of Object.entries(sectionMap)) {
+      if (lower.includes(key)) {
+        const entry = designEntries.find(e => e.name.includes(name))
+        if (entry) return { content: [{ type: 'text', text: entry.content }] }
+      }
+    }
+
+    // Try matching governance entries
+    if (lower.includes('governance') || lower.includes('ethics') || lower.includes('council')) {
+      const entry = designEntries.find(e => e.name.includes('Ethics Council'))
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    if (lower.includes('rollout') || lower.includes('phase') || lower.includes('implementation')) {
+      const entry = designEntries.find(e => e.name.includes('Phased Implementation'))
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    if (lower.includes('metric')) {
+      const entry = designEntries.find(e => e.name.includes('Metrics Framework'))
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    if (lower.includes('sludge') || lower.includes('anti-pattern') || lower.includes('anti pattern') || lower.includes('dark pattern')) {
+      const entry = designEntries.find(e => e.type === 'anti-pattern')
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    if (lower.includes('lifecycle') || lower.includes('life cycle') || lower.includes('overview')) {
+      const entry = designEntries.find(e => e.name.includes('Lifecycle Overview'))
+      if (entry) return { content: [{ type: 'text', text: entry.content }] }
+    }
+
+    // Fuzzy match against all entries
+    const results = searchDesignEntries(section)
+    if (results.length > 0) {
+      const best = results[0]
+      return { content: [{ type: 'text', text: best.content }] }
+    }
+
+    const available = [
+      'taxonomy / autonomy', 'framing / intent / quality',
+      'governance / ethics council', 'rollout / phases',
+      'metrics', 'sludge / anti-pattern', 'lifecycle',
+      'cross-reference', 'frameworks', 'sources',
+    ].join(', ')
+
+    return { content: [{ type: 'text', text: `No section matching "${section}" found. Available sections: ${available}` }] }
   },
 )
 

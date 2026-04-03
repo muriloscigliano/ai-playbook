@@ -1,6 +1,6 @@
 # AI Agent Patterns Playbook
 
-> **78 production-ready patterns** for building AI-first products — from agent loops and tool design to multi-agent orchestration, memory systems, and production hardening.
+> **78 production-ready patterns + design principles** for building AI-first products — from agent loops and tool design to multi-agent orchestration, memory systems, production hardening, and human-centered AI design.
 
 ---
 
@@ -11,6 +11,7 @@
 | [`PATTERN_INDEX.md`](PATTERN_INDEX.md) | One-line summary of all 78 patterns | Finding the right pattern |
 | [`AI_FIRST_BUILD_GUIDE.md`](AI_FIRST_BUILD_GUIDE.md) | Decision trees + 5-phase build plan | Starting a feature or project |
 | [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md) | Full reference (78 patterns, 4500+ lines) | Deep implementation details |
+| [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 7 UX patterns + governance for agentic AI | Designing interactions, UX reviews, product framing, governance |
 
 ## Patterns Overview
 
@@ -97,7 +98,7 @@ git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
 ## MCP Server (Recommended)
 
-The MCP server gives any AI agent instant access to patterns **without loading the full 170KB file**. 6 tools, zero context waste.
+The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 170KB+ files**. 10 tools, zero context waste.
 
 ### Setup
 
@@ -105,10 +106,11 @@ The MCP server gives any AI agent instant access to patterns **without loading t
 # Clone the repo
 git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
-# Install dependencies and build the pattern index
+# Install dependencies and build indexes
 cd ~/.ai-playbook/mcp-server
 npm install
 node build-index.js
+node build-design-index.js
 ```
 
 ### Add to your AI agent config
@@ -129,6 +131,8 @@ node build-index.js
 
 ### Available Tools
 
+**Engineering Patterns (6 tools):**
+
 | Tool | Input | Output | Best for |
 |------|-------|--------|----------|
 | `recommend_patterns` | `"a customer support chatbot"` | Phased plan with the right patterns for your project | **Start here** — don't know which patterns you need |
@@ -137,6 +141,15 @@ node build-index.js
 | `get_pattern` | `23` | Full pattern content (problem, solution, pseudocode, rules) | Ready to implement a specific pattern |
 | `list_patterns` | `"safety"` (optional) | All patterns in a Part, one-line each | Browsing what's available |
 | `get_build_guide` | `"phase 1"` (optional) | Build guide section or decision trees | Planning your architecture |
+
+**Design Principles (4 tools):**
+
+| Tool | Input | Output | Best for |
+|------|-------|--------|----------|
+| `get_design_principle` | `3` | Full principle (problem, guidance, examples, practitioner perspectives) | Implementing a specific design principle |
+| `get_ux_pattern` | `1` | Full UX pattern (anatomy, metrics, examples, playbook connections) | Implementing agentic UX (Intent Preview, Autonomy Dial, etc.) |
+| `search_design` | `"trust"` | Top 10 matching design entries (principles, patterns, governance) | Finding relevant design guidance by topic |
+| `get_design_section` | `"taxonomy"` | Full section (taxonomy, governance, rollout, metrics, framing) | Reading governance frameworks or autonomy taxonomy |
 
 ### How a beginner uses it
 
@@ -169,9 +182,9 @@ Agent calls: get_pattern(46)
 
 ### Rebuild after updates
 
-When you update the playbook, rebuild the index:
+When you update the playbook or design principles, rebuild the indexes:
 ```bash
-cd ~/.ai-playbook/mcp-server && node build-index.js
+cd ~/.ai-playbook/mcp-server && node build-index.js && node build-design-index.js
 ```
 
 ---

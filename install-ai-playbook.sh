@@ -23,6 +23,7 @@ PLAYBOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
 FILES=(
     "AI_AGENT_PATTERNS_PLAYBOOK.md"
     "AI_FIRST_BUILD_GUIDE.md"
+    "AI_DESIGN_PRINCIPLES.md"
     "PATTERN_INDEX.md"
 )
 
