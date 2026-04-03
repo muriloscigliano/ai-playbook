@@ -62,6 +62,19 @@ Not patterns — this is the **build guide**: how to combine patterns into a pro
 - Decision trees for agent loop, memory, safety, cost, speed
 - Production checklist (30+ items)
 
+### AI Design Principles (companion document)
+
+17 design principles + 7 UX patterns + governance framework for building **human-centered** agentic AI. Cross-referenced to all 78 technical patterns.
+
+| Section | What's Covered |
+|---------|---------------|
+| **Framing** | Quality as downstream of intent, not tooling |
+| **Autonomy Taxonomy** | 4 levels: Observe & Suggest → Plan & Propose → Act with Confirmation → Act Autonomously |
+| **17 Design Principles** | Cognition (preserve struggle, metacognition), Interfaces (adaptive, generative), Agency (consent, negotiation), Accountability (power, exit rights) |
+| **7 UX Patterns** | Intent Preview, Autonomy Dial, Explainable Rationale, Confidence Signal, Action Audit & Undo, Escalation Pathway, Empathic Error Recovery |
+| **Governance** | Ethics Council, 3-phase rollout (safety → calibrated autonomy → delegation), metrics framework |
+| **Practitioner Voices** | 15+ designers from CMU, Adobe, Smashing Magazine, Big Medium, Obsidian, Mule Design |
+
 ---
 
 ## Install Into Your Project
@@ -90,7 +103,7 @@ git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
 ### What the installer does
 
-1. Creates `.claude/ai-playbook/` in your project with the 3 reference files
+1. Creates `.claude/ai-playbook/` in your project with the 4 reference files
 2. Adds a playbook section to your `CLAUDE.md` (creates one if missing)
 3. Adds `.claude/ai-playbook/` to `.gitignore` (symlink mode only)
 
@@ -180,6 +193,23 @@ Agent calls: get_pattern(46)
     → Returns: Full Model Routing pattern — 87% cost reduction
 ```
 
+### How to use design principles
+
+```
+User: "How should we handle user trust in our scheduling agent?"
+    ↓
+Agent calls: search_design("trust autonomy scheduling")
+    → Returns: Principle 3 (Transparent Thinking Partner), P2 (Autonomy Dial),
+      P4 (Confidence Signal), Phased Rollout
+    ↓
+Agent calls: get_ux_pattern(2)
+    → Returns: Full Autonomy Dial pattern — per-task autonomy settings,
+      anatomy, metrics, examples
+    ↓
+Agent calls: get_design_section("rollout")
+    → Returns: 3-phase rollout with exit criteria for each phase
+```
+
 ### Rebuild after updates
 
 When you update the playbook or design principles, rebuild the indexes:
@@ -234,7 +264,7 @@ git pull
 
 ## Sources
 
-Built from analysis of 10+ open-source agent frameworks, 30+ academic papers, and production engineering guides. Full source list with paper citations in [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md#87-sources--research-papers).
+Built from analysis of 10+ open-source agent frameworks, 30+ academic papers, production engineering guides, and 15+ design practitioner perspectives. Full source lists in [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md#87-sources--research-papers) and [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md#sources--attribution).
 
 ---
 
