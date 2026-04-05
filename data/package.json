@@ -1,11 +1,15 @@
 {
   "name": "@muriloscigliano/ai-playbook",
   "version": "1.0.0",
-  "description": "Structured data for the AI Agent Patterns Playbook — 78 patterns, 17 design principles, 7 UX patterns, vocabularies, and relations",
+  "description": "Structured data for the AI Agent Patterns Playbook — 78 engineering patterns, 17 design principles, 7 UX patterns, interaction vocabularies, and typed relations",
   "type": "module",
   "main": "index.js",
+  "types": "index.d.ts",
   "exports": {
-    ".": "./index.js",
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
     "./patterns": "./patterns/_index.js",
     "./principles": "./principles/_index.js",
     "./ux-patterns": "./ux-patterns/_index.js",
@@ -14,6 +18,48 @@
     "./relations": "./relations/_index.js",
     "./taxonomy": "./taxonomy/autonomy-levels.js",
     "./helpers": "./helpers/index.js"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "patterns/",
+    "principles/",
+    "ux-patterns/",
+    "vocabulary/",
+    "recommendations/",
+    "relations/",
+    "taxonomy/",
+    "helpers/"
+  ],
+  "keywords": [
+    "ai",
+    "agent",
+    "patterns",
+    "playbook",
+    "design-principles",
+    "ux-patterns",
+    "agentic",
+    "llm",
+    "multi-agent",
+    "rag",
+    "guardrails",
+    "mcp",
+    "interaction-design",
+    "autonomy",
+    "human-in-the-loop"
+  ],
+  "author": "Murilo Scigliano",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muriloscigliano/ai-playbook.git",
+    "directory": "data"
+  },
+  "homepage": "https://github.com/muriloscigliano/ai-playbook#structured-data-layer",
+  "bugs": {
+    "url": "https://github.com/muriloscigliano/ai-playbook/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "license": "MIT"
 }

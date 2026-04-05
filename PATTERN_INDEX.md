@@ -1,6 +1,9 @@
 # Pattern Index — Quick Reference
 
 > One-line summary of each pattern. Find the right one, then `Read` the full pattern from `AI_AGENT_PATTERNS_PLAYBOOK.md`.
+>
+> For **design principles** and **UX patterns**, see [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md).
+> For **programmatic access**, import from [`data/`](data/) or `@muriloscigliano/ai-playbook`.
 
 ## Part I: Foundation
 | # | Pattern | One-Liner |
@@ -127,3 +130,61 @@
 | 76 | Bridge Pattern | Agent core decoupled from UI — one core, many surfaces (CLI/IDE/Web) |
 | 77 | Hook System (Shell) | Shell-executed interceptors at lifecycle points (settings.json config) |
 | 78 | Tool Result Budget | Replace old tool results with tombstones to save context tokens |
+
+## Design Principles & UX Patterns
+
+See [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) for full content.
+
+**17 Design Principles (4 themes):**
+
+| # | Principle | Theme |
+|---|-----------|-------|
+| 1 | Preserve Struggle When Delegation Is Effortless | Cognition |
+| 2 | Make Metacognition the Interface | Cognition |
+| 3 | Design AI as a Transparent Thinking Partner | Cognition |
+| 4 | Preserve Creative Interpretation When Output Is Instant | Cognition |
+| 5 | Safeguard Meaning-Making Through Non-Human Metaphors | Cognition |
+| 6 | Design Adaptive Interfaces for Additional Modalities | Interfaces |
+| 7 | Organize by Space-Time, Not Apps | Interfaces |
+| 8 | Generate Interfaces for the Moment | Interfaces |
+| 9 | Enhance Human Work Instead of Replacing It | Agency |
+| 10 | Design to Communicate Limitations | Agency |
+| 11 | Design Consent as Continuous, Not Binary | Agency |
+| 12 | Negotiate Agency Moment-by-Moment | Agency |
+| 13 | Make Accountability Visible | Accountability |
+| 14 | Design Beyond Immediate Utility Toward Societal Impact | Accountability |
+| 15 | Establish Guardrails to Prevent Misuse | Accountability |
+| 16 | Make Power Legible in Infrastructure | Accountability |
+| 17 | Design Exit as Sacred Right | Accountability |
+
+**7 UX Patterns (lifecycle-organized):**
+
+| # | Pattern | Lifecycle Phase |
+|---|---------|----------------|
+| P1 | Intent Preview (Plan Summary) | Pre-Action |
+| P2 | Autonomy Dial (Progressive Authorization) | Pre-Action |
+| P3 | Explainable Rationale | In-Action |
+| P4 | Confidence Signal | In-Action |
+| P5 | Action Audit & Undo | Post-Action |
+| P6 | Escalation Pathway | Post-Action |
+| P7 | Empathic Error Recovery | Repair |
+
+## Programmatic Access
+
+```js
+import { patterns, principles, uxPatterns, humanTasks, constraints } from './data/index.js'
+import { getRelationsFor, detectProjectType } from './data/index.js'
+```
+
+| Export | Count | What |
+|--------|-------|------|
+| `patterns` | 78 | Engineering pattern metadata |
+| `principles` | 17 | Design principle metadata |
+| `uxPatterns` | 7 | UX pattern metadata |
+| `humanTasks` | 23 | Human task vocabulary |
+| `constraints` | 36 | Constraint taxonomy |
+| `touchpoints` | 37 | Interaction surfaces |
+| `aiTasks` | 24 | AI tasks by autonomy level |
+| `allRelations` | 98 | Typed relations between entities |
+| `projectBlueprints` | 6 | Phased recommendations by project type |
+| `problemDiagnoses` | 10 | Problem-to-pattern fix mappings |

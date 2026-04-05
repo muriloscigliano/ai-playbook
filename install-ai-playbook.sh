@@ -80,12 +80,18 @@ install_to_dir() {
     local claude_md="${target_dir}/CLAUDE.md"
     local playbook_section="## AI-First Playbook
 
-This project uses the AI Agent Patterns Playbook for architecture guidance.
+This project uses the AI Agent Patterns Playbook for architecture and design guidance.
 
-- Pattern lookup: \`Grep \"## <number>. Pattern\" .claude/ai-playbook/AI_AGENT_PATTERNS_PLAYBOOK.md\`
+### Engineering Patterns (78)
 - Quick index: \`Read .claude/ai-playbook/PATTERN_INDEX.md\`
+- Pattern lookup: \`Grep \"## <number>. Pattern\" .claude/ai-playbook/AI_AGENT_PATTERNS_PLAYBOOK.md\`
 - Build guide: \`Read .claude/ai-playbook/AI_FIRST_BUILD_GUIDE.md\`
-- Full reference: \`.claude/ai-playbook/AI_AGENT_PATTERNS_PLAYBOOK.md\` (78 patterns, read specific sections only)"
+- Full reference: \`.claude/ai-playbook/AI_AGENT_PATTERNS_PLAYBOOK.md\` (78 patterns, read specific sections only)
+
+### Design Principles (17) + UX Patterns (7)
+- Design reference: \`.claude/ai-playbook/AI_DESIGN_PRINCIPLES.md\`
+- Covers: autonomy taxonomy, human task vocabulary, constraint taxonomy, governance
+- Cross-referenced to engineering patterns"
 
     if [ -f "$claude_md" ]; then
         # Check if section already exists

@@ -3,4 +3,8 @@
 *.swo
 *~
 .qodo/
+.cursor/
+.claude/settings.local.json
 node_modules/
+.env
+.env.*
