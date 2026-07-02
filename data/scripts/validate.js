@@ -24,6 +24,7 @@ import {
 import {
   projectBlueprints,
   problemDiagnoses,
+  uxDiagnoses,
 } from '../recommendations/index.js'
 import { autonomyLevels } from '../taxonomy/autonomy-levels.js'
 
@@ -158,6 +159,14 @@ for (const [key, b] of Object.entries(projectBlueprints)) {
       resolvePatternNumber(n, `projectBlueprint "${key}" phase[${pi}] "${phase.name}"`),
     )
   })
+}
+for (const [key, d] of Object.entries(uxDiagnoses)) {
+  const w = `uxDiagnosis "${key}"`
+  ;(d.uxPatterns || []).forEach((code) => resolveUxCode(code, w))
+  ;(d.principles || []).forEach((n) => resolvePrincipleNumber(n, w))
+  if (d.engineeringRootCause != null && !problemDiagnoses[d.engineeringRootCause]) {
+    fail(`${w}: engineeringRootCause "${d.engineeringRootCause}" is not a real problemDiagnoses key`)
+  }
 }
 
 // ── 5. Cross-references in taxonomy ──

@@ -111,6 +111,25 @@ export interface ProblemDiagnosis {
   explanation: string
 }
 
+/**
+ * A user-perceived (UX) failure, mapped to the design-side entities that
+ * address it. The design mirror of ProblemDiagnosis.
+ */
+export interface UxDiagnosis {
+  title: string
+  /** Short statement of the user-facing symptom. */
+  challenge: string
+  /** UX pattern codes, e.g. ['P3', 'P4']. */
+  uxPatterns: string[]
+  /** Design principle numbers, e.g. [8, 10]. */
+  principles: number[]
+  /** Concrete copy / interaction guidance. */
+  microcopy: string
+  /** Key into problemDiagnoses when a technical root cause exists, else null. */
+  engineeringRootCause: string | null
+  explanation: string
+}
+
 // ── Relation Types ──
 
 export interface Relation {
@@ -177,6 +196,8 @@ export declare const projectBlueprints: Record<string, ProjectBlueprint>
 export declare const projectKeywords: Record<string, string[]>
 export declare const problemDiagnoses: Record<string, ProblemDiagnosis>
 export declare const problemKeywords: Record<string, string[]>
+export declare const uxDiagnoses: Record<string, UxDiagnosis>
+export declare const uxDiagnoseKeywords: Record<string, string[]>
 
 // ── Relations ──
 
@@ -191,5 +212,6 @@ export declare function getRelatedIds(entityId: string, type?: string): string[]
 
 export declare function detectProjectType(description: string): string | null
 export declare function detectProblems(description: string): string[]
+export declare function detectUxComplaints(description: string): string[]
 export declare function detectHumanTasks(description: string): string[]
 export declare function detectConstraints(description: string): string[]

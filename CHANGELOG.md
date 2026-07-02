@@ -13,6 +13,15 @@ provable-consistency layer over the 78 × 17 × 7 + relations data.
 
 ### Added
 
+- **`diagnose_ux` — reverse lookup for user-perceived failures.** New data set
+  `uxDiagnoses` (19 complaints) + `uxDiagnoseKeywords`, each mapping a user
+  complaint to UX patterns, design principles, concrete microcopy, and — where
+  one exists — a cross-reference to the engineering root cause in
+  `problemDiagnoses`. Surfaced as the MCP tool `diagnose_ux({ complaint })`, the
+  CLI command `diagnose-ux "<complaint>"`, and the `detectUxComplaints(desc)`
+  helper. Exported from `@muriloscigliano/ai-playbook` (`uxDiagnoses`,
+  `uxDiagnoseKeywords`, `detectUxComplaints`) with a `UxDiagnosis` type. The
+  validator now checks every `uxDiagnoses` reference resolves.
 - **Data integrity validator** (`data/scripts/validate.js`, zero deps). Asserts
   unique pattern numbers `1..78`, principle numbers `1..17`, and UX codes
   `P1..Pn`; every relation `from`/`to` resolves to a real entity id with a valid

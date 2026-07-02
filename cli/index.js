@@ -30,11 +30,12 @@ const { principles, principlesByNumber } = await import(join(dataDir, 'principle
 const { uxPatterns, uxPatternsByNumber } = await import(join(dataDir, 'ux-patterns', '_index.js'))
 const { projectBlueprints } = await import(join(dataDir, 'recommendations', 'project-blueprints.js'))
 const { problemDiagnoses } = await import(join(dataDir, 'recommendations', 'problem-diagnoses.js'))
+const { uxDiagnoses } = await import(join(dataDir, 'recommendations', 'ux-diagnoses.js'))
 const { humanTasks } = await import(join(dataDir, 'vocabulary', 'human-tasks.js'))
 const { constraints } = await import(join(dataDir, 'vocabulary', 'constraints.js'))
 const { allRelations, getRelationsFor } = await import(join(dataDir, 'relations', '_index.js'))
 const { autonomyLevels } = await import(join(dataDir, 'taxonomy', 'autonomy-levels.js'))
-const { detectProjectType, detectProblems, detectHumanTasks, detectConstraints } = await import(join(dataDir, 'helpers', 'search.js'))
+const { detectProjectType, detectProblems, detectUxComplaints, detectHumanTasks, detectConstraints } = await import(join(dataDir, 'helpers', 'search.js'))
 
 // Load full prose indexes if available
 let patternsJson = []
@@ -137,6 +138,47 @@ function cmdDiagnose(problem) {
         console.log(`    ${priority.padEnd(20)} ${green(String(num).padStart(2))}  ${p.name}`)
       }
     })
+    console.log()
+  }
+}
+
+function cmdDiagnoseUx(complaint) {
+  const matched = detectUxComplaints(complaint)
+  if (matched.length === 0) {
+    console.log(yellow('\nCouldn\'t match a UX complaint. Try:'))
+    Object.values(uxDiagnoses).forEach(d => console.log(`  - "${d.title}"`))
+    console.log(dim('\n  For a technical failure, use: ai-playbook diagnose "..."\n'))
+    return
+  }
+
+  console.log(bold('\n  UX Diagnosis\n'))
+
+  for (const key of matched) {
+    const diag = uxDiagnoses[key]
+    if (!diag) continue
+
+    console.log(bold(`  ${diag.title}`))
+    console.log(dim(`  ${diag.challenge}\n`))
+
+    console.log(`  ${bold('UX patterns:')}`)
+    diag.uxPatterns.forEach(code => {
+      const num = Number(String(code).replace(/^P/i, ''))
+      const ux = uxPatternsByNumber[num]
+      console.log(`    ${green(code.padEnd(4))} ${ux ? ux.name + dim(`  (${ux.lifecyclePhase})`) : ''}`)
+    })
+
+    console.log(`  ${bold('Principles:')}`)
+    diag.principles.forEach(n => {
+      const pr = principlesByNumber[n]
+      console.log(`    ${green(String(n).padStart(2))}   ${pr ? pr.name : ''}`)
+    })
+
+    console.log(`  ${bold('Microcopy:')} ${dim(diag.microcopy)}`)
+
+    if (diag.engineeringRootCause) {
+      const eng = problemDiagnoses[diag.engineeringRootCause]
+      console.log(yellow(`  ↳ Root cause may be technical — try: ai-playbook diagnose "${diag.engineeringRootCause}"`) + (eng ? dim(`  (${eng.title})`) : ''))
+    }
     console.log()
   }
 }
@@ -342,6 +384,7 @@ function cmdStats() {
   console.log(`  ${green(String(allRelations.length).padStart(4))}  Typed relations`)
   console.log(`  ${green(String(Object.keys(projectBlueprints).length).padStart(4))}  Project blueprints`)
   console.log(`  ${green(String(Object.keys(problemDiagnoses).length).padStart(4))}  Problem diagnoses`)
+  console.log(`  ${green(String(Object.keys(uxDiagnoses).length).padStart(4))}  UX diagnoses`)
   console.log(`  ${green(String(autonomyLevels.length).padStart(4))}  Autonomy levels`)
   console.log()
 }
@@ -354,6 +397,7 @@ ${bold('  Usage:')}
 
     ${green('ai-playbook recommend')} ${dim('"a customer support chatbot"')}     Get phased pattern plan
     ${green('ai-playbook diagnose')}  ${dim('"too slow, forgets context"')}      Get fixes for problems
+    ${green('ai-playbook diagnose-ux')} ${dim('"walls of text"')}                 UX fixes for user complaints
     ${green('ai-playbook search')}    ${dim('"memory"')}                         Search patterns + principles
     ${green('ai-playbook pattern')}   ${dim('44')}                               Read full pattern content
     ${green('ai-playbook principle')} ${dim('3')}                                Read full design principle
@@ -372,6 +416,7 @@ ${bold('  Examples:')}
 
     ai-playbook recommend "a RAG app for legal docs" --level=advanced
     ai-playbook diagnose "agent hallucinates and is too expensive"
+    ai-playbook diagnose-ux "it keeps giving me walls of text"
     ai-playbook search "multi-agent orchestration"
     ai-playbook design "code review bot with human approval"
     ai-playbook relations 9
@@ -396,6 +441,9 @@ switch (command) {
     break
   case 'diagnose':
     cmdDiagnose(rest.join(' '))
+    break
+  case 'diagnose-ux':
+    cmdDiagnoseUx(rest.join(' '))
     break
   case 'search':
     cmdSearch(rest.join(' '))

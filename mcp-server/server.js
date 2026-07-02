@@ -3,12 +3,13 @@
 /**
  * AI Playbook MCP Server
  *
- * Provides 10 tools for retrieving patterns and design principles from the
+ * Provides 12 tools for retrieving patterns and design principles from the
  * AI Agent Patterns Playbook and AI Design Principles document.
  *
- * Engineering Patterns (6 tools):
+ * Engineering Patterns (7 tools):
  *   - recommend_patterns(description, level)  → "I'm building X" → phased plan
  *   - diagnose_agent(problem)                 → "My agent does Y wrong" → fixes
+ *   - diagnose_ux(complaint)                  → "Users say Z" → UX patterns + microcopy
  *   - search_patterns(query)                  → Find patterns by keyword
  *   - get_pattern(number)                     → Get full content of a pattern
  *   - list_patterns(part?)                    → List all patterns by Part
@@ -34,10 +35,13 @@ import { projectBlueprints } from '../data/recommendations/project-blueprints.js
 import { projectKeywords } from '../data/recommendations/project-keywords.js'
 import { problemDiagnoses } from '../data/recommendations/problem-diagnoses.js'
 import { problemKeywords } from '../data/recommendations/problem-keywords.js'
+import { uxDiagnoses } from '../data/recommendations/ux-diagnoses.js'
 import { humanTasks } from '../data/vocabulary/human-tasks.js'
 import { taskKeywords } from '../data/vocabulary/human-tasks.js'
 import { constraints, constraintCategories, constraintKeywords } from '../data/vocabulary/constraints.js'
-import { detectProjectType, detectProblems, detectHumanTasks, detectConstraints } from '../data/helpers/search.js'
+import { uxPatternsByNumber } from '../data/ux-patterns/_index.js'
+import { principlesByNumber } from '../data/principles/_index.js'
+import { detectProjectType, detectProblems, detectUxComplaints, detectHumanTasks, detectConstraints } from '../data/helpers/search.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -132,6 +136,50 @@ function formatDiagnosis(problemKeys) {
   }
 
   lines.push('Use `get_pattern(N)` to read the full implementation details for any pattern.')
+  return lines.join('\n')
+}
+
+function resolveUxPattern(code) {
+  const num = Number(String(code).replace(/^P/i, ''))
+  return uxPatternsByNumber[num] || null
+}
+
+function formatUxDiagnosis(complaintKeys) {
+  const lines = ['# UX Diagnosis\n']
+
+  for (const key of complaintKeys) {
+    const diag = uxDiagnoses[key]
+    if (!diag) continue
+
+    lines.push(`## ${diag.title}`)
+    lines.push(`${diag.challenge}\n`)
+    lines.push(`**Why it reads as broken:** ${diag.explanation}\n`)
+
+    lines.push('**UX patterns to apply:**')
+    for (const code of diag.uxPatterns) {
+      const ux = resolveUxPattern(code)
+      lines.push(ux ? `- ${code} — ${ux.name} (${ux.lifecyclePhase})` : `- ${code}`)
+    }
+    lines.push('')
+
+    lines.push('**Design principles:**')
+    for (const n of diag.principles) {
+      const pr = principlesByNumber[n]
+      lines.push(pr ? `- Principle ${n} — ${pr.name}` : `- Principle ${n}`)
+    }
+    lines.push('')
+
+    lines.push(`**Microcopy:** ${diag.microcopy}\n`)
+
+    if (diag.engineeringRootCause) {
+      const eng = problemDiagnoses[diag.engineeringRootCause]
+      const engTitle = eng ? ` (${eng.title})` : ''
+      lines.push(`> Root cause may be technical — see \`diagnose_agent\` → "${diag.engineeringRootCause}"${engTitle}.`)
+      lines.push('')
+    }
+  }
+
+  lines.push('Use `get_ux_pattern(N)` or `get_design_principle(N)` for the full write-up.')
   return lines.join('\n')
 }
 
@@ -276,6 +324,34 @@ server.tool(
     }
 
     const text = formatDiagnosis(matchedProblems)
+    return { content: [{ type: 'text', text }] }
+  },
+)
+
+// Tool 2b: Diagnose user-perceived (UX) problems
+server.tool(
+  'diagnose_ux',
+  'Describe a user complaint about an AI feature and get the UX patterns, design principles, and microcopy that address it — plus a cross-reference to the engineering root cause when one exists. E.g. "it gives me walls of text", "it never asks what I meant", "it just makes things up", "it agrees with everything".',
+  {
+    complaint: z.string().describe('What does the user perceive as wrong? E.g. "walls of text", "keeps forgetting", "won\'t push back", "made it up", "won\'t ask me anything", "too slow", "hit the usage limit"'),
+  },
+  async ({ complaint }) => {
+    const matched = detectUxComplaints(complaint)
+
+    if (matched.length === 0) {
+      const available = Object.values(uxDiagnoses)
+        .map(d => `- "${d.title}"`)
+        .join('\n')
+
+      return {
+        content: [{
+          type: 'text',
+          text: `I couldn't match a specific UX diagnosis from: "${complaint}"\n\nTry describing the complaint as one of:\n${available}\n\nFor a technical (not perceptual) failure, use \`diagnose_agent("your problem")\` instead.`,
+        }],
+      }
+    }
+
+    const text = formatUxDiagnosis(matched)
     return { content: [{ type: 'text', text }] }
   },
 )

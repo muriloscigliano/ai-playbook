@@ -17,6 +17,8 @@ export {
   projectKeywords,
   problemDiagnoses,
   problemKeywords,
+  uxDiagnoses,
+  uxDiagnoseKeywords,
 } from './recommendations/index.js'
 
 // Taxonomy
@@ -26,6 +28,7 @@ export { autonomyLevels } from './taxonomy/autonomy-levels.js'
 export {
   detectProjectType,
   detectProblems,
+  detectUxComplaints,
   detectHumanTasks,
   detectConstraints,
 } from './helpers/index.js'

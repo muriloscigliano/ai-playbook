@@ -1,7 +1,7 @@
 # AI Agent Patterns Playbook
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![MCP Tools](https://img.shields.io/badge/MCP_Tools-11-blue.svg)](mcp-server/)
+[![MCP Tools](https://img.shields.io/badge/MCP_Tools-12-blue.svg)](mcp-server/)
 [![Patterns](https://img.shields.io/badge/Patterns-78-orange.svg)](AI_AGENT_PATTERNS_PLAYBOOK.md)
 [![Principles](https://img.shields.io/badge/Design_Principles-17-purple.svg)](AI_DESIGN_PRINCIPLES.md)
 
@@ -170,8 +170,11 @@ import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playb
 | `allRelations` | 365 | Typed relations (`requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`, `measured_by`, …) |
 | `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
 | `projectBlueprints` | 6 | Phased pattern plans by project type |
-| `problemDiagnoses` | 10 | Problem-to-pattern fix mappings |
+| `problemDiagnoses` | 10 | Problem-to-pattern fix mappings (technical) |
+| `uxDiagnoses` | 19 | User-complaint-to-UX-pattern + microcopy mappings (perceptual) |
 | `detectProjectType(desc)` | — | Keyword-based project type detection |
+| `detectProblems(desc)` | — | Keyword-based technical-problem detection |
+| `detectUxComplaints(desc)` | — | Keyword-based UX-complaint detection (ranked) |
 | `detectHumanTasks(desc)` | — | Keyword-based human task detection |
 | `detectConstraints(desc)` | — | Keyword-based constraint detection |
 | `getRelationsFor(id)` | — | Query typed relations by entity ID |
@@ -193,7 +196,8 @@ data/
 │   └── ai-tasks.js             # 24 AI tasks by autonomy level
 ├── recommendations/
 │   ├── project-blueprints.js   # 6 project types with phased patterns
-│   └── problem-diagnoses.js    # 10 problem-to-pattern mappings
+│   ├── problem-diagnoses.js    # 10 technical problem-to-pattern mappings
+│   └── ux-diagnoses.js         # 19 UX complaint-to-pattern + microcopy mappings
 ├── relations/                  # 98 typed relations + query helpers
 ├── taxonomy/                   # 4 autonomy levels
 ├── helpers/                    # search + detect utilities
@@ -237,6 +241,7 @@ All 10 commands:
 |---------|------|
 | `recommend "description"` | Phased pattern plan for your project type |
 | `diagnose "problem"` | Pattern fixes for your agent's issues |
+| `diagnose-ux "complaint"` | UX patterns + microcopy for user-perceived failures |
 | `search "query"` | Search patterns + principles by keyword |
 | `pattern N` | Read full pattern content (1-78) |
 | `principle N` | Read full design principle (1-17) |
@@ -315,12 +320,13 @@ node build-design-index.js
 
 ### Available Tools
 
-**Engineering Patterns (6 tools):**
+**Engineering Patterns (7 tools):**
 
 | Tool | Input | Output | Best for |
 |------|-------|--------|----------|
 | `recommend_patterns` | `"a customer support chatbot"` | Phased plan with the right patterns | **Start here** — don't know which patterns you need |
 | `diagnose_agent` | `"too slow and forgets context"` | Prioritized fixes matched to your problem | Agent already built but has issues |
+| `diagnose_ux` | `"it gives me walls of text"` | UX patterns + principles + microcopy, with an engineering cross-reference | A *user* complaint about how the AI feels, not a technical bug |
 | `search_patterns` | `"memory"` | Top 10 matching patterns | Know the topic, need the right pattern |
 | `get_pattern` | `23` | Full pattern content (problem, solution, pseudocode) | Ready to implement a specific pattern |
 | `list_patterns` | `"safety"` (optional) | All patterns in a Part, one-line each | Browsing what's available |
