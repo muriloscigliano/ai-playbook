@@ -116,9 +116,27 @@ export interface ProblemDiagnosis {
 export interface Relation {
   from: string
   to: string
-  type: 'requires' | 'enhances' | 'alternative' | 'extends' | 'implements' | 'conflicts' | 'measured_by'
+  type:
+    | 'requires'
+    | 'enhances'
+    | 'alternative'
+    | 'extends'
+    | 'implements'
+    | 'conflicts'
+    | 'conflicts_with'
+    | 'measured_by'
+    | 'prerequisite'
+    | 'enables'
+    | 'triggers'
+    | 'prevents'
   strength: 'strong' | 'moderate' | 'weak'
-  reason: string
+  /** Human-readable justification (pattern-to-pattern relations). */
+  reason?: string
+  /** Provenance for seeded relations, e.g. 'human-task:authenticate'. */
+  source?: string
+  /** Applicable autonomy band for principle→UX relations, e.g. 'L2-L3'. */
+  autonomyLevel?: string
+  note?: string
 }
 
 // ── Patterns ──
