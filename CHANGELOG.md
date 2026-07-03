@@ -9,7 +9,10 @@ and the data package (`@muriloscigliano/ai-playbook`) adheres to
 ## [2.0.0] — 2026-07-02
 
 Aligns the `data/` package version with the playbook release and adds a
-provable-consistency layer over the 78 × 17 × 7 + relations data.
+provable-consistency layer over the 78 patterns × 17 principles × 9 UX patterns
++ relations data. Repositions the project around its production-hardening core
+(patterns 63–78) and readies `@muriloscigliano/ai-playbook` for its first npm
+publish.
 
 ### Added
 
@@ -52,7 +55,15 @@ provable-consistency layer over the 78 × 17 × 7 + relations data.
 
 ### Changed
 
+- **README hero repositioned** to lead with the production-hardening core
+  (patterns 63–78: deferred tool loading, hierarchical memory files, skills
+  system, bridge pattern, tool-result tombstones) rather than generic ReAct/RAG,
+  with an npm install line and a "What's new in 2.0" pointer to this changelog.
 - **`data` package version bumped `1.0.0` → `2.0.0`** to match the playbook tag.
+- **Packaging readied for publish:** added a package-level `data/README.md`
+  (shown on npm), normalized `repository.url` to `git+https://…`, and confirmed
+  via `npm publish --dry-run` that the `files` whitelist ships only the intended
+  data dirs + types + README (132 files) — dev-only `scripts/` is excluded.
 - `data/index.d.ts` `Relation.type` enum widened to the full set actually in use
   (`prerequisite`, `enables`, `triggers`, `prevents`, `conflicts_with` added);
   optional `source`, `autonomyLevel`, and `note` metadata fields documented and

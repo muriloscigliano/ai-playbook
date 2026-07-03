@@ -23,6 +23,7 @@
     "./helpers": "./helpers/index.js"
   },
   "files": [
+    "README.md",
     "index.js",
     "index.d.ts",
     "patterns/",
@@ -54,7 +55,7 @@
   "author": "Murilo Scigliano",
   "repository": {
     "type": "git",
-    "url": "https://github.com/muriloscigliano/ai-playbook.git",
+    "url": "git+https://github.com/muriloscigliano/ai-playbook.git",
     "directory": "data"
   },
   "homepage": "https://github.com/muriloscigliano/ai-playbook#structured-data-layer",

@@ -5,8 +5,14 @@
 [![Patterns](https://img.shields.io/badge/Patterns-78-orange.svg)](AI_AGENT_PATTERNS_PLAYBOOK.md)
 [![Principles](https://img.shields.io/badge/Design_Principles-17-purple.svg)](AI_DESIGN_PRINCIPLES.md)
 
-> **78 engineering patterns + 17 design principles + structured data layer** for building AI-first products.
-> From agent loops and tool design to multi-agent orchestration, human-centered UX, and production hardening.
+> **Production-hardened agent patterns, reverse-engineered from real systems** — not another ReAct-and-RAG explainer.
+> The core (63–78) is the stuff that only shows up once agents hit production: deferred tool loading, hierarchical memory files, a skills system, the one-core-many-surfaces bridge pattern, and tool-result tombstones. Wrapped around it: 78 engineering patterns, 17 design principles, 9 UX patterns, and a typed data layer that connects them.
+
+```bash
+npm install @muriloscigliano/ai-playbook   # the structured data layer (patterns, uxDiagnoses, relations…)
+```
+
+> **New in 2.0** — a `diagnose_ux` reverse lookup for user-perceived failures, response-shaping UX patterns (P8/P9), a Quiet-vs-Visible AI axis (V1–V4), and a provably-consistent data layer. See the [CHANGELOG](CHANGELOG.md).
 
 ---
 
