@@ -34,6 +34,33 @@ export interface UxPattern {
   keywords: string[]
 }
 
+/**
+ * An AI capability — what AI is good at and which primitive to reach for.
+ * Bridges a task ("group these", "find similar") to the patterns, principles,
+ * and UX patterns that make it safe and usable.
+ */
+export interface Capability {
+  id: string
+  key: string
+  name: string
+  aka: string[]
+  category: 'Retrieval' | 'Classification' | 'Analysis' | 'Generation' | 'Language'
+  whatItsGoodFor: string
+  whenNotToUse: string
+  dataRequirements: string
+  /** Human-readable failure modes. */
+  failureModes: string[]
+  /** Subset of failure modes that resolve to uxDiagnoses keys (diagnose_ux). */
+  failureModeKeys?: string[]
+  /** Engineering pattern numbers that implement this capability. */
+  patterns: number[]
+  principles: number[]
+  /** UX pattern codes, e.g. ['P1', 'P4']. */
+  uxPatterns: string[]
+  keywords: string[]
+  example: string
+}
+
 // ── Vocabulary Types ──
 
 export interface HumanTask {
@@ -194,6 +221,11 @@ export declare const uxPatterns: UxPattern[]
 export declare const uxPatternsByNumber: Record<number, UxPattern>
 export declare const uxPatternsBySlug: Record<string, UxPattern>
 
+// ── Capabilities ──
+
+export declare const capabilities: Capability[]
+export declare const capabilitiesByKey: Record<string, Capability>
+
 // ── Vocabulary ──
 
 export declare const humanTasks: Record<string, HumanTask>
@@ -217,6 +249,7 @@ export declare const problemDiagnoses: Record<string, ProblemDiagnosis>
 export declare const problemKeywords: Record<string, string[]>
 export declare const uxDiagnoses: Record<string, UxDiagnosis>
 export declare const uxDiagnoseKeywords: Record<string, string[]>
+export declare const capabilityKeywords: Record<string, string[]>
 
 // ── Relations ──
 
@@ -224,6 +257,7 @@ export declare const allRelations: Relation[]
 export declare const patternToPattern: Relation[]
 export declare const patternToPrinciple: Relation[]
 export declare const principleToUxPattern: Relation[]
+export declare const capabilityToPattern: Relation[]
 export declare function getRelationsFor(entityId: string): Relation[]
 export declare function getRelatedIds(entityId: string, type?: string): string[]
 
@@ -232,5 +266,6 @@ export declare function getRelatedIds(entityId: string, type?: string): string[]
 export declare function detectProjectType(description: string): string | null
 export declare function detectProblems(description: string): string[]
 export declare function detectUxComplaints(description: string): string[]
+export declare function detectCapabilities(description: string): string[]
 export declare function detectHumanTasks(description: string): string[]
 export declare function detectConstraints(description: string): string[]

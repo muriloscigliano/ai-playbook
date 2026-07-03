@@ -3,16 +3,19 @@
 import { patternToPattern } from './pattern-to-pattern.js'
 import { patternToPrinciple } from './pattern-to-principle.js'
 import { principleToUxPattern } from './principle-to-ux-pattern.js'
+import { capabilityToPattern } from './capability-to-pattern.js'
 
 export { patternToPattern } from './pattern-to-pattern.js'
 export { patternToPrinciple } from './pattern-to-principle.js'
 export { principleToUxPattern } from './principle-to-ux-pattern.js'
+export { capabilityToPattern } from './capability-to-pattern.js'
 
 /** Combined array of all relations. */
 export const allRelations = [
   ...patternToPattern,
   ...patternToPrinciple,
   ...principleToUxPattern,
+  ...capabilityToPattern,
 ]
 
 /**

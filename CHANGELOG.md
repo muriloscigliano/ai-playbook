@@ -6,6 +6,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the data package (`@muriloscigliano/ai-playbook`) adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] — 2026-07-03
+
+**Capability layer.** Adds the capability→use-case bridge between *how to build*
+(patterns) and *how to design* (principles): start from a task and get the right
+AI primitive, its data needs, failure modes, and the entities that make it safe.
+Backward-compatible additions only.
+
+### Added
+
+- **10 capability entities** (`data/capabilities/`, new `./capabilities`
+  subpath) across five categories — semantic search, classification, clustering,
+  anomaly detection, summarization, extraction, generation, reasoning & planning,
+  transcription & translation, language modeling. Each carries
+  `whatItsGoodFor` / `whenNotToUse` / `dataRequirements` / `failureModes` and
+  resolved `patterns` / `principles` / `uxPatterns`. `Capability` type added to
+  `index.d.ts`; `failureModeKeys` links a capability's failures to the matching
+  `uxDiagnoses` keys (so a flagged failure routes to its UX fix via `diagnose_ux`).
+- **`capability-to-pattern` relations** (`implements`, 29 edges) registered in
+  the relations barrel and `allRelations`.
+- **`detectCapabilities(task)`** helper + `capabilityKeywords` map — routes a
+  plain task phrase ("group these", "find similar", "flag the unusual ones") to
+  a capability.
+- **MCP tools** `list_capabilities`, `get_capability(key)`,
+  `recommend_capability(task)` (server now exposes 15 tools).
+- **CLI** `capabilities`, `capability <key>`, `capability --for "<task>"`;
+  `stats` now counts capabilities.
+- **`rag-over-your-content` project blueprint** — the docs→embed→retrieve→
+  generate→learn content pipeline — plus its trigger keywords.
+- **`FOUNDATIONS.md`** (tokens, context window, embeddings, training, and
+  "prediction, not understanding" framed as a design *stance*) and
+  **`GLOSSARY.md`** (25 core terms). Both model-agnostic — no version numbers or
+  benchmarks. Linked from the README.
+
+### Changed
+
+- `data` package `2.0.0` → `2.1.0` (minor — additive).
+- `validate.js` extended to check capability ids/keys/categories and every
+  capability `patterns` / `principles` / `uxPatterns` / `failureModeKeys`
+  reference, plus the `capability-to-pattern` relations. Report now includes a
+  capability count.
+
 ## [2.0.0] — 2026-07-02
 
 Aligns the `data/` package version with the playbook release and adds a

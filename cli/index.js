@@ -31,12 +31,13 @@ const { uxPatterns, uxPatternsByNumber } = await import(join(dataDir, 'ux-patter
 const { projectBlueprints } = await import(join(dataDir, 'recommendations', 'project-blueprints.js'))
 const { problemDiagnoses } = await import(join(dataDir, 'recommendations', 'problem-diagnoses.js'))
 const { uxDiagnoses } = await import(join(dataDir, 'recommendations', 'ux-diagnoses.js'))
+const { capabilities, capabilitiesByKey } = await import(join(dataDir, 'capabilities', '_index.js'))
 const { humanTasks } = await import(join(dataDir, 'vocabulary', 'human-tasks.js'))
 const { constraints } = await import(join(dataDir, 'vocabulary', 'constraints.js'))
 const { allRelations, getRelationsFor } = await import(join(dataDir, 'relations', '_index.js'))
 const { autonomyLevels } = await import(join(dataDir, 'taxonomy', 'autonomy-levels.js'))
 const { visibilityLevels } = await import(join(dataDir, 'taxonomy', 'visibility-levels.js'))
-const { detectProjectType, detectProblems, detectUxComplaints, detectHumanTasks, detectConstraints } = await import(join(dataDir, 'helpers', 'search.js'))
+const { detectProjectType, detectProblems, detectUxComplaints, detectCapabilities, detectHumanTasks, detectConstraints } = await import(join(dataDir, 'helpers', 'search.js'))
 
 // Load full prose indexes if available
 let patternsJson = []
@@ -182,6 +183,60 @@ function cmdDiagnoseUx(complaint) {
     }
     console.log()
   }
+}
+
+function printCapability(cap) {
+  console.log(bold(`\n  ${cap.name}`) + dim(`  [${cap.category}]`))
+  if (cap.aka?.length) console.log(dim(`  aka: ${cap.aka.join(', ')}`))
+  console.log(`\n  ${bold('Good for:')} ${dim(cap.whatItsGoodFor)}`)
+  console.log(`  ${bold('Avoid when:')} ${dim(cap.whenNotToUse)}`)
+  console.log(`  ${bold('Data needs:')} ${dim(cap.dataRequirements)}`)
+
+  console.log(`\n  ${bold('Failure modes:')}`)
+  cap.failureModes.forEach(fm => console.log(`    ${yellow('•')} ${dim(fm)}`))
+  if (cap.failureModeKeys?.length) {
+    console.log(dim(`    ↳ diagnose_ux keys: ${cap.failureModeKeys.map(k => `"${k}"`).join(', ')}`))
+  }
+
+  console.log(`\n  ${bold('Patterns:')}`)
+  cap.patterns.forEach(n => {
+    const p = patternsByNumber[n]
+    console.log(`    ${green(String(n).padStart(2))}  ${p ? p.name : ''}`)
+  })
+  console.log(`  ${bold('Principles:')} ${cap.principles.map(n => green(String(n))).join(', ')}    ${bold('UX:')} ${cap.uxPatterns.map(c => green(c)).join(', ')}`)
+  console.log(`\n  ${bold('Example:')} ${dim(cap.example)}\n`)
+}
+
+function cmdCapability(arg, forTask) {
+  // `capability --for "<task>"` recommends by task phrase
+  if (forTask) {
+    const matched = detectCapabilities(forTask)
+    if (matched.length === 0) {
+      console.log(yellow(`\n  Couldn't match a capability for "${forTask}". Try "group these", "find similar", "flag unusual", "pull fields out".\n`))
+      return
+    }
+    console.log(bold(`\n  Capability for: "${forTask}"`))
+    matched.forEach(k => printCapability(capabilitiesByKey[k]))
+    return
+  }
+  const cap = capabilitiesByKey[arg]
+  if (!cap) {
+    console.log(yellow(`\n  Unknown capability "${arg}". Run: ai-playbook capabilities\n`))
+    return
+  }
+  printCapability(cap)
+}
+
+function cmdCapabilities() {
+  console.log(bold('\n  AI Capabilities\n'))
+  const byCat = {}
+  capabilities.forEach(c => (byCat[c.category] ||= []).push(c))
+  for (const [cat, caps] of Object.entries(byCat)) {
+    console.log(magenta(`  ${cat}`))
+    caps.forEach(c => console.log(`    ${green(c.key.padEnd(28))} ${dim(c.name)}`))
+    console.log()
+  }
+  console.log(dim('  ai-playbook capability <key>   ·   ai-playbook capability --for "<task>"\n'))
 }
 
 function cmdSearch(query) {
@@ -394,6 +449,7 @@ function cmdStats() {
   console.log(`  ${green(String(patterns.length).padStart(4))}  Engineering patterns`)
   console.log(`  ${green(String(principles.length).padStart(4))}  Design principles`)
   console.log(`  ${green(String(uxPatterns.length).padStart(4))}  UX patterns`)
+  console.log(`  ${green(String(capabilities.length).padStart(4))}  Capabilities`)
   console.log(`  ${green(String(Object.keys(humanTasks).length).padStart(4))}  Human tasks`)
   console.log(`  ${green(String(Object.keys(constraints).length).padStart(4))}  Constraints`)
   console.log(`  ${green(String(allRelations.length).padStart(4))}  Typed relations`)
@@ -414,6 +470,9 @@ ${bold('  Usage:')}
     ${green('ai-playbook recommend')} ${dim('"a customer support chatbot"')}     Get phased pattern plan
     ${green('ai-playbook diagnose')}  ${dim('"too slow, forgets context"')}      Get fixes for problems
     ${green('ai-playbook diagnose-ux')} ${dim('"walls of text"')}                 UX fixes for user complaints
+    ${green('ai-playbook capabilities')}                                  List AI capabilities
+    ${green('ai-playbook capability')} ${dim('semantic-search')}               Read one capability
+    ${green('ai-playbook capability')} ${dim('--for "group these"')}           Capability for a task
     ${green('ai-playbook search')}    ${dim('"memory"')}                         Search patterns + principles
     ${green('ai-playbook pattern')}   ${dim('44')}                               Read full pattern content
     ${green('ai-playbook principle')} ${dim('3')}                                Read full design principle
@@ -461,6 +520,15 @@ switch (command) {
     break
   case 'diagnose-ux':
     cmdDiagnoseUx(rest.join(' '))
+    break
+  case 'capability': {
+    // `capability --for "<task>"` or `capability --for=<task>` recommends by task
+    const forTask = typeof flags.for === 'string' ? flags.for : (flags.for ? rest.join(' ') : null)
+    cmdCapability(rest.join(' '), forTask)
+    break
+  }
+  case 'capabilities':
+    cmdCapabilities()
     break
   case 'search':
     cmdSearch(rest.join(' '))

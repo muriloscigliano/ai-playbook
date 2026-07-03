@@ -19,7 +19,11 @@ export {
   problemKeywords,
   uxDiagnoses,
   uxDiagnoseKeywords,
+  capabilityKeywords,
 } from './recommendations/index.js'
+
+// Capabilities
+export { capabilities, capabilitiesByKey } from './capabilities/_index.js'
 
 // Taxonomy
 export { autonomyLevels } from './taxonomy/autonomy-levels.js'
@@ -30,6 +34,7 @@ export {
   detectProjectType,
   detectProblems,
   detectUxComplaints,
+  detectCapabilities,
   detectHumanTasks,
   detectConstraints,
 } from './helpers/index.js'
@@ -48,6 +53,7 @@ export {
   patternToPattern,
   patternToPrinciple,
   principleToUxPattern,
+  capabilityToPattern,
   allRelations,
   getRelationsFor,
   getRelatedIds,
