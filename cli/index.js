@@ -35,6 +35,7 @@ const { humanTasks } = await import(join(dataDir, 'vocabulary', 'human-tasks.js'
 const { constraints } = await import(join(dataDir, 'vocabulary', 'constraints.js'))
 const { allRelations, getRelationsFor } = await import(join(dataDir, 'relations', '_index.js'))
 const { autonomyLevels } = await import(join(dataDir, 'taxonomy', 'autonomy-levels.js'))
+const { visibilityLevels } = await import(join(dataDir, 'taxonomy', 'visibility-levels.js'))
 const { detectProjectType, detectProblems, detectUxComplaints, detectHumanTasks, detectConstraints } = await import(join(dataDir, 'helpers', 'search.js'))
 
 // Load full prose indexes if available
@@ -252,7 +253,7 @@ function cmdPrinciple(num) {
 function cmdUxPattern(num) {
   const p = designJson.find(x => x.type === 'ux-pattern' && x.number === num)
   if (!p) {
-    console.log(red(`\nUX Pattern ${num} not found. Valid range: 1-7.\n`))
+    console.log(red(`\nUX Pattern ${num} not found. Valid range: 1-9.\n`))
     return
   }
   console.log(`\n${p.content}\n`)
@@ -374,6 +375,20 @@ function cmdDesign(description) {
   }
 }
 
+function cmdVisibility() {
+  console.log(bold('\n  AI Visibility Taxonomy'))
+  console.log(dim('  How visible the AI is in the interface — orthogonal to autonomy.\n'))
+
+  for (const v of visibilityLevels) {
+    console.log(`  ${green(v.code)}  ${bold(v.name)}`)
+    console.log(dim(`      ${v.description}`))
+    console.log(dim(`      Perceived as: “${v.userPerception}”`))
+    console.log(dim(`      Examples: ${v.examples}`))
+    console.log(`      ${dim('Principles:')} ${v.primaryPrinciples.map(n => green(String(n))).join(', ')}`)
+    console.log()
+  }
+}
+
 function cmdStats() {
   console.log(bold('\n  AI Agent Patterns Playbook — Stats\n'))
   console.log(`  ${green(String(patterns.length).padStart(4))}  Engineering patterns`)
@@ -386,6 +401,7 @@ function cmdStats() {
   console.log(`  ${green(String(Object.keys(problemDiagnoses).length).padStart(4))}  Problem diagnoses`)
   console.log(`  ${green(String(Object.keys(uxDiagnoses).length).padStart(4))}  UX diagnoses`)
   console.log(`  ${green(String(autonomyLevels.length).padStart(4))}  Autonomy levels`)
+  console.log(`  ${green(String(visibilityLevels.length).padStart(4))}  Visibility levels`)
   console.log()
 }
 
@@ -405,6 +421,7 @@ ${bold('  Usage:')}
     ${green('ai-playbook list')}      ${dim('[part]')}                           List patterns, filter by part
     ${green('ai-playbook relations')} ${dim('44')}                               See pattern connections
     ${green('ai-playbook design')}    ${dim('"scheduling agent"')}               Unified design recommendation
+    ${green('ai-playbook visibility')}                                   AI visibility axis (V1-V4)
     ${green('ai-playbook stats')}                                        Project statistics
     ${green('ai-playbook help')}                                         This help message
 
@@ -465,6 +482,9 @@ switch (command) {
     break
   case 'design':
     cmdDesign(rest.join(' '))
+    break
+  case 'visibility':
+    cmdVisibility()
     break
   case 'stats':
     cmdStats()

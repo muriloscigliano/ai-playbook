@@ -496,11 +496,11 @@ server.tool(
   },
 )
 
-// Tool 8: Get a specific UX pattern by number (1-7)
+// Tool 8: Get a specific UX pattern by number (1-9)
 server.tool(
   'get_ux_pattern',
-  'Get the full content of an agentic UX pattern by number (1-7). Includes: lifecycle phase, autonomy levels, anatomy, metrics, examples, and playbook connections. P1=Intent Preview, P2=Autonomy Dial, P3=Explainable Rationale, P4=Confidence Signal, P5=Action Audit & Undo, P6=Escalation Pathway, P7=Empathic Error Recovery.',
-  { number: z.number().min(1).max(7).describe('UX pattern number (1-7)') },
+  'Get the full content of an agentic UX pattern by number (1-9). Includes: lifecycle phase, autonomy levels, anatomy, metrics, examples, and playbook connections. P1=Intent Preview, P2=Autonomy Dial, P3=Explainable Rationale, P4=Confidence Signal, P5=Action Audit & Undo, P6=Escalation Pathway, P7=Empathic Error Recovery, P8=Progressive Disclosure (Response Shaping), P9=Editable & Forkable Output.',
+  { number: z.number().min(1).max(9).describe('UX pattern number (1-9)') },
   async ({ number }) => {
     if (designEntries.length === 0) {
       return { content: [{ type: 'text', text: 'Design principles index not found. Run: node build-design-index.js' }] }
@@ -508,7 +508,7 @@ server.tool(
 
     const entry = designEntries.find(e => e.type === 'ux-pattern' && e.number === number)
     if (!entry) {
-      return { content: [{ type: 'text', text: `UX pattern ${number} not found. Valid range: 1-7.` }] }
+      return { content: [{ type: 'text', text: `UX pattern ${number} not found. Valid range: 1-9.` }] }
     }
 
     return { content: [{ type: 'text', text: entry.content }] }

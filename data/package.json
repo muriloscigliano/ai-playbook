@@ -19,7 +19,7 @@
     "./vocabulary": "./vocabulary/index.js",
     "./recommendations": "./recommendations/index.js",
     "./relations": "./relations/_index.js",
-    "./taxonomy": "./taxonomy/autonomy-levels.js",
+    "./taxonomy": "./taxonomy/index.js",
     "./helpers": "./helpers/index.js"
   },
   "files": [

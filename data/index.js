@@ -23,6 +23,7 @@ export {
 
 // Taxonomy
 export { autonomyLevels } from './taxonomy/autonomy-levels.js'
+export { visibilityLevels } from './taxonomy/visibility-levels.js'
 
 // Helpers
 export {

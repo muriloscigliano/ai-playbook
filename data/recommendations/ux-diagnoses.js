@@ -69,11 +69,11 @@ export const uxDiagnoses = {
   'over-explains': {
     title: 'Over-explains — too long by default',
     challenge: 'Every answer is exhaustive when the user wanted a short one.',
-    uxPatterns: ['P3'],
+    uxPatterns: ['P8'],
     principles: [8],
     microcopy: 'Lead with the one-line answer, then "Show details ▸". Let depth be pulled, not pushed.',
     engineeringRootCause: null,
-    explanation: 'Progressive disclosure of the rationale (P3) gives a short answer first and expands only on request. Generating the interface for the moment (principle 8) means matching output length to the actual need rather than dumping everything.',
+    explanation: 'Progressive disclosure / response shaping (P8) gives a short answer first and expands only on request. Generating the interface for the moment (principle 8) means matching output length to the actual need rather than dumping everything.',
   },
   'quality degrades over long sessions': {
     title: 'Quality degrades over long sessions',
@@ -159,20 +159,20 @@ export const uxDiagnoses = {
   'walls of text': {
     title: 'Output is a wall of text',
     challenge: 'Output is long and unstructured; the user cannot scan it.',
-    uxPatterns: ['P3'],
+    uxPatterns: ['P8'],
     principles: [8],
     microcopy: 'Lead with a one-line answer, then "Show details ▸". Chunk long output into scannable sections; never dump.',
     engineeringRootCause: null,
-    explanation: 'Progressive disclosure of the rationale (P3) turns a wall of text into a short answer with expandable depth. Generating the interface for the moment (principle 8) shapes output to what the user can actually absorb.',
+    explanation: 'Progressive disclosure / response shaping (P8) turns a wall of text into a short answer with expandable, chunked depth. Generating the interface for the moment (principle 8) shapes output to what the user can actually absorb.',
   },
   'hard to edit output': {
     title: 'Output is hard to edit or iterate on',
     challenge: 'The result is delivered as a finished artifact the user cannot easily adjust.',
-    uxPatterns: ['P2', 'P5'],
+    uxPatterns: ['P9', 'P5'],
     principles: [12, 4],
     microcopy: 'Treat output as a draft: inline edit, "Regenerate this section ▸", cheap re-roll. Keep an undo so iteration is safe.',
     engineeringRootCause: null,
-    explanation: 'An autonomy dial (P2) lets the user take manual control of parts of the output, and an action audit with undo (P5) makes iterating safe. Negotiating agency moment by moment (principle 12) and preserving creative interpretation when output is instant (principle 4) keep the human in authorship.',
+    explanation: 'Editable & forkable output (P9) treats the result as a draft the user revises in place, re-rolls part-by-part, and forks cheaply; an action audit with undo (P5) makes that iteration safe. Negotiating agency moment by moment (principle 12) and preserving creative interpretation when output is instant (principle 4) keep the human in authorship.',
   },
   'silently hits limits': {
     title: 'Silently hits plan or usage limits',

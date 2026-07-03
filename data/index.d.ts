@@ -94,6 +94,24 @@ export interface AutonomyLevel {
   applicablePatterns: string[]
 }
 
+/**
+ * How visible the AI is in the interface (V1 Ambient → V4 Foreground).
+ * Orthogonal to AutonomyLevel: how much the user sees it is AI, not how
+ * much the AI is allowed to do.
+ */
+export interface VisibilityLevel {
+  id: string
+  level: number
+  code: string
+  name: string
+  description: string
+  userPerception: string
+  examples: string
+  designImplications: string
+  /** Design principle numbers most relevant at this visibility level. */
+  primaryPrinciples: number[]
+}
+
 // ── Recommendation Types ──
 
 export interface ProjectBlueprint {
@@ -189,6 +207,7 @@ export declare const aiTasks: AiTask[]
 // ── Taxonomy ──
 
 export declare const autonomyLevels: AutonomyLevel[]
+export declare const visibilityLevels: VisibilityLevel[]
 
 // ── Recommendations ──
 

@@ -27,6 +27,7 @@ import {
   uxDiagnoses,
 } from '../recommendations/index.js'
 import { autonomyLevels } from '../taxonomy/autonomy-levels.js'
+import { visibilityLevels } from '../taxonomy/visibility-levels.js'
 
 // ── Allowed enums ──
 // Relation types actually in use across the corpus (superset of the documented
@@ -175,6 +176,9 @@ for (const level of autonomyLevels) {
     // These are UX pattern codes (P1..PN)
     resolveUxCode(code, `autonomyLevel "${level.id}"`)
   })
+}
+for (const v of visibilityLevels) {
+  ;(v.primaryPrinciples || []).forEach((n) => resolvePrincipleNumber(n, `visibilityLevel "${v.id}"`))
 }
 
 // ── 6. Orphan patterns (warn only) ──

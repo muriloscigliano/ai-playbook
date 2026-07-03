@@ -56,7 +56,7 @@ Then add to Claude Code (`~/.claude/settings.json`):
 | [`PATTERN_INDEX.md`](PATTERN_INDEX.md) | One-line summary of all 78 patterns | Quick pattern lookup |
 | [`AI_FIRST_BUILD_GUIDE.md`](AI_FIRST_BUILD_GUIDE.md) | Decision trees + 5-phase build plan | Starting a feature or project |
 | [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md) | Full reference (78 patterns, 4500+ lines) | Deep implementation details |
-| [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 7 UX patterns + governance | Designing interactions, UX reviews, governance |
+| [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 9 UX patterns + governance | Designing interactions, UX reviews, governance |
 | [`AI_ANTI_PATTERNS.md`](AI_ANTI_PATTERNS.md) | 14 anti-patterns with failure case studies and fixes | Avoiding common pitfalls, code reviews, postmortems |
 | [`INDUSTRY_GUIDES.md`](INDUSTRY_GUIDES.md) | 6 industry guides with phased pattern selections | Fintech, healthcare, dev tools, support, e-commerce, enterprise |
 | [`data/`](data/) | Structured data layer (125+ files, npm package) | Programmatic access, building tools, web UIs |
@@ -127,14 +127,15 @@ The **build guide** — how to combine patterns into a product:
 
 ## Design Principles & UX Patterns
 
-17 strategic design principles + 7 UX patterns + governance framework for human-centered agentic AI. Cross-referenced to all 78 engineering patterns.
+17 strategic design principles + 9 UX patterns + governance framework for human-centered agentic AI. Cross-referenced to all 78 engineering patterns.
 
 | Section | What's Covered |
 |---------|---------------|
 | **Framing** | Quality as downstream of intent, not tooling |
 | **Autonomy Taxonomy** | 4 levels: Observe & Suggest → Plan & Propose → Act with Confirmation → Act Autonomously |
 | **17 Design Principles** | Cognition, interfaces, agency, accountability — with practitioner perspectives from 15+ designers |
-| **7 UX Patterns** | Intent Preview, Autonomy Dial, Explainable Rationale, Confidence Signal, Action Audit & Undo, Escalation Pathway, Empathic Error Recovery |
+| **9 UX Patterns** | Intent Preview, Autonomy Dial, Explainable Rationale, Confidence Signal, Action Audit & Undo, Escalation Pathway, Empathic Error Recovery, Progressive Disclosure (Response Shaping), Editable & Forkable Output |
+| **Visibility Axis** | V1 Ambient · V2 Assistive · V3 Conversational · V4 Foreground — how visible the AI is, orthogonal to autonomy |
 | **Human Task Vocabulary** | 21 human tasks mapped to UX patterns and autonomy levels |
 | **Constraint Taxonomy** | 37 constraints across 8 categories with enforcement matrix |
 | **Touchpoint Vocabulary** | 37 interaction surfaces across 6 categories |
@@ -162,13 +163,14 @@ import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playb
 |--------|-------|------|
 | `patterns` / `patternsByNumber` / `patternsBySlug` | 78 | Pattern metadata (id, name, part, problem, solution, keywords) |
 | `principles` / `principlesByNumber` | 17 | Design principle metadata (theme, summary, related patterns) |
-| `uxPatterns` / `uxPatternsByNumber` | 7 | UX pattern metadata (lifecycle phase, autonomy levels) |
+| `uxPatterns` / `uxPatternsByNumber` | 9 | UX pattern metadata (lifecycle phase, autonomy levels) |
 | `humanTasks` | 23 | Human task vocabulary with UX pattern + principle mappings |
 | `constraints` / `constraintCategories` | 36 | Constraint taxonomy with enforcement types |
 | `touchpoints` | 37 | Interaction surface vocabulary |
 | `aiTasks` | 24 | AI tasks with default autonomy levels |
 | `allRelations` | 365 | Typed relations (`requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`, `measured_by`, …) |
 | `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
+| `visibilityLevels` | 4 | V1-V4 visibility axis (orthogonal to autonomy) |
 | `projectBlueprints` | 6 | Phased pattern plans by project type |
 | `problemDiagnoses` | 10 | Problem-to-pattern fix mappings (technical) |
 | `uxDiagnoses` | 19 | User-complaint-to-UX-pattern + microcopy mappings (perceptual) |
@@ -188,7 +190,7 @@ data/
 ├── package.json                # @muriloscigliano/ai-playbook
 ├── patterns/                   # 78 pattern metadata files + _index.js
 ├── principles/                 # 17 principle metadata files + _index.js
-├── ux-patterns/                # 7 UX pattern metadata files + _index.js
+├── ux-patterns/                # 9 UX pattern metadata files + _index.js
 ├── vocabulary/
 │   ├── human-tasks.js          # 23 human tasks
 │   ├── constraints.js          # 36 constraints in 8 categories
@@ -199,7 +201,7 @@ data/
 │   ├── problem-diagnoses.js    # 10 technical problem-to-pattern mappings
 │   └── ux-diagnoses.js         # 19 UX complaint-to-pattern + microcopy mappings
 ├── relations/                  # 98 typed relations + query helpers
-├── taxonomy/                   # 4 autonomy levels
+├── taxonomy/                   # 4 autonomy levels + 4 visibility levels
 ├── helpers/                    # search + detect utilities
 └── scripts/                    # migration + validate.js (integrity check)
 ```
@@ -245,7 +247,8 @@ All 10 commands:
 | `search "query"` | Search patterns + principles by keyword |
 | `pattern N` | Read full pattern content (1-78) |
 | `principle N` | Read full design principle (1-17) |
-| `ux-pattern N` | Read full UX pattern (1-7) |
+| `ux-pattern N` | Read full UX pattern (1-9) |
+| `visibility` | Show the AI visibility axis (V1-V4) |
 | `list [part]` | List all patterns, optionally filter by part |
 | `relations N` | See all typed connections for a pattern |
 | `design "description"` | Unified design + engineering recommendation |

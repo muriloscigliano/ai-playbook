@@ -13,6 +13,23 @@ provable-consistency layer over the 78 × 17 × 7 + relations data.
 
 ### Added
 
+- **UX patterns P8 & P9.** `P8 Progressive Disclosure (Response Shaping)`
+  (In-Action — answer-first, expand-on-demand, chunk long output) and
+  `P9 Editable & Forkable Output` (Post-Action — treat output as an editable
+  draft with cheap partial re-roll and forking). Added as full sections in
+  `AI_DESIGN_PRINCIPLES.md`, rebuilt through the design index + generator (the
+  UX barrel stays generated, not hand-edited), and wired into the pattern
+  summary table and ToC. `diagnose_ux` rows for over-explaining / walls of text
+  now point at P8 and the hard-to-edit row at P9. New `principle→ux-pattern`
+  relations for both. `get_ux_pattern` range widened 1–7 → 1–9 (MCP + CLI).
+- **Visibility axis (V1–V4).** New taxonomy `visibilityLevels`
+  (`data/taxonomy/visibility-levels.js`) — V1 Ambient/Invisible, V2
+  Assistive/Inline, V3 Conversational/Surfaced, V4 Foreground/Agentic — with
+  `designImplications` and `primaryPrinciples[]`, orthogonal to autonomy.
+  Exported via `./taxonomy` (now a barrel) and the main index; `VisibilityLevel`
+  type added; surfaced in the CLI `visibility` command and `stats`; validated.
+- **Positioning & naming rule** ("don't lead with AI") added to
+  `templates/MICROCOPY_SNIPPETS.md`, cross-linked to the visibility axis.
 - **`diagnose_ux` — reverse lookup for user-perceived failures.** New data set
   `uxDiagnoses` (19 complaints) + `uxDiagnoseKeywords`, each mapping a user
   complaint to UX patterns, design principles, concrete microcopy, and — where

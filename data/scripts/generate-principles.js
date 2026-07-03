@@ -107,6 +107,8 @@ const uxPatternCodes = {
   5: 'P5',
   6: 'P6',
   7: 'P7',
+  8: 'P8',
+  9: 'P9',
 }
 
 // Extract lifecycle phase from the name/content
@@ -118,6 +120,8 @@ const uxLifecyclePhases = {
   5: 'Post-Action',
   6: 'Post-Action',
   7: 'Post-Action',
+  8: 'In-Action',
+  9: 'Post-Action',
 }
 
 const generatedUx = []
