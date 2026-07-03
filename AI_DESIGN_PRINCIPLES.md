@@ -1352,7 +1352,7 @@ P1 (Intent Preview) → P3 (Rationale) → P5 (Audit)
 
 ### Human Task Vocabulary
 
-The UX patterns below (P1-P7) reference human actions — reviewing, approving, configuring, providing feedback — but never formally enumerate them. This vocabulary defines 21 distinct human tasks that occur when interacting with agentic AI systems, organized by interaction phase. Each task maps to the UX patterns and principles that govern it.
+The UX patterns below (P1-P9) reference human actions — reviewing, approving, configuring, providing feedback — but never formally enumerate them. This vocabulary defines the distinct human tasks that occur when interacting with agentic AI systems, organized by interaction phase. Each task maps to the UX patterns and principles that govern it.
 
 **Source:** AI Interaction Atlas (ai-interaction.com, Apache 2.0, by quietloudlab). Adapted and mapped to this document's lifecycle, UX patterns, and autonomy taxonomy.
 

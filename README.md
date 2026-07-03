@@ -12,7 +12,7 @@
 npm install @muriloscigliano/ai-playbook   # the structured data layer (patterns, uxDiagnoses, relations…)
 ```
 
-> **New in 2.0** — a `diagnose_ux` reverse lookup for user-perceived failures, response-shaping UX patterns (P8/P9), a Quiet-vs-Visible AI axis (V1–V4), and a provably-consistent data layer. See the [CHANGELOG](CHANGELOG.md).
+> **New in 2.1** — a **capability layer** (task → the right AI primitive, with data needs, failure modes, and mapped patterns/principles/UX) plus `FOUNDATIONS.md` and `GLOSSARY.md`. **2.0** added a `diagnose_ux` reverse lookup, response-shaping UX patterns (P8/P9), a Quiet-vs-Visible AI axis (V1–V4), and a provably-consistent data layer. See the [CHANGELOG](CHANGELOG.md).
 
 ---
 
@@ -173,8 +173,8 @@ The **build guide** — how to combine patterns into a product:
 | **17 Design Principles** | Cognition, interfaces, agency, accountability — with practitioner perspectives from 15+ designers |
 | **9 UX Patterns** | Intent Preview, Autonomy Dial, Explainable Rationale, Confidence Signal, Action Audit & Undo, Escalation Pathway, Empathic Error Recovery, Progressive Disclosure (Response Shaping), Editable & Forkable Output |
 | **Visibility Axis** | V1 Ambient · V2 Assistive · V3 Conversational · V4 Foreground — how visible the AI is, orthogonal to autonomy |
-| **Human Task Vocabulary** | 21 human tasks mapped to UX patterns and autonomy levels |
-| **Constraint Taxonomy** | 37 constraints across 8 categories with enforcement matrix |
+| **Human Task Vocabulary** | 23 human tasks mapped to UX patterns and autonomy levels |
+| **Constraint Taxonomy** | 36 constraints across 8 categories with enforcement matrix |
 | **Touchpoint Vocabulary** | 37 interaction surfaces across 6 categories |
 | **Governance** | Ethics Council, 3-phase rollout, metrics framework |
 
@@ -205,10 +205,10 @@ import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playb
 | `constraints` / `constraintCategories` | 36 | Constraint taxonomy with enforcement types |
 | `touchpoints` | 37 | Interaction surface vocabulary |
 | `aiTasks` | 24 | AI tasks with default autonomy levels |
-| `allRelations` | 365 | Typed relations (`requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`, `measured_by`, …) |
+| `allRelations` | 398 | Typed relations (`requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`, `measured_by`, …) |
 | `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
 | `visibilityLevels` | 4 | V1-V4 visibility axis (orthogonal to autonomy) |
-| `projectBlueprints` | 6 | Phased pattern plans by project type |
+| `projectBlueprints` | 7 | Phased pattern plans by project type |
 | `problemDiagnoses` | 10 | Problem-to-pattern fix mappings (technical) |
 | `uxDiagnoses` | 19 | User-complaint-to-UX-pattern + microcopy mappings (perceptual) |
 | `capabilities` / `capabilitiesByKey` | 10 | AI capabilities — task → primitive, with data needs, failure modes, and mapped patterns/principles/UX |
@@ -333,7 +333,7 @@ git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
 ## MCP Server (Recommended)
 
-The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 380KB+ of files**. 11 tools, zero context waste.
+The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 380KB+ of files**. 15 tools, zero context waste.
 
 ### Setup
 

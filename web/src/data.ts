@@ -203,9 +203,10 @@ export function docLink(node: GraphNode): { label: string; url: string } {
         url: `${REPO}/AI_AGENT_PATTERNS_PLAYBOOK.md`,
       }
     case 'principle':
+      // Heading is "#### Principle N: Name" → GitHub anchor #principle-N-<slug>
       return {
         label: `AI_DESIGN_PRINCIPLES.md#principle-${node.number}`,
-        url: `${REPO}/AI_DESIGN_PRINCIPLES.md#${node.slug}`,
+        url: `${REPO}/AI_DESIGN_PRINCIPLES.md#principle-${node.number}-${node.slug}`,
       }
     case 'ux-pattern':
       return {

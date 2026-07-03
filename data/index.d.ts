@@ -98,13 +98,15 @@ export interface Touchpoint {
   name: string
   category: string
   designImplications: string
-  primaryPrinciple: string
+  /** Principle number this touchpoint primarily engages. */
+  primaryPrinciple: number
 }
 
 export interface AiTask {
   id: string
   name: string
-  defaultLevel: string
+  /** Autonomy level (1–4) this task defaults to. */
+  defaultLevel: number
   rationale: string
 }
 

@@ -358,11 +358,23 @@ function cmdRelations(num) {
   for (const rel of rels) {
     const color = typeColors[rel.type] || dim
     const otherEntity = rel.from === entityId ? rel.to : rel.from
-    const otherNum = parseInt(otherEntity.split('-')[1])
-    const otherPattern = patternsByNumber[otherNum]
     const direction = rel.from === entityId ? '→' : '←'
 
-    console.log(`  ${direction} ${color(rel.type.padEnd(14))} ${green(String(otherNum).padStart(2))}  ${otherPattern ? otherPattern.name : otherEntity}`)
+    // Resolve the other endpoint by its id prefix (pattern-N, principle-N,
+    // ux-pattern-N, capability-<key>). Only patterns get a numeric label.
+    const [kind, ...idParts] = otherEntity.split('-')
+    let label, badge
+    if (kind === 'pattern') {
+      const num = parseInt(idParts[0])
+      const p = patternsByNumber[num]
+      badge = green(String(num).padStart(4))
+      label = p ? p.name : otherEntity
+    } else {
+      badge = dim(kind === 'ux' ? 'ux'.padStart(4) : kind.slice(0, 4).padStart(4))
+      label = idParts.join('-')
+    }
+
+    console.log(`  ${direction} ${color(rel.type.padEnd(14))} ${badge}  ${label}`)
     if (rel.reason) console.log(`    ${dim(rel.reason)}`)
   }
   console.log()
