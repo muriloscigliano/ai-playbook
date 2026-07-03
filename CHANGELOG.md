@@ -16,6 +16,14 @@ publish.
 
 ### Added
 
+- **Web explorer (`web/`).** A standalone Vite + Vue 3 + TypeScript app that
+  renders the data layer as a d3-force graph of all 104 entities — edges typed
+  and colored by relation kind, weighted by strength — with a node panel
+  (neighborhood + doc deep-links), faceted filters (kind / Part / theme / UX
+  lifecycle / autonomy L1–L4 / visibility V1–V4), full-text search, and a
+  **Diagnose UX** page consuming the `uxDiagnoses` dataset. Imports the data
+  layer live via a pnpm workspace (`workspace:*`) — single source of truth, no
+  duplicated data. Static build deploys to Pages/Netlify with no backend.
 - **UX patterns P8 & P9.** `P8 Progressive Disclosure (Response Shaping)`
   (In-Action — answer-first, expand-on-demand, chunk long output) and
   `P9 Editable & Forkable Output` (Post-Action — treat output as an editable

@@ -65,7 +65,20 @@ Then add to Claude Code (`~/.claude/settings.json`):
 | [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 9 UX patterns + governance | Designing interactions, UX reviews, governance |
 | [`AI_ANTI_PATTERNS.md`](AI_ANTI_PATTERNS.md) | 14 anti-patterns with failure case studies and fixes | Avoiding common pitfalls, code reviews, postmortems |
 | [`INDUSTRY_GUIDES.md`](INDUSTRY_GUIDES.md) | 6 industry guides with phased pattern selections | Fintech, healthcare, dev tools, support, e-commerce, enterprise |
-| [`data/`](data/) | Structured data layer (125+ files, npm package) | Programmatic access, building tools, web UIs |
+| [`data/`](data/) | Structured data layer (130+ files, npm package) | Programmatic access, building tools, web UIs |
+| [`web/`](web/) | Relations-graph explorer (Vite + Vue 3) | Visually browsing patterns, principles & their typed relations |
+
+---
+
+## Explore the graph
+
+The [`web/`](web/) app renders the whole data layer — 104 entities and their typed relations — as an interactive force-directed graph, plus a live **Diagnose UX** tool built on the `uxDiagnoses` dataset. Static, no backend.
+
+```bash
+pnpm install
+pnpm --filter web dev      # http://localhost:5173
+pnpm --filter web build    # → web/dist (deploy to Pages/Netlify)
+```
 
 ---
 
