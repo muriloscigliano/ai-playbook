@@ -167,7 +167,7 @@ import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playb
 | `constraints` / `constraintCategories` | 36 | Constraint taxonomy with enforcement types |
 | `touchpoints` | 37 | Interaction surface vocabulary |
 | `aiTasks` | 24 | AI tasks with default autonomy levels |
-| `allRelations` | 366 | Typed relations (`requires`, `enhances`, `alternative`, `implements`, `conflicts`) |
+| `allRelations` | 365 | Typed relations (`requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`, `measured_by`, …) |
 | `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
 | `projectBlueprints` | 6 | Phased pattern plans by project type |
 | `problemDiagnoses` | 10 | Problem-to-pattern fix mappings |
@@ -197,8 +197,22 @@ data/
 ├── relations/                  # 98 typed relations + query helpers
 ├── taxonomy/                   # 4 autonomy levels
 ├── helpers/                    # search + detect utilities
-└── scripts/                    # migration scripts (generate-patterns.js, etc.)
+└── scripts/                    # migration + validate.js (integrity check)
 ```
+
+### Validating integrity
+
+The data layer is provably consistent — every relation endpoint and every
+`principles[]`/`patterns[]`/`uxPattern` cross-reference resolves to a real
+entity. Run the zero-dependency validator any time you edit `data/`:
+
+```bash
+cd data && npm run validate
+```
+
+It fails (non-zero exit) on dangling references, out-of-range numbers, or bad
+relation `type`/`strength` values, and warns on orphan patterns. The same check
+runs in CI on every push and pull request.
 
 ---
 
