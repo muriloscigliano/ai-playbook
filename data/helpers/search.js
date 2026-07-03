@@ -3,6 +3,8 @@
 
 import { projectKeywords } from '../recommendations/project-keywords.js'
 import { problemKeywords } from '../recommendations/problem-keywords.js'
+import { uxDiagnoseKeywords } from '../recommendations/ux-diagnose-keywords.js'
+import { capabilityKeywords } from '../recommendations/capability-keywords.js'
 import { taskKeywords } from '../vocabulary/human-tasks.js'
 import { constraintKeywords } from '../vocabulary/constraints.js'
 
@@ -45,6 +47,50 @@ export function detectProblems(description) {
   }
 
   return matches
+}
+
+/**
+ * Detect user-perceived UX complaints from a free-text string.
+ * Returns matching uxDiagnoses keys ranked by number of keyword hits
+ * (best match first), so a single complaint maps to its closest diagnosis.
+ * @param {string} description
+ * @returns {string[]}
+ */
+export function detectUxComplaints(description) {
+  const lower = description.toLowerCase()
+  const scored = []
+
+  for (const [key, keywords] of Object.entries(uxDiagnoseKeywords)) {
+    let hits = 0
+    for (const kw of keywords) {
+      if (lower.includes(kw)) hits += 1
+    }
+    if (hits > 0) scored.push({ key, hits })
+  }
+
+  return scored.sort((a, b) => b.hits - a.hits).map(s => s.key)
+}
+
+/**
+ * Detect AI capabilities from a task phrase.
+ * Returns matching capability keys ranked by number of keyword hits
+ * (best match first) — e.g. "group these customers" → ['clustering'].
+ * @param {string} description
+ * @returns {string[]}
+ */
+export function detectCapabilities(description) {
+  const lower = description.toLowerCase()
+  const scored = []
+
+  for (const [key, keywords] of Object.entries(capabilityKeywords)) {
+    let hits = 0
+    for (const kw of keywords) {
+      if (lower.includes(kw)) hits += 1
+    }
+    if (hits > 0) scored.push({ key, hits })
+  }
+
+  return scored.sort((a, b) => b.hits - a.hits).map(s => s.key)
 }
 
 /**

@@ -62,4 +62,14 @@ export const projectBlueprints = {
       { name: 'Scale', patterns: [46, 15, 66], why: 'Model routing, parallel execution, streaming tools' },
     ],
   },
+  'rag-over-your-content': {
+    name: 'RAG over your own content (docs, audio, video)',
+    phases: [
+      { name: 'Ingest & clean', patterns: [17, 49], why: 'Normalise mixed sources; entity replacement, metadata joins, chunking.' },
+      { name: 'Embed & index', patterns: [24, 34], why: 'Build the embedding index that powers semantic retrieval.' },
+      { name: 'Retrieve & rank', patterns: [31, 33, 35], why: 'Corrective/adaptive/agentic retrieval with a ranker.' },
+      { name: 'Generate & ground', patterns: [32, 13], why: 'Self-reflective generation, verified against retrieved context.' },
+      { name: 'Learn from feedback', patterns: [10, 54], why: 'Close the loop — feedback improves ranking and answers.' },
+    ],
+  },
 }

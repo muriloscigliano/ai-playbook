@@ -1,12 +1,18 @@
 # AI Agent Patterns Playbook
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![MCP Tools](https://img.shields.io/badge/MCP_Tools-11-blue.svg)](mcp-server/)
+[![MCP Tools](https://img.shields.io/badge/MCP_Tools-15-blue.svg)](mcp-server/)
 [![Patterns](https://img.shields.io/badge/Patterns-78-orange.svg)](AI_AGENT_PATTERNS_PLAYBOOK.md)
 [![Principles](https://img.shields.io/badge/Design_Principles-17-purple.svg)](AI_DESIGN_PRINCIPLES.md)
 
-> **78 engineering patterns + 17 design principles + structured data layer** for building AI-first products.
-> From agent loops and tool design to multi-agent orchestration, human-centered UX, and production hardening.
+> **Production-hardened agent patterns, reverse-engineered from real systems** — not another ReAct-and-RAG explainer.
+> The core (63–78) is the stuff that only shows up once agents hit production: deferred tool loading, hierarchical memory files, a skills system, the one-core-many-surfaces bridge pattern, and tool-result tombstones. Wrapped around it: 78 engineering patterns, 17 design principles, 9 UX patterns, and a typed data layer that connects them.
+
+```bash
+npm install @muriloscigliano/ai-playbook   # the structured data layer (patterns, uxDiagnoses, relations…)
+```
+
+> **New in 2.1** — a **capability layer** (task → the right AI primitive, with data needs, failure modes, and mapped patterns/principles/UX) plus `FOUNDATIONS.md` and `GLOSSARY.md`. **2.0** added a `diagnose_ux` reverse lookup, response-shaping UX patterns (P8/P9), a Quiet-vs-Visible AI axis (V1–V4), and a provably-consistent data layer. See the [CHANGELOG](CHANGELOG.md).
 
 ---
 
@@ -56,10 +62,41 @@ Then add to Claude Code (`~/.claude/settings.json`):
 | [`PATTERN_INDEX.md`](PATTERN_INDEX.md) | One-line summary of all 78 patterns | Quick pattern lookup |
 | [`AI_FIRST_BUILD_GUIDE.md`](AI_FIRST_BUILD_GUIDE.md) | Decision trees + 5-phase build plan | Starting a feature or project |
 | [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md) | Full reference (78 patterns, 4500+ lines) | Deep implementation details |
-| [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 7 UX patterns + governance | Designing interactions, UX reviews, governance |
+| [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 9 UX patterns + governance | Designing interactions, UX reviews, governance |
 | [`AI_ANTI_PATTERNS.md`](AI_ANTI_PATTERNS.md) | 14 anti-patterns with failure case studies and fixes | Avoiding common pitfalls, code reviews, postmortems |
 | [`INDUSTRY_GUIDES.md`](INDUSTRY_GUIDES.md) | 6 industry guides with phased pattern selections | Fintech, healthcare, dev tools, support, e-commerce, enterprise |
-| [`data/`](data/) | Structured data layer (125+ files, npm package) | Programmatic access, building tools, web UIs |
+| [`FOUNDATIONS.md`](FOUNDATIONS.md) | Builder literacy: tokens, context, embeddings, training, "prediction not understanding" | Getting the mental model before you build |
+| [`GLOSSARY.md`](GLOSSARY.md) | One-line definitions of the core terms | Quick term lookup |
+| [`data/`](data/) | Structured data layer (140+ files, npm package) | Programmatic access, building tools, web UIs |
+| [`web/`](web/) | Relations-graph explorer (Vite + Vue 3) | Visually browsing patterns, principles & their typed relations |
+
+---
+
+## Explore the graph
+
+The [`web/`](web/) app renders the whole data layer — 104 entities and their typed relations — as an interactive force-directed graph, plus a live **Diagnose UX** tool built on the `uxDiagnoses` dataset. Static, no backend.
+
+```bash
+pnpm install
+pnpm --filter web dev      # http://localhost:5173
+pnpm --filter web build    # → web/dist (deploy to Pages/Netlify)
+```
+
+---
+
+## AI Capabilities
+
+Start from a *task* — "group these", "find similar", "flag the weird ones", "pull fields out of this" — and the playbook routes you to the right AI primitive, its data requirements, its failure modes, and the patterns/principles/UX patterns that make it safe and usable. This is the capability→use-case bridge that sits between *how to build* (patterns) and *how to design* (principles).
+
+Ten capabilities across five categories: **Retrieval** (semantic search) · **Classification** · **Analysis** (clustering, anomaly detection, reasoning & planning) · **Generation** (summarization, extraction, content generation) · **Language** (transcription & translation, language modeling).
+
+```bash
+./cli/index.js capabilities                          # list them
+./cli/index.js capability anomaly-detection          # full write-up
+./cli/index.js capability --for "group these users"  # task → capability
+```
+
+New to the vocabulary? [`FOUNDATIONS.md`](FOUNDATIONS.md) covers tokens, context windows, embeddings, training, and the "prediction, not understanding" design stance; [`GLOSSARY.md`](GLOSSARY.md) has crisp one-line definitions.
 
 ---
 
@@ -127,16 +164,17 @@ The **build guide** — how to combine patterns into a product:
 
 ## Design Principles & UX Patterns
 
-17 strategic design principles + 7 UX patterns + governance framework for human-centered agentic AI. Cross-referenced to all 78 engineering patterns.
+17 strategic design principles + 9 UX patterns + governance framework for human-centered agentic AI. Cross-referenced to all 78 engineering patterns.
 
 | Section | What's Covered |
 |---------|---------------|
 | **Framing** | Quality as downstream of intent, not tooling |
 | **Autonomy Taxonomy** | 4 levels: Observe & Suggest → Plan & Propose → Act with Confirmation → Act Autonomously |
 | **17 Design Principles** | Cognition, interfaces, agency, accountability — with practitioner perspectives from 15+ designers |
-| **7 UX Patterns** | Intent Preview, Autonomy Dial, Explainable Rationale, Confidence Signal, Action Audit & Undo, Escalation Pathway, Empathic Error Recovery |
-| **Human Task Vocabulary** | 21 human tasks mapped to UX patterns and autonomy levels |
-| **Constraint Taxonomy** | 37 constraints across 8 categories with enforcement matrix |
+| **9 UX Patterns** | Intent Preview, Autonomy Dial, Explainable Rationale, Confidence Signal, Action Audit & Undo, Escalation Pathway, Empathic Error Recovery, Progressive Disclosure (Response Shaping), Editable & Forkable Output |
+| **Visibility Axis** | V1 Ambient · V2 Assistive · V3 Conversational · V4 Foreground — how visible the AI is, orthogonal to autonomy |
+| **Human Task Vocabulary** | 23 human tasks mapped to UX patterns and autonomy levels |
+| **Constraint Taxonomy** | 36 constraints across 8 categories with enforcement matrix |
 | **Touchpoint Vocabulary** | 37 interaction surfaces across 6 categories |
 | **Governance** | Ethics Council, 3-phase rollout, metrics framework |
 
@@ -162,16 +200,22 @@ import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playb
 |--------|-------|------|
 | `patterns` / `patternsByNumber` / `patternsBySlug` | 78 | Pattern metadata (id, name, part, problem, solution, keywords) |
 | `principles` / `principlesByNumber` | 17 | Design principle metadata (theme, summary, related patterns) |
-| `uxPatterns` / `uxPatternsByNumber` | 7 | UX pattern metadata (lifecycle phase, autonomy levels) |
+| `uxPatterns` / `uxPatternsByNumber` | 9 | UX pattern metadata (lifecycle phase, autonomy levels) |
 | `humanTasks` | 23 | Human task vocabulary with UX pattern + principle mappings |
 | `constraints` / `constraintCategories` | 36 | Constraint taxonomy with enforcement types |
 | `touchpoints` | 37 | Interaction surface vocabulary |
 | `aiTasks` | 24 | AI tasks with default autonomy levels |
-| `allRelations` | 365 | Typed relations (`requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`, `measured_by`, …) |
+| `allRelations` | 398 | Typed relations (`requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`, `measured_by`, …) |
 | `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
-| `projectBlueprints` | 6 | Phased pattern plans by project type |
-| `problemDiagnoses` | 10 | Problem-to-pattern fix mappings |
+| `visibilityLevels` | 4 | V1-V4 visibility axis (orthogonal to autonomy) |
+| `projectBlueprints` | 7 | Phased pattern plans by project type |
+| `problemDiagnoses` | 10 | Problem-to-pattern fix mappings (technical) |
+| `uxDiagnoses` | 19 | User-complaint-to-UX-pattern + microcopy mappings (perceptual) |
+| `capabilities` / `capabilitiesByKey` | 10 | AI capabilities — task → primitive, with data needs, failure modes, and mapped patterns/principles/UX |
 | `detectProjectType(desc)` | — | Keyword-based project type detection |
+| `detectProblems(desc)` | — | Keyword-based technical-problem detection |
+| `detectUxComplaints(desc)` | — | Keyword-based UX-complaint detection (ranked) |
+| `detectCapabilities(desc)` | — | Task-phrase → capability detection (ranked) |
 | `detectHumanTasks(desc)` | — | Keyword-based human task detection |
 | `detectConstraints(desc)` | — | Keyword-based constraint detection |
 | `getRelationsFor(id)` | — | Query typed relations by entity ID |
@@ -185,17 +229,20 @@ data/
 ├── package.json                # @muriloscigliano/ai-playbook
 ├── patterns/                   # 78 pattern metadata files + _index.js
 ├── principles/                 # 17 principle metadata files + _index.js
-├── ux-patterns/                # 7 UX pattern metadata files + _index.js
+├── ux-patterns/                # 9 UX pattern metadata files + _index.js
+├── capabilities/               # 10 AI capability metadata files + _index.js
 ├── vocabulary/
 │   ├── human-tasks.js          # 23 human tasks
 │   ├── constraints.js          # 36 constraints in 8 categories
 │   ├── touchpoints.js          # 37 touchpoints in 6 categories
 │   └── ai-tasks.js             # 24 AI tasks by autonomy level
 ├── recommendations/
-│   ├── project-blueprints.js   # 6 project types with phased patterns
-│   └── problem-diagnoses.js    # 10 problem-to-pattern mappings
-├── relations/                  # 98 typed relations + query helpers
-├── taxonomy/                   # 4 autonomy levels
+│   ├── project-blueprints.js   # 7 project types with phased patterns
+│   ├── problem-diagnoses.js    # 10 technical problem-to-pattern mappings
+│   ├── ux-diagnoses.js         # 19 UX complaint-to-pattern + microcopy mappings
+│   └── capability-keywords.js  # task phrase → capability routing
+├── relations/                  # typed relations (incl. capability→pattern) + query helpers
+├── taxonomy/                   # 4 autonomy levels + 4 visibility levels
 ├── helpers/                    # search + detect utilities
 └── scripts/                    # migration + validate.js (integrity check)
 ```
@@ -231,16 +278,20 @@ Use the playbook from any terminal — no MCP required:
 ./cli/index.js stats
 ```
 
-All 10 commands:
+The commands:
 
 | Command | What |
 |---------|------|
 | `recommend "description"` | Phased pattern plan for your project type |
 | `diagnose "problem"` | Pattern fixes for your agent's issues |
+| `diagnose-ux "complaint"` | UX patterns + microcopy for user-perceived failures |
+| `capabilities` | List AI capabilities by category |
+| `capability <key>` / `--for "<task>"` | Read one capability, or route a task to the right one |
 | `search "query"` | Search patterns + principles by keyword |
 | `pattern N` | Read full pattern content (1-78) |
 | `principle N` | Read full design principle (1-17) |
-| `ux-pattern N` | Read full UX pattern (1-7) |
+| `ux-pattern N` | Read full UX pattern (1-9) |
+| `visibility` | Show the AI visibility axis (V1-V4) |
 | `list [part]` | List all patterns, optionally filter by part |
 | `relations N` | See all typed connections for a pattern |
 | `design "description"` | Unified design + engineering recommendation |
@@ -282,7 +333,7 @@ git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
 ## MCP Server (Recommended)
 
-The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 380KB+ of files**. 11 tools, zero context waste.
+The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 380KB+ of files**. 15 tools, zero context waste.
 
 ### Setup
 
@@ -315,12 +366,16 @@ node build-design-index.js
 
 ### Available Tools
 
-**Engineering Patterns (6 tools):**
+**Engineering Patterns & Capabilities (10 tools):**
 
 | Tool | Input | Output | Best for |
 |------|-------|--------|----------|
 | `recommend_patterns` | `"a customer support chatbot"` | Phased plan with the right patterns | **Start here** — don't know which patterns you need |
 | `diagnose_agent` | `"too slow and forgets context"` | Prioritized fixes matched to your problem | Agent already built but has issues |
+| `diagnose_ux` | `"it gives me walls of text"` | UX patterns + principles + microcopy, with an engineering cross-reference | A *user* complaint about how the AI feels, not a technical bug |
+| `recommend_capability` | `"group these customers"` | The AI primitive for a task + data needs, failure modes, mapped patterns/principles/UX | Starting from a *task*, unsure which capability to use |
+| `list_capabilities` | — | Capabilities by category | Browsing what AI is good at |
+| `get_capability` | `"anomaly-detection"` | Full capability write-up | Ready to design around a specific capability |
 | `search_patterns` | `"memory"` | Top 10 matching patterns | Know the topic, need the right pattern |
 | `get_pattern` | `23` | Full pattern content (problem, solution, pseudocode) | Ready to implement a specific pattern |
 | `list_patterns` | `"safety"` (optional) | All patterns in a Part, one-line each | Browsing what's available |

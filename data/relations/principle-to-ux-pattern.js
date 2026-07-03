@@ -15,4 +15,12 @@ export const principleToUxPattern = [
   // Principle 17 (exit as a sacred right) is realized architecturally by the
   // Bridge Pattern (76) — clean data portability / egress across surfaces.
   { from: 'principle-17', to: 'pattern-76', type: 'enables', strength: 'moderate', source: 'cross-reference', autonomyLevel: 'All', note: 'architectural — data portability' },
+
+  // P8 Progressive Disclosure (Response Shaping) — In-Action
+  { from: 'principle-8', to: 'ux-pattern-8', type: 'enables', strength: 'strong', source: 'cross-reference', autonomyLevel: 'All', note: 'generate the interface for the moment → shape the response' },
+  { from: 'principle-10', to: 'ux-pattern-8', type: 'enables', strength: 'weak', source: 'cross-reference', autonomyLevel: 'All', note: 'chunking communicates scope without a wall of text' },
+
+  // P9 Editable & Forkable Output — Post-Action
+  { from: 'principle-4', to: 'ux-pattern-9', type: 'enables', strength: 'strong', source: 'cross-reference', autonomyLevel: 'All', note: 'preserve creative interpretation → output is an editable draft' },
+  { from: 'principle-12', to: 'ux-pattern-9', type: 'enables', strength: 'moderate', source: 'cross-reference', autonomyLevel: 'All', note: 'negotiate agency → user re-rolls and forks parts' },
 ]

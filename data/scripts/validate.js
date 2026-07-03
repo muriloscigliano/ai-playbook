@@ -13,6 +13,7 @@
 import { patterns } from '../patterns/_index.js'
 import { principles } from '../principles/_index.js'
 import { uxPatterns } from '../ux-patterns/_index.js'
+import { capabilities } from '../capabilities/_index.js'
 import { allRelations } from '../relations/_index.js'
 import {
   humanTasks,
@@ -24,8 +25,11 @@ import {
 import {
   projectBlueprints,
   problemDiagnoses,
+  uxDiagnoses,
 } from '../recommendations/index.js'
+import { uxDiagnoseKeywords } from '../recommendations/ux-diagnose-keywords.js'
 import { autonomyLevels } from '../taxonomy/autonomy-levels.js'
+import { visibilityLevels } from '../taxonomy/visibility-levels.js'
 
 // ── Allowed enums ──
 // Relation types actually in use across the corpus (superset of the documented
@@ -55,8 +59,10 @@ const warn = (msg) => warnings.push(msg)
 const patternIds = new Set(patterns.map((p) => p.id))
 const principleIds = new Set(principles.map((p) => p.id))
 const uxPatternIds = new Set(uxPatterns.map((p) => p.id))
+const capabilityIds = new Set(capabilities.map((c) => c.id))
 const uxPatternCodes = new Set(uxPatterns.map((p) => p.code))
-const allEntityIds = new Set([...patternIds, ...principleIds, ...uxPatternIds])
+const uxDiagnoseKeys = new Set(Object.keys(uxDiagnoseKeywords))
+const allEntityIds = new Set([...patternIds, ...principleIds, ...uxPatternIds, ...capabilityIds])
 
 const patternNumbers = new Set(patterns.map((p) => p.number))
 const principleNumbers = new Set(principles.map((p) => p.number))
@@ -159,6 +165,14 @@ for (const [key, b] of Object.entries(projectBlueprints)) {
     )
   })
 }
+for (const [key, d] of Object.entries(uxDiagnoses)) {
+  const w = `uxDiagnosis "${key}"`
+  ;(d.uxPatterns || []).forEach((code) => resolveUxCode(code, w))
+  ;(d.principles || []).forEach((n) => resolvePrincipleNumber(n, w))
+  if (d.engineeringRootCause != null && !problemDiagnoses[d.engineeringRootCause]) {
+    fail(`${w}: engineeringRootCause "${d.engineeringRootCause}" is not a real problemDiagnoses key`)
+  }
+}
 
 // ── 5. Cross-references in taxonomy ──
 for (const level of autonomyLevels) {
@@ -167,6 +181,31 @@ for (const level of autonomyLevels) {
     resolveUxCode(code, `autonomyLevel "${level.id}"`)
   })
 }
+for (const v of visibilityLevels) {
+  ;(v.primaryPrinciples || []).forEach((n) => resolvePrincipleNumber(n, `visibilityLevel "${v.id}"`))
+}
+
+// ── 5b. Capabilities ──
+const CAPABILITY_CATEGORIES = new Set(['Retrieval', 'Classification', 'Analysis', 'Generation', 'Language'])
+;(() => {
+  const seenId = new Set()
+  const seenKey = new Set()
+  for (const c of capabilities) {
+    const w = `capability "${c.key}"`
+    if (c.id !== `capability-${c.key}`) fail(`${w}: id "${c.id}" does not match key`)
+    if (seenId.has(c.id)) fail(`duplicate capability id ${c.id}`)
+    if (seenKey.has(c.key)) fail(`duplicate capability key ${c.key}`)
+    seenId.add(c.id)
+    seenKey.add(c.key)
+    if (!CAPABILITY_CATEGORIES.has(c.category)) fail(`${w}: unknown category "${c.category}"`)
+    ;(c.patterns || []).forEach((n) => resolvePatternNumber(n, w))
+    ;(c.principles || []).forEach((n) => resolvePrincipleNumber(n, w))
+    ;(c.uxPatterns || []).forEach((code) => resolveUxCode(code, w))
+    ;(c.failureModeKeys || []).forEach((k) => {
+      if (!uxDiagnoseKeys.has(k)) fail(`${w}: failureModeKey "${k}" is not a real uxDiagnoses key`)
+    })
+  }
+})()
 
 // ── 6. Orphan patterns (warn only) ──
 ;(() => {
@@ -185,10 +224,11 @@ const line = '─'.repeat(60)
 console.log(line)
 console.log('AI Playbook — data integrity report')
 console.log(line)
-console.log(`  patterns:    ${patterns.length}`)
-console.log(`  principles:  ${principles.length}`)
-console.log(`  ux patterns: ${uxPatterns.length}`)
-console.log(`  relations:   ${allRelations.length}`)
+console.log(`  patterns:     ${patterns.length}`)
+console.log(`  principles:   ${principles.length}`)
+console.log(`  ux patterns:  ${uxPatterns.length}`)
+console.log(`  capabilities: ${capabilities.length}`)
+console.log(`  relations:    ${allRelations.length}`)
 console.log(line)
 
 if (warnings.length) {

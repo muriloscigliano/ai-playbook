@@ -3,12 +3,16 @@
 /**
  * AI Playbook MCP Server
  *
- * Provides 10 tools for retrieving patterns and design principles from the
+ * Provides 15 tools for retrieving patterns and design principles from the
  * AI Agent Patterns Playbook and AI Design Principles document.
  *
- * Engineering Patterns (6 tools):
+ * Engineering Patterns (7 tools):
  *   - recommend_patterns(description, level)  → "I'm building X" → phased plan
  *   - diagnose_agent(problem)                 → "My agent does Y wrong" → fixes
+ *   - diagnose_ux(complaint)                  → "Users say Z" → UX patterns + microcopy
+ *   - list_capabilities()                     → what AI is good at, by category
+ *   - get_capability(key)                     → full write-up for one capability
+ *   - recommend_capability(task)              → "group these" → the right primitive
  *   - search_patterns(query)                  → Find patterns by keyword
  *   - get_pattern(number)                     → Get full content of a pattern
  *   - list_patterns(part?)                    → List all patterns by Part
@@ -34,10 +38,14 @@ import { projectBlueprints } from '../data/recommendations/project-blueprints.js
 import { projectKeywords } from '../data/recommendations/project-keywords.js'
 import { problemDiagnoses } from '../data/recommendations/problem-diagnoses.js'
 import { problemKeywords } from '../data/recommendations/problem-keywords.js'
+import { uxDiagnoses } from '../data/recommendations/ux-diagnoses.js'
+import { capabilities, capabilitiesByKey } from '../data/capabilities/_index.js'
 import { humanTasks } from '../data/vocabulary/human-tasks.js'
 import { taskKeywords } from '../data/vocabulary/human-tasks.js'
 import { constraints, constraintCategories, constraintKeywords } from '../data/vocabulary/constraints.js'
-import { detectProjectType, detectProblems, detectHumanTasks, detectConstraints } from '../data/helpers/search.js'
+import { uxPatternsByNumber } from '../data/ux-patterns/_index.js'
+import { principlesByNumber } from '../data/principles/_index.js'
+import { detectProjectType, detectProblems, detectUxComplaints, detectCapabilities, detectHumanTasks, detectConstraints } from '../data/helpers/search.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -135,6 +143,90 @@ function formatDiagnosis(problemKeys) {
   return lines.join('\n')
 }
 
+function resolveUxPattern(code) {
+  const num = Number(String(code).replace(/^P/i, ''))
+  return uxPatternsByNumber[num] || null
+}
+
+function formatUxDiagnosis(complaintKeys) {
+  const lines = ['# UX Diagnosis\n']
+
+  for (const key of complaintKeys) {
+    const diag = uxDiagnoses[key]
+    if (!diag) continue
+
+    lines.push(`## ${diag.title}`)
+    lines.push(`${diag.challenge}\n`)
+    lines.push(`**Why it reads as broken:** ${diag.explanation}\n`)
+
+    lines.push('**UX patterns to apply:**')
+    for (const code of diag.uxPatterns) {
+      const ux = resolveUxPattern(code)
+      lines.push(ux ? `- ${code} — ${ux.name} (${ux.lifecyclePhase})` : `- ${code}`)
+    }
+    lines.push('')
+
+    lines.push('**Design principles:**')
+    for (const n of diag.principles) {
+      const pr = principlesByNumber[n]
+      lines.push(pr ? `- Principle ${n} — ${pr.name}` : `- Principle ${n}`)
+    }
+    lines.push('')
+
+    lines.push(`**Microcopy:** ${diag.microcopy}\n`)
+
+    if (diag.engineeringRootCause) {
+      const eng = problemDiagnoses[diag.engineeringRootCause]
+      const engTitle = eng ? ` (${eng.title})` : ''
+      lines.push(`> Root cause may be technical — see \`diagnose_agent\` → "${diag.engineeringRootCause}"${engTitle}.`)
+      lines.push('')
+    }
+  }
+
+  lines.push('Use `get_ux_pattern(N)` or `get_design_principle(N)` for the full write-up.')
+  return lines.join('\n')
+}
+
+function formatCapability(cap) {
+  const lines = [`# ${cap.name}`, '']
+  if (cap.aka?.length) lines.push(`*Also known as: ${cap.aka.join(', ')}* — category: **${cap.category}**\n`)
+
+  lines.push(`**Good for:** ${cap.whatItsGoodFor}\n`)
+  lines.push(`**When not to use:** ${cap.whenNotToUse}\n`)
+  lines.push(`**Data requirements:** ${cap.dataRequirements}\n`)
+
+  lines.push('**Failure modes:**')
+  for (const fm of cap.failureModes) lines.push(`- ${fm}`)
+  if (cap.failureModeKeys?.length) {
+    lines.push(`  ↳ Some map to UX diagnoses — try \`diagnose_ux\`: ${cap.failureModeKeys.map(k => `"${k}"`).join(', ')}.`)
+  }
+  lines.push('')
+
+  lines.push('**Implementing patterns:**')
+  for (const num of cap.patterns) {
+    const p = patterns.find(x => x.pattern === num)
+    lines.push(p ? `- ${num} — ${p.name}` : `- Pattern ${num}`)
+  }
+  lines.push('')
+
+  lines.push('**Design principles:**')
+  for (const n of cap.principles) {
+    const pr = principlesByNumber[n]
+    lines.push(pr ? `- Principle ${n} — ${pr.name}` : `- Principle ${n}`)
+  }
+  lines.push('')
+
+  lines.push('**UX patterns:**')
+  for (const code of cap.uxPatterns) {
+    const ux = resolveUxPattern(code)
+    lines.push(ux ? `- ${code} — ${ux.name} (${ux.lifecyclePhase})` : `- ${code}`)
+  }
+  lines.push('')
+
+  lines.push(`**Example:** ${cap.example}`)
+  return lines.join('\n')
+}
+
 // ── Search Helpers ──
 
 function searchPatterns(query) {
@@ -197,7 +289,7 @@ function getBuildGuideSection(section) {
 
 const server = new McpServer({
   name: 'ai-playbook',
-  version: '2.0.0',
+  version: '2.1.0',
 })
 
 // Tool 1: Recommend patterns for a project (beginner-friendly)
@@ -276,6 +368,91 @@ server.tool(
     }
 
     const text = formatDiagnosis(matchedProblems)
+    return { content: [{ type: 'text', text }] }
+  },
+)
+
+// Tool 2b: Diagnose user-perceived (UX) problems
+server.tool(
+  'diagnose_ux',
+  'Describe a user complaint about an AI feature and get the UX patterns, design principles, and microcopy that address it — plus a cross-reference to the engineering root cause when one exists. E.g. "it gives me walls of text", "it never asks what I meant", "it just makes things up", "it agrees with everything".',
+  {
+    complaint: z.string().describe('What does the user perceive as wrong? E.g. "walls of text", "keeps forgetting", "won\'t push back", "made it up", "won\'t ask me anything", "too slow", "hit the usage limit"'),
+  },
+  async ({ complaint }) => {
+    const matched = detectUxComplaints(complaint)
+
+    if (matched.length === 0) {
+      const available = Object.values(uxDiagnoses)
+        .map(d => `- "${d.title}"`)
+        .join('\n')
+
+      return {
+        content: [{
+          type: 'text',
+          text: `I couldn't match a specific UX diagnosis from: "${complaint}"\n\nTry describing the complaint as one of:\n${available}\n\nFor a technical (not perceptual) failure, use \`diagnose_agent("your problem")\` instead.`,
+        }],
+      }
+    }
+
+    const text = formatUxDiagnosis(matched)
+    return { content: [{ type: 'text', text }] }
+  },
+)
+
+// Tool 2c: List AI capabilities
+server.tool(
+  'list_capabilities',
+  'List the AI capabilities the playbook covers — what AI is actually good at, grouped by category (Retrieval, Classification, Analysis, Generation, Language). Use get_capability(key) for the full write-up.',
+  {},
+  async () => {
+    const byCat = {}
+    for (const c of capabilities) {
+      ;(byCat[c.category] ||= []).push(c)
+    }
+    const lines = ['# AI Capabilities\n']
+    for (const [cat, caps] of Object.entries(byCat)) {
+      lines.push(`## ${cat}`)
+      for (const c of caps) lines.push(`- **${c.key}** — ${c.name}: ${c.whatItsGoodFor}`)
+      lines.push('')
+    }
+    lines.push('Use `get_capability("<key>")` for data requirements, failure modes, and the patterns/principles/UX patterns that implement it.')
+    return { content: [{ type: 'text', text: lines.join('\n') }] }
+  },
+)
+
+// Tool 2d: Get a specific capability by key
+server.tool(
+  'get_capability',
+  'Get the full write-up for an AI capability by key — what it is good for, when not to use it, data requirements, failure modes, and the resolved patterns/principles/UX patterns. Keys: semantic-search, classification, clustering, anomaly-detection, summarization, extraction, generation, reasoning-planning, transcription-translation, language-modeling.',
+  { key: z.string().describe('Capability key, e.g. "semantic-search", "clustering", "anomaly-detection"') },
+  async ({ key }) => {
+    const cap = capabilitiesByKey[key]
+    if (!cap) {
+      const keys = Object.keys(capabilitiesByKey).map(k => `"${k}"`).join(', ')
+      return { content: [{ type: 'text', text: `Capability "${key}" not found. Valid keys: ${keys}.` }] }
+    }
+    return { content: [{ type: 'text', text: formatCapability(cap) }] }
+  },
+)
+
+// Tool 2e: Recommend a capability for a task
+server.tool(
+  'recommend_capability',
+  'Describe a task in plain language ("group these customers", "find similar images", "flag suspicious rows", "pull fields out of this document") and get the AI capability to reach for, its data requirements, failure modes, and the patterns/principles/UX patterns that make it safe.',
+  { task: z.string().describe('A task phrase — e.g. "group these customers", "find similar products", "flag unusual transactions", "summarize this thread"') },
+  async ({ task }) => {
+    const matched = detectCapabilities(task)
+    if (matched.length === 0) {
+      const available = capabilities.map(c => `- ${c.key} — ${c.name}`).join('\n')
+      return {
+        content: [{
+          type: 'text',
+          text: `I couldn't match a capability from: "${task}"\n\nAvailable capabilities:\n${available}\n\nTry a task phrase like "group these", "find similar", "flag the unusual ones", or "pull fields out of this".`,
+        }],
+      }
+    }
+    const text = matched.map(k => formatCapability(capabilitiesByKey[k])).join('\n\n---\n\n')
     return { content: [{ type: 'text', text }] }
   },
 )
@@ -420,11 +597,11 @@ server.tool(
   },
 )
 
-// Tool 8: Get a specific UX pattern by number (1-7)
+// Tool 8: Get a specific UX pattern by number (1-9)
 server.tool(
   'get_ux_pattern',
-  'Get the full content of an agentic UX pattern by number (1-7). Includes: lifecycle phase, autonomy levels, anatomy, metrics, examples, and playbook connections. P1=Intent Preview, P2=Autonomy Dial, P3=Explainable Rationale, P4=Confidence Signal, P5=Action Audit & Undo, P6=Escalation Pathway, P7=Empathic Error Recovery.',
-  { number: z.number().min(1).max(7).describe('UX pattern number (1-7)') },
+  'Get the full content of an agentic UX pattern by number (1-9). Includes: lifecycle phase, autonomy levels, anatomy, metrics, examples, and playbook connections. P1=Intent Preview, P2=Autonomy Dial, P3=Explainable Rationale, P4=Confidence Signal, P5=Action Audit & Undo, P6=Escalation Pathway, P7=Empathic Error Recovery, P8=Progressive Disclosure (Response Shaping), P9=Editable & Forkable Output.',
+  { number: z.number().min(1).max(9).describe('UX pattern number (1-9)') },
   async ({ number }) => {
     if (designEntries.length === 0) {
       return { content: [{ type: 'text', text: 'Design principles index not found. Run: node build-design-index.js' }] }
@@ -432,7 +609,7 @@ server.tool(
 
     const entry = designEntries.find(e => e.type === 'ux-pattern' && e.number === number)
     if (!entry) {
-      return { content: [{ type: 'text', text: `UX pattern ${number} not found. Valid range: 1-7.` }] }
+      return { content: [{ type: 'text', text: `UX pattern ${number} not found. Valid range: 1-9.` }] }
     }
 
     return { content: [{ type: 'text', text: entry.content }] }

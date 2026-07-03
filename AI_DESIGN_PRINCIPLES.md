@@ -42,11 +42,13 @@
   - [In-Action: Providing Context](#in-action-providing-context)
     - [P3. Explainable Rationale](#p3-explainable-rationale)
     - [P4. Confidence Signal](#p4-confidence-signal)
+    - [P8. Progressive Disclosure (Response Shaping)](#p8-progressive-disclosure-response-shaping)
   - [Post-Action: Safety and Recovery](#post-action-safety-and-recovery)
     - [P5. Action Audit & Undo](#p5-action-audit--undo)
     - [P6. Escalation Pathway](#p6-escalation-pathway)
   - [Repair & Redress](#repair--redress)
     - [P7. Empathic Error Recovery](#p7-empathic-error-recovery)
+    - [P9. Editable & Forkable Output](#p9-editable--forkable-output)
   - [Anti-Pattern: Agentic Sludge](#anti-pattern-agentic-sludge)
   - [Pattern Summary Table](#pattern-summary-table)
 - [Part C: Governance, Rollout, and Metrics](#part-c-governance-rollout-and-metrics)
@@ -1350,7 +1352,7 @@ P1 (Intent Preview) → P3 (Rationale) → P5 (Audit)
 
 ### Human Task Vocabulary
 
-The UX patterns below (P1-P7) reference human actions — reviewing, approving, configuring, providing feedback — but never formally enumerate them. This vocabulary defines 21 distinct human tasks that occur when interacting with agentic AI systems, organized by interaction phase. Each task maps to the UX patterns and principles that govern it.
+The UX patterns below (P1-P9) reference human actions — reviewing, approving, configuring, providing feedback — but never formally enumerate them. This vocabulary defines the distinct human tasks that occur when interacting with agentic AI systems, organized by interaction phase. Each task maps to the UX patterns and principles that govern it.
 
 **Source:** AI Interaction Atlas (ai-interaction.com, Apache 2.0, by quietloudlab). Adapted and mapped to this document's lifecycle, UX patterns, and autonomy taxonomy.
 
@@ -1762,6 +1764,60 @@ This progression mirrors the Autonomy Dial's progression — as trust calibrates
 
 ---
 
+#### P8. Progressive Disclosure (Response Shaping)
+
+**Lifecycle phase:** In-Action (applies while output is being rendered)
+**Autonomy levels:** All
+**What it does:** Shapes the response to the moment instead of emitting everything at once. Lead with the single most useful line — a direct answer or a summary — then let the reader pull depth on demand. Long output is chunked into scannable, labeled sections rather than delivered as an undifferentiated block.
+
+**When to use:**
+- Whenever an answer could be long, layered, or exhaustive by default
+- When different readers need different depths (a quick confirmation vs. a full trace)
+- When output mixes a headline result with supporting detail, sources, or reasoning
+- When the same response will be read on surfaces of very different sizes
+
+**Risk of omission:** Without response shaping, every answer arrives as a wall of text. The reader cannot scan, cannot find the one line they needed, and cannot tell the conclusion from the supporting material. Fluency is mistaken for length; the interface pushes effort onto the reader that the system should have absorbed.
+
+**Anatomy:**
+
+Response shaping has three moves:
+
+1. **Answer first.** The first line resolves the request — a decision, a number, a yes/no, or a one-sentence summary. Nothing above it.
+
+2. **Expand on demand.** Depth lives behind an affordance: "Show details ▸", a collapsible section, a "See reasoning" toggle. The default view is short; the full view is one interaction away.
+
+3. **Chunk the long tail.** When detail is shown, structure it — headed sections, short paragraphs, lists — so it can be scanned rather than read start-to-finish.
+
+**Example:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ ✓ Yes — the migration is safe to run now.               │
+│                                                         │
+│   Show details ▸                                        │
+│   ─────────────                                         │
+│   • No open transactions on the affected tables         │
+│   • Backup completed 4 min ago                          │
+│   • Estimated lock time: under 200ms                    │
+│                                                         │
+│   Show full pre-flight report ▸                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Design considerations:**
+
+1. **The first line is the product.** If the reader stops after one line, they should still have what they asked for. Everything below is optional depth, not required context.
+
+2. **Match depth to the surface.** On a watch or a voice interface, the answer-first line may be the entire response; on a dashboard, the expanded view can be rich. The shaping adapts; the answer-first discipline does not.
+
+3. **Don't bury the answer to show your work.** Reasoning, caveats, and sources are valuable but secondary. Lead with the conclusion, then justify it — never the reverse.
+
+4. **Chunking is not truncation.** Progressive disclosure hides depth behind an affordance; it never silently drops information the reader may need.
+
+**Playbook connection:** [Pattern 8 (Progressive Context Disclosure)](AI_AGENT_PATTERNS_PLAYBOOK.md) — the engineering analogue: reveal context to the model incrementally. P8 applies the same principle to the human reader. [Pattern 49 (Structured Outputs)](AI_AGENT_PATTERNS_PLAYBOOK.md) — structured output is what makes reliable chunking possible.
+
+---
+
 ### Post-Action: Safety and Recovery
 
 ---
@@ -2005,6 +2061,59 @@ The paradox (trust after recovery > trust before error) is real but bounded:
 
 ---
 
+#### P9. Editable & Forkable Output
+
+**Lifecycle phase:** Post-Action (begins the moment output is delivered)
+**Autonomy levels:** All
+**What it does:** Treats generated output as an editable draft, not a finished artifact. The user can revise in place, regenerate a single part without discarding the rest, and branch a result into an alternative version cheaply. Authorship stays with the human; the system supplies a starting point, not a verdict.
+
+**When to use:**
+- Whenever the output is a document, plan, message, image, or any artifact the user will keep working on
+- When the first result is likely to be *close* but not exactly right
+- When users want to explore variations rather than accept or reject a single answer
+- When the cost of a full regeneration is high but a local edit or partial re-roll is cheap
+
+**Risk of omission:** When output is delivered as a sealed final artifact, iteration collapses into a binary: accept it or throw it away and start over. Users lose the parts that were good to fix the parts that were wrong. The system positions itself as an author handing down a result rather than a collaborator handing over a draft — which quietly strips the human of agency over their own work.
+
+**Anatomy:**
+
+Editable-forkable output rests on three affordances:
+
+1. **Inline edit.** The result is directly editable where it sits — no copy-paste into another tool to change a word. What the system produced is the same object the user refines.
+
+2. **Partial regeneration.** The user can re-roll one section, one paragraph, one element, holding everything else fixed. "Regenerate this section ▸" beats "regenerate everything."
+
+3. **Cheap forking.** Producing an alternative version is a single, low-friction action, and prior versions remain recoverable — iteration is safe because nothing good is destroyed to try something new.
+
+**Example:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Draft reply                                    [Edit] ✎  │
+│                                                         │
+│ Hi Jordan — thanks for the flexibility. Thursday at    │
+│ 2pm works well on our end. I'll send the invite         │
+│ shortly.                                                │
+│                                                         │
+│ ↻ Regenerate this paragraph   ⑂ Fork a warmer version   │
+│ ← Previous version                                      │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Design considerations:**
+
+1. **The draft is the default stance.** Frame output as "here's a starting point" rather than "here's the answer." The framing sets the expectation that revision is normal, not a sign the system failed.
+
+2. **Make partial re-rolls the norm.** Whole-output regeneration is a blunt instrument that throws away work the user liked. Section-level regeneration preserves the good and targets the bad.
+
+3. **Keep forks recoverable.** Iteration must be safe: branching to a variation should never destroy the version the user might want back. Pair with P5 (Action Audit & Undo) so version history is legible.
+
+4. **Preserve human authorship.** The point is not to make editing possible as an escape hatch — it is to keep the human in the author's seat throughout. The system drafts; the person decides.
+
+**Playbook connection:** [Pattern 12 (Self-Refine)](AI_AGENT_PATTERNS_PLAYBOOK.md) — iterative improvement as an engineering loop; P9 exposes that loop to the user. [Pattern 20 (Tool Suspend/Resume, Human-in-the-Loop)](AI_AGENT_PATTERNS_PLAYBOOK.md) — the mechanism for handing control back to the human mid-flow.
+
+---
+
 ### Anti-Pattern: Agentic Sludge
 
 **What it is:** Traditional dark patterns create friction to prevent user action (making cancellation difficult, hiding unsubscribe links). Agentic sludge is the opposite: it removes friction to a fault, making it too easy for users to accept actions that primarily benefit the business, not the user.
@@ -2064,6 +2173,8 @@ The key insight: **transparency does not prevent sludge through policy — it pr
 | P5. Action Audit & Undo | Post-Action | All levels, critical at L4 | Users cannot verify or reverse agent actions | Reversion Rate <5% | 53, 77 |
 | P6. Escalation Pathway | Post-Action | L3-L4 edge cases | Silent failures, forced low-confidence actions | Escalation Freq 5-15% | 20 |
 | P7. Error Recovery | Post-Action | All levels after errors | Accumulated unaddressed errors destroy trust | Recovery → Trust ↑ | 50, 53 |
+| P8. Progressive Disclosure | In-Action | Any long or layered answer | Walls of text; the answer is buried in detail | Scan-to-Answer time ↓ | 8, 49 |
+| P9. Editable & Forkable Output | Post-Action | Any artifact the user keeps working on | Accept-or-restart; good work discarded to fix the bad | Edit/Fork rate; restart rate ↓ | 12, 20 |
 
 ---
 
