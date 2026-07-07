@@ -72,4 +72,15 @@ export const projectBlueprints = {
       { name: 'Learn from feedback', patterns: [10, 54], why: 'Close the loop — feedback improves ranking and answers.' },
     ],
   },
+  'autonomous-maintenance-loop': {
+    name: 'Autonomous maintenance loop (self-driving codebase upkeep)',
+    phases: [
+      { name: 'Discover & triage', patterns: [73, 77, 53], why: 'Scheduled/background run reads CI failures, issues, and recent commits; hooks trigger the sweep; observability surfaces what needs attention.' },
+      { name: 'Codify intent', patterns: [69, 74], why: 'Hierarchical memory files + skills so the loop retrieves shared conventions instead of re-inventing them — the antidote to comprehension debt.' },
+      { name: 'Isolate & draft', patterns: [67, 43, 63], why: 'One git worktree per actionable item; a sub-agent drafts the fix in isolation; deferred tool loading keeps each worker lean.' },
+      { name: 'Verify independently', patterns: [13, 75, 16, 55], why: 'A SEPARATE reviewer (different agent/model) checks against tests and skills — never let the author grade its own homework. Tool-verified correction + majority voting + LLM-as-judge.' },
+      { name: 'Ship & escalate', patterns: [60, 20, 70], why: 'Connectors (MCP) open PRs and update tickets; unhandled or high-stakes items suspend for human judgment; denial tracking escalates when the loop strays outside demonstrated competence.' },
+      { name: 'Keep the human in the loop', patterns: [50, 71, 64], why: 'Guardrails, cost gating, and layered permissions keep an autonomous loop bounded — you stay the engineer, not just the person who presses go.' },
+    ],
+  },
 }

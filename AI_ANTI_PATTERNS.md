@@ -1,10 +1,11 @@
-# AI Anti-Patterns: 14 Failure Modes in Agent Systems
+# AI Anti-Patterns: 17 Failure Modes in Agent Systems
 
 > Companion to the [AI Agent Patterns Playbook](AI_AGENT_PATTERNS_PLAYBOOK.md) and [AI Design Principles](AI_DESIGN_PRINCIPLES.md).
-> 14 common failure modes that the 78 engineering patterns and 17 design principles are designed to prevent.
+> 17 common failure modes that the 78 engineering patterns and 17 design principles are designed to prevent.
 > Learn what goes wrong so you can recognize it before it ships.
 >
 > **v1.0 — April 2026**: Synthesized from production postmortems, practitioner observations, and the patterns that exist specifically because these failures kept happening.
+> **v1.1**: Added the Autonomy Anti-Patterns (15–17) — the failure modes of loop engineering, where the risk shifts from the system to the human's relationship to it.
 
 ---
 
@@ -29,6 +30,11 @@
 12. [The Runaway Bill](#12-the-runaway-bill)
 13. [Permission Theater](#13-permission-theater)
 14. [Trust Cliff](#14-trust-cliff)
+
+### Autonomy Anti-Patterns
+15. [Grading Its Own Homework](#15-grading-its-own-homework)
+16. [Comprehension Debt](#16-comprehension-debt)
+17. [Cognitive Surrender](#17-cognitive-surrender)
 
 ### Reference
 - [Summary Table: Anti-Patterns to Fixes](#summary-table-anti-patterns--fixes)
@@ -655,6 +661,137 @@ The Trust Cliff also has a temporal dimension. A new user should start with low 
 
 ---
 
+## Autonomy Anti-Patterns
+
+Autonomy anti-patterns are the failure modes of *loop engineering* — the shift from prompting an agent turn-by-turn to designing a system that prompts the agent for you. When an automation discovers work, drafts a fix in an isolated worktree, and opens a pull request while you sleep, the leverage is real. So is a new class of risk: the failures here are not architectural or operational bugs but failures of the human's relationship to the loop. They are quiet, they compound, and the most dangerous one feels like relief.
+
+The through-line: **build the loop like someone who intends to stay the engineer, not just the person who presses go.**
+
+---
+
+### 15. Grading Its Own Homework
+
+**One-liner:** The same agent (or an identical instance with the same context and incentives) both produces the work and judges whether the work is correct, so its blind spots pass verification unchallenged.
+
+**The Trap:**
+
+Splitting the worker from the verifier costs more — two agent runs instead of one, two prompts to maintain, extra latency and tokens. So the loop is built with a single agent that writes the code and then, in the same context, declares the tests sufficient and the change safe. It looks like verification: there is a step labeled "review," the agent produces a confident "LGTM," and the PR opens. But an agent reviewing its own output shares every assumption that produced the output. The premise it never questioned while writing, it will not question while reviewing. The edge case it did not consider, it will not consider now. It rationalizes rather than checks — the failure mode the deck names as models "grading their own homework."
+
+This is distinct from **The Hallucination Factory (#5)**, which is having *no* verification layer at all. Grading Its Own Homework is worse in one respect: the team believes verification exists. There is a green check. The safety net is painted on.
+
+**What It Looks Like:**
+
+- The loop uses one agent for both "implement" and "review" steps, in the same context window
+- The verifier's prompt is a variant of the author's prompt, run by the same model with the same instructions
+- Self-review almost never rejects — approval rates near 100% are read as quality, not as a broken check
+- The verifier confirms tests pass but never asks whether the tests test the right thing
+- A bug ships; in the postmortem the "review" step approved it with a confident rationale
+- Nobody can point to an independent signal — everything green traces back to the same agent
+
+**The Fix:**
+
+- **Pattern 13 (CRITIC / Tool-Verified Self-Correction)** — verification grounded in external tool results (tests, type-checkers, linters, runtime checks), not the model's own say-so
+- **Pattern 75 (Coordinator-Worker Architecture)** — a separate reviewer sub-agent with different instructions, and ideally a different model, from the worker
+- **Pattern 16 (Self-Consistency / Majority Voting)** — independent samples that must agree, so one confident rationalization cannot carry the decision
+- **Pattern 54 (Golden Dataset in CI)** and **Pattern 55 (LLM-as-Judge)** — an out-of-loop evaluation the worker cannot influence
+- **Pattern 41 (Multi-Agent Debate)** — an adversarial reviewer prompted to *refute* the change, defaulting to rejection when uncertain
+
+**Design Principle Connection:**
+
+- **Principle 13: Make Accountability Visible** — a check that traces back to the same agent is not accountability, it is a mirror. Verification must come from a source the worker does not control.
+- **Principle 2: Make Metacognition the Interface** — genuine self-checking requires reasoning about one's own reasoning from the outside; a single pass rarely does this, so structure it as a separate perspective.
+
+**Real-World Signal:**
+
+> Separating the code-writing agent from the verification agent prevents models from grading their own homework, and catches errors the creator would rationalize away.
+>
+> — paraphrasing Addy Osmani, *Loop Engineering* (2026)
+
+---
+
+### 16. Comprehension Debt
+
+**One-liner:** The loop ships faster than any human reads, so the gap between what the codebase *is* and what anyone *understands* widens every cycle — until no one can safely review, debug, or steer the system the loop is building.
+
+**The Trap:**
+
+Comprehension debt is the interest you pay for shipping code you did not read. A well-built loop merges dozens of changes a week. Each one passed its checks; each one looked fine in the PR summary you skimmed. Individually they are unremarkable. Collectively, the system drifts away from anyone's mental model of it. Six weeks in, an incident requires a human to reason about code no human has ever read as a whole — and the loop that wrote it cannot be trusted to explain it, because explaining is the very comprehension that was skipped.
+
+Like technical debt, a little is fine and sometimes correct: not every generated helper deserves a close read. The danger is that comprehension debt is *invisible* and *compounding*. Technical debt shows up in the code; comprehension debt shows up only in a human's head, as a slowly growing "I'm not sure how this works anymore." By the time it is obvious, the cheapest moment to have understood the change — when it was small, isolated, and fresh — is long past.
+
+**What It Looks Like:**
+
+- PRs merge on a green check and a skimmed summary; nobody reads the diff
+- The team's answer to "how does X work?" is increasingly "ask the agent" — and the agent's answer cannot be checked
+- Debugging slows down even as shipping speeds up: the two curves cross
+- No one can confidently predict the blast radius of a change anymore
+- Onboarding a new engineer is impossible because there is no human who holds the system in their head
+- The loop's velocity is celebrated in standup; the growing "I don't fully get our own codebase" is unspoken
+- Reviews degrade into rubber-stamping because reading everything the loop produces is no longer feasible
+
+**The Fix:**
+
+- **Pattern 69 (Hierarchical Memory Files / CLAUDE.md)** — codify conventions and architecture so the loop retrieves shared intent instead of re-inventing it, keeping generated code legible against a known standard
+- **Pattern 53 (Observability Span Hierarchy)** — make what the loop actually did inspectable after the fact, so understanding can be reconstructed
+- **Pattern 74 (Skills System)** — encode "how we do things here" as skills the loop follows, narrowing the space of surprising output
+- **Pattern 8 (Progressive Disclosure)** and **UX Pattern P3 (Explainable Rationale)** — surface the *why* of each change at review time, not just the diff, so a skim conveys real understanding
+- **Process, not just patterns:** cap the loop's merge-without-human-read rate; require a human to read anything touching a load-bearing path; treat "can a human explain this?" as a release gate
+
+**Design Principle Connection:**
+
+- **Principle 1: Preserve Struggle When Delegation Is Effortless** — the understanding you skip is the understanding you lose. When delegation is frictionless, the productive struggle that builds a mental model has to be preserved deliberately, or it evaporates.
+- **Principle 10: Design to Communicate Limitations** — a loop should make the boundary of what has been humanly reviewed *visible*, not blur it. "Merged, unread" is a state the system should be honest about.
+
+**Real-World Signal:**
+
+> As loop velocity rises, the gap widens between what exists and what you understand. Ship faster without reading the output and understanding rots.
+>
+> — paraphrasing Addy Osmani, *Loop Engineering* (2026)
+
+---
+
+### 17. Cognitive Surrender
+
+**One-liner:** The loop is designed to *avoid thinking* rather than to move faster on thinking you still do — the same architecture, pointed at abdication instead of leverage — and it is the most dangerous anti-pattern precisely because it feels like relief.
+
+**The Trap:**
+
+Cognitive Surrender is the endgame that **Comprehension Debt (#16)** trends toward when it is never paid down. The tell is not in the code or the tooling — a surrendered loop and a masterful loop can be byte-for-byte identical. The difference is the intent behind the person pressing go. One engineer builds the loop to handle the mechanical parts of work they understand deeply, freeing attention for the judgment only they can supply. Another builds the identical loop to not have to understand the work at all. The architecture cannot tell them apart. The outcomes could not be more different.
+
+The trap is that the surrendered posture is the *comfortable* one. Deferring to the loop feels efficient, even responsible — "the system handled it." There is no error message for "you have stopped thinking about this." The competence you are no longer exercising atrophies silently, and the first time the loop is wrong in a way that matters, you have neither the context nor the sharpened judgment to catch it. You optimized the loop for your own absence, and then the moment came when only your presence would have helped.
+
+**What It Looks Like:**
+
+- The loop is framed internally as a way to think about the problem *less*, not to think about the hard parts *better*
+- Decisions the loop surfaces are approved by reflex; "do you agree?" has become "yes" by default (the automation-era relative of **Sycophancy Spiral (#9)**, aimed at the human)
+- Skills that were once sharp — reading a tricky diff, smelling a bad plan — have quietly dulled from disuse
+- The team can no longer function if the loop is unavailable; capability has been exported, not extended
+- When the loop errs on something consequential, no human has retained the context to notice in time
+- The goal has silently shifted from "move faster on work we own" to "not have to own the work"
+
+**The Fix:**
+
+There is no pattern that fixes Cognitive Surrender, because the failure is not in the system — it is in the relationship to the system. The fixes are structural guardrails that keep a human in the loop of *judgment*, not just execution:
+
+- **Pattern 20 (Tool Suspend/Resume — Human-in-the-Loop)** — force a human decision point at the moments that actually require judgment, so presence is architectural, not optional
+- **Pattern 70 (Denial Tracking & Permission Escalation)** — escalate to a human when the loop strays outside demonstrated competence, rather than letting it proceed unattended
+- **UX Pattern P1 (Intent Preview)** and **UX Pattern P6 (Escalation Pathway)** — make the human's "should this proceed?" a real, un-skippable step for high-stakes actions
+- **The real fix is a stance:** design the loop to amplify judgment you keep exercising, not to replace it. Reserve human attention for the decisions that matter and *actually spend it there*.
+
+**Design Principle Connection:**
+
+- **Principle 1: Preserve Struggle When Delegation Is Effortless** — the foundational tension of the whole playbook. Effortless delegation is exactly when cognitive offloading tips from useful to harmful. The struggle that must be preserved is the *judgment*, not the keystrokes.
+- **Principle 9: Enhance Human Work Instead of Replacing It** — a loop built to enhance keeps the human sharper; a loop built to replace makes them dispensable, then indispensable-when-it-fails. Design for the former.
+- **Principle 17: Design Exit as a Sacred Right** — the human must always be able to step back into the loop and take over. A system that has made that impossible has already lost.
+
+**Real-World Signal:**
+
+> The comfortable posture is the dangerous one. Two people can build the identical system: one uses it to move faster on work they understand deeply, the other to avoid understanding the work at all.
+>
+> — paraphrasing Addy Osmani, *Loop Engineering* (2026)
+
+---
+
 ## Quick Diagnostic: How Many Apply to Your System?
 
 Score your system honestly. Each "yes" is a signal, not a verdict.
@@ -679,12 +816,19 @@ Score your system honestly. Each "yes" is a signal, not a verdict.
 - [ ] Your permission system has not been audited for enforcement (not just UI)
 - [ ] Your agent has exactly two modes: fully autonomous or fully manual
 
+**Autonomy (loop engineering):**
+- [ ] The same agent both produces work and approves it, with no independent verification signal
+- [ ] Changes merge on a green check and a skimmed summary — nobody reads the full diff
+- [ ] Debugging is getting slower even as shipping gets faster
+- [ ] No single human could explain your system end-to-end anymore, or function if the loop went away
+- [ ] You built the loop to think about the work *less*, not to think about the hard parts *better*
+
 **Scoring:**
 
 - **0-2:** You are ahead of most teams. Focus on the specific anti-patterns you identified.
-- **3-5:** Typical for a team six months into production. Prioritize the operational anti-patterns — they compound fastest.
-- **6-9:** Significant risk. Start with Pattern 53 (Observability) and Pattern 71 (Cost Gating) — they give you the visibility to fix everything else.
-- **10-14:** Stop building features. The system needs structural remediation before new capabilities will be reliable.
+- **3-6:** Typical for a team six months into production. Prioritize the operational and autonomy anti-patterns — they compound fastest.
+- **7-11:** Significant risk. Start with Pattern 53 (Observability) and Pattern 71 (Cost Gating) — they give you the visibility to fix everything else.
+- **12-19:** Stop building features. The system needs structural remediation before new capabilities will be reliable — and if the autonomy boxes are checked, remediation starts with the human, not the code.
 
 Note: scoring 0 likely means you have not looked closely enough. Every production agent system has at least one of these issues. The question is whether you have detected it yet.
 
@@ -708,6 +852,9 @@ Note: scoring 0 likely means you have not looked closely enough. Every productio
 | 12 | **The Runaway Bill** | Operational | P46 (Model Routing), P47 (Semantic Caching), P68 (Reactive Compaction), P71 (Cost Gating), P78 (Tool Result Budget) | 14, 15 |
 | 13 | **Permission Theater** | Operational | P62 (Hooks), P64 (Permissions), P70 (Denial Tracking), P77 (Hook System) | 11, 16, 17 |
 | 14 | **Trust Cliff** | Operational | P64 (Permissions), P70 (Denial Tracking), UX-P1 (Intent Preview), UX-P2 (Autonomy Dial) | 11, 12, 15 |
+| 15 | **Grading Its Own Homework** | Autonomy | P13 (CRITIC), P16 (Self-Consistency), P41 (Debate), P75 (Coordinator-Worker), P54 (Golden Dataset), P55 (LLM-as-Judge) | 2, 13 |
+| 16 | **Comprehension Debt** | Autonomy | P69 (Hierarchical Memory), P74 (Skills System), P53 (Observability), P8 (Progressive Disclosure), UX-P3 (Explainable Rationale) | 1, 10 |
+| 17 | **Cognitive Surrender** | Autonomy | P20 (Suspend/Resume), P70 (Denial Tracking), UX-P1 (Intent Preview), UX-P6 (Escalation Pathway) | 1, 9, 17 |
 
 ---
 
@@ -720,6 +867,8 @@ Anti-patterns rarely occur in isolation. They reinforce each other:
 - **The Trust Cliff** leads to either **Automation Surprise** (too much autonomy) or abandonment (too little)
 - **The Blank Prompt Trap** leads to **Sycophancy Spiral** (users who do not know what to ask get agreement instead of guidance)
 - **Permission Theater** enables **Agentic Sludge** (if permissions are not enforced, business-aligned defaults go unchecked)
+- **Grading Its Own Homework** feeds **Comprehension Debt** (unchecked output merges faster than anyone reads) which decays into **Cognitive Surrender** (once no one understands the system, deferring to it stops feeling like a choice) — the autonomy anti-patterns are a progression, not three separate bugs
+- **Cognitive Surrender** amplifies every other anti-pattern: a human who has stopped thinking about the system will not catch the God Agent forming, the Runaway Bill climbing, or the Hallucination Factory shipping
 
 When diagnosing your system, look for clusters. A single anti-pattern is a fix. A cluster is a refactoring.
 
@@ -727,20 +876,19 @@ When diagnosing your system, look for clusters. A single anti-pattern is a fix. 
 
 ## Pattern Coverage Analysis
 
-The 14 anti-patterns reference **35 distinct playbook patterns** (out of 78) and **all 17 design principles**. This is not coincidental — the patterns were designed to address these failure modes.
+The 17 anti-patterns reference **39 distinct playbook patterns** (out of 78) and **all 17 design principles**. This is not coincidental — the patterns were designed to address these failure modes.
 
 **Most-referenced playbook patterns:**
 - Pattern 53 (Observability Span Hierarchy) — referenced by 4 anti-patterns
-- Pattern 50 (Guardrail-as-Processor) — referenced by 3 anti-patterns
-- Pattern 64 (Multi-Layer Permission Architecture) — referenced by 4 anti-patterns
 - Pattern 70 (Denial Tracking & Permission Escalation) — referenced by 4 anti-patterns
-- Pattern 71 (Runtime Cost Gating) — referenced by 2 anti-patterns
+- Pattern 13 (CRITIC / Tool-Verified Self-Correction) — referenced by 3 anti-patterns
+- Pattern 64 (Multi-Layer Permission Architecture) — referenced by 3 anti-patterns
+- Patterns 8, 54, 55 — each referenced by 3 anti-patterns
 
 **Most-referenced design principles:**
-- Principle 15 (Establish Guardrails) — referenced by 6 anti-patterns
-- Principle 10 (Communicate Limitations) — referenced by 4 anti-patterns
-- Principle 11 (Consent as Continuous) — referenced by 3 anti-patterns
-- Principle 12 (Negotiate Agency) — referenced by 3 anti-patterns
+- Principle 15 (Establish Guardrails) — referenced by 5 anti-patterns
+- Principle 10 (Communicate Limitations) — referenced by 5 anti-patterns
+- Principle 1 (Preserve Struggle) — referenced by 4 anti-patterns — the autonomy anti-patterns all trace back to it
 - Principle 13 (Make Accountability Visible) — referenced by 4 anti-patterns
 
 The clustering is informative. Observability, permissions, and guardrails are the most cross-cutting concerns. If your system lacks these three capabilities, it is vulnerable to the majority of anti-patterns in this document.
@@ -781,6 +929,7 @@ This document synthesizes failure modes observed across production AI agent syst
 | Josh Clark & Veronika Kindred | Big Medium | Sentient design, radically adaptive interfaces |
 | Geoffrey Litt | Ink & Switch | Malleable software, user agency |
 | Ken Liu | — | Technology as externalized thought, societal impact |
+| Addy Osmani | Google | Loop engineering; verification abdication, comprehension debt, cognitive surrender |
 
 ---
 

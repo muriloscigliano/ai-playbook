@@ -63,7 +63,7 @@ Then add to Claude Code (`~/.claude/settings.json`):
 | [`AI_FIRST_BUILD_GUIDE.md`](AI_FIRST_BUILD_GUIDE.md) | Decision trees + 5-phase build plan | Starting a feature or project |
 | [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md) | Full reference (78 patterns, 4500+ lines) | Deep implementation details |
 | [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 9 UX patterns + governance | Designing interactions, UX reviews, governance |
-| [`AI_ANTI_PATTERNS.md`](AI_ANTI_PATTERNS.md) | 14 anti-patterns with failure case studies and fixes | Avoiding common pitfalls, code reviews, postmortems |
+| [`AI_ANTI_PATTERNS.md`](AI_ANTI_PATTERNS.md) | 17 anti-patterns with failure case studies and fixes | Avoiding common pitfalls, code reviews, postmortems |
 | [`INDUSTRY_GUIDES.md`](INDUSTRY_GUIDES.md) | 6 industry guides with phased pattern selections | Fintech, healthcare, dev tools, support, e-commerce, enterprise |
 | [`FOUNDATIONS.md`](FOUNDATIONS.md) | Builder literacy: tokens, context, embeddings, training, "prediction not understanding" | Getting the mental model before you build |
 | [`GLOSSARY.md`](GLOSSARY.md) | One-line definitions of the core terms | Quick term lookup |
@@ -208,7 +208,7 @@ import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playb
 | `allRelations` | 398 | Typed relations (`requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`, `measured_by`, …) |
 | `autonomyLevels` | 4 | L1-L4 taxonomy definitions |
 | `visibilityLevels` | 4 | V1-V4 visibility axis (orthogonal to autonomy) |
-| `projectBlueprints` | 7 | Phased pattern plans by project type |
+| `projectBlueprints` | 8 | Phased pattern plans by project type |
 | `problemDiagnoses` | 10 | Problem-to-pattern fix mappings (technical) |
 | `uxDiagnoses` | 19 | User-complaint-to-UX-pattern + microcopy mappings (perceptual) |
 | `capabilities` / `capabilitiesByKey` | 10 | AI capabilities — task → primitive, with data needs, failure modes, and mapped patterns/principles/UX |
@@ -237,7 +237,7 @@ data/
 │   ├── touchpoints.js          # 37 touchpoints in 6 categories
 │   └── ai-tasks.js             # 24 AI tasks by autonomy level
 ├── recommendations/
-│   ├── project-blueprints.js   # 7 project types with phased patterns
+│   ├── project-blueprints.js   # 8 project types with phased patterns
 │   ├── problem-diagnoses.js    # 10 technical problem-to-pattern mappings
 │   ├── ux-diagnoses.js         # 19 UX complaint-to-pattern + microcopy mappings
 │   └── capability-keywords.js  # task phrase → capability routing

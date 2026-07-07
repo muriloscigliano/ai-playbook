@@ -289,7 +289,7 @@ function getBuildGuideSection(section) {
 
 const server = new McpServer({
   name: 'ai-playbook',
-  version: '2.1.0',
+  version: '2.2.0',
 })
 
 // Tool 1: Recommend patterns for a project (beginner-friendly)

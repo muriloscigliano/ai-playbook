@@ -1,6 +1,6 @@
 {
   "name": "@muriloscigliano/ai-playbook",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Structured data for the AI Agent Patterns Playbook — 78 engineering patterns, 17 design principles, 7 UX patterns, interaction vocabularies, and typed relations",
   "type": "module",
   "main": "index.js",

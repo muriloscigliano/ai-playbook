@@ -6,6 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the data package (`@muriloscigliano/ai-playbook`) adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] — 2026-07-08
+
+**Loop engineering.** Encodes the autonomous-loop layer — the shift from prompting
+an agent to designing the system that prompts it — as queryable playbook entities.
+Distilled from Addy Osmani's *Loop Engineering* (2026); the article's loop
+primitives already mapped onto existing production patterns (67, 69, 74, 75, 77,
+13), so this adds the composition and the failure modes, not new primitives.
+
+### Added
+
+- **`autonomous-maintenance-loop` project blueprint** (`data/recommendations/`)
+  — the discover→codify→isolate→verify→ship→escalate pipeline for a self-driving
+  codebase-upkeep agent, wired to real patterns, with trigger keywords. Surfaces in
+  `recommend` / `recommend_patterns`.
+- **Three Autonomy Anti-Patterns** in `AI_ANTI_PATTERNS.md` (now 17 total):
+  #15 **Grading Its Own Homework** (author verifies its own work), #16
+  **Comprehension Debt** (ships faster than anyone reads), #17 **Cognitive
+  Surrender** (a loop built to avoid thinking rather than to think better). Fully
+  threaded through the ToC, summary table, interaction map, coverage analysis, and
+  quick-diagnostic. Each cross-links real patterns/principles; all three trace back
+  to Principle 1 (Preserve Struggle).
+- **"Loop Engineering" section** in `AI_FIRST_BUILD_GUIDE.md` — a primitive→pattern
+  mapping table and the human-in-the-loop guardrails, placed after Phase 5
+  (Autonomous) in the launch sequence.
+
+### Changed
+
+- `data` package `2.1.0` → `2.2.0` (minor — additive blueprint).
+- README/CLAUDE.md counts refreshed (17 anti-patterns, 8 project blueprints).
+
 ## [2.1.0] — 2026-07-03
 
 **Capability layer.** Adds the capability→use-case bridge between *how to build*
