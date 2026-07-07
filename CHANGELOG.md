@@ -10,9 +10,9 @@ and the data package (`@muriloscigliano/ai-playbook`) adheres to
 
 **Loop engineering.** Encodes the autonomous-loop layer — the shift from prompting
 an agent to designing the system that prompts it — as queryable playbook entities.
-Distilled from Addy Osmani's *Loop Engineering* (2026); the six loop primitives
-already mapped onto existing production patterns (67, 69, 74, 75, 77, 13), so this
-adds the composition and the failure modes, not new primitives.
+Distilled from Addy Osmani's *Loop Engineering* (2026); the article's loop
+primitives already mapped onto existing production patterns (67, 69, 74, 75, 77,
+13), so this adds the composition and the failure modes, not new primitives.
 
 ### Added
 

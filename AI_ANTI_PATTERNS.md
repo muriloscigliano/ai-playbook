@@ -876,20 +876,19 @@ When diagnosing your system, look for clusters. A single anti-pattern is a fix. 
 
 ## Pattern Coverage Analysis
 
-The 17 anti-patterns reference **44 distinct playbook patterns** (out of 78) and **all 17 design principles**. This is not coincidental — the patterns were designed to address these failure modes.
+The 17 anti-patterns reference **39 distinct playbook patterns** (out of 78) and **all 17 design principles**. This is not coincidental — the patterns were designed to address these failure modes.
 
 **Most-referenced playbook patterns:**
 - Pattern 53 (Observability Span Hierarchy) — referenced by 4 anti-patterns
 - Pattern 70 (Denial Tracking & Permission Escalation) — referenced by 4 anti-patterns
-- Pattern 64 (Multi-Layer Permission Architecture) — referenced by 3 anti-patterns
 - Pattern 13 (CRITIC / Tool-Verified Self-Correction) — referenced by 3 anti-patterns
-- Pattern 1 (Intent Preview via UX-P1) — referenced by 3 anti-patterns
+- Pattern 64 (Multi-Layer Permission Architecture) — referenced by 3 anti-patterns
+- Patterns 8, 54, 55 — each referenced by 3 anti-patterns
 
 **Most-referenced design principles:**
 - Principle 15 (Establish Guardrails) — referenced by 5 anti-patterns
 - Principle 10 (Communicate Limitations) — referenced by 5 anti-patterns
 - Principle 1 (Preserve Struggle) — referenced by 4 anti-patterns — the autonomy anti-patterns all trace back to it
-- Principle 13 (Make Accountability Visible) — referenced by 4 anti-patterns
 - Principle 13 (Make Accountability Visible) — referenced by 4 anti-patterns
 
 The clustering is informative. Observability, permissions, and guardrails are the most cross-cutting concerns. If your system lacks these three capabilities, it is vulnerable to the majority of anti-patterns in this document.
