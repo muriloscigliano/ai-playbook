@@ -348,6 +348,35 @@ AI acts independently for proven task types only. L4.
 
 ---
 
+## Loop Engineering: From Prompting to Designing the Loop
+
+Once a task type reaches Phase 5, the work changes shape. You stop prompting the agent turn-by-turn and start **designing the system that prompts it for you** — an automation that discovers work, drafts a change in isolation, verifies it, ships it, and asks for you only when it should. The unit of engineering shifts from the prompt to the loop.
+
+This is not a new pattern. It is a **composition** of patterns you already have — and the playbook's [`autonomous-maintenance-loop`](data/recommendations/project-blueprints.js) blueprint wires them together:
+
+| Loop primitive | What it does | Playbook pattern |
+|----------------|--------------|------------------|
+| **Automations** | Run on a schedule; discover work and triage it | [73 Session Backgrounding](AI_AGENT_PATTERNS_PLAYBOOK.md), [77 Hook System](AI_AGENT_PATTERNS_PLAYBOOK.md) |
+| **Codified intent** | Retrieve shared conventions instead of re-explaining | [69 Hierarchical Memory Files](AI_AGENT_PATTERNS_PLAYBOOK.md), [74 Skills System](AI_AGENT_PATTERNS_PLAYBOOK.md) |
+| **Worktrees** | Isolate parallel work so agents don't collide | [67 Fork-Based Isolation](AI_AGENT_PATTERNS_PLAYBOOK.md) |
+| **Sub-agents** | Draft and — separately — review | [43 Sub-Agent Architecture](AI_AGENT_PATTERNS_PLAYBOOK.md), [75 Coordinator-Worker](AI_AGENT_PATTERNS_PLAYBOOK.md) |
+| **Independent verification** | Check work the author can't rationalize away | [13 CRITIC](AI_AGENT_PATTERNS_PLAYBOOK.md), [16 Self-Consistency](AI_AGENT_PATTERNS_PLAYBOOK.md), [55 LLM-as-Judge](AI_AGENT_PATTERNS_PLAYBOOK.md) |
+| **Connectors** | Open PRs, update tickets, notify | [60 MCP](AI_AGENT_PATTERNS_PLAYBOOK.md) |
+| **State on disk** | The loop forgets between runs; memory must persist | [69 Hierarchical Memory Files](AI_AGENT_PATTERNS_PLAYBOOK.md), a markdown/issue board |
+| **Human escalation** | Surface judgment calls, don't auto-decide them | [20 Suspend/Resume](AI_AGENT_PATTERNS_PLAYBOOK.md), [70 Denial Tracking](AI_AGENT_PATTERNS_PLAYBOOK.md) |
+
+**The one rule that makes or breaks a loop:** separate the agent that does the work from the agent that verifies it. An agent reviewing its own output shares every blind spot that produced it — see anti-pattern [#15 Grading Its Own Homework](AI_ANTI_PATTERNS.md).
+
+**The three ways a loop goes wrong are about the human, not the system:**
+
+- **[Comprehension Debt (#16)](AI_ANTI_PATTERNS.md)** — the loop ships faster than anyone reads, so understanding rots. Pay it down: cap merge-without-read on load-bearing paths.
+- **[Cognitive Surrender (#17)](AI_ANTI_PATTERNS.md)** — building the loop to avoid thinking rather than to think better about the hard parts. A surrendered loop and a masterful loop can be byte-for-byte identical; the difference is the intent behind pressing go.
+- Both trace back to **[Principle 1: Preserve Struggle When Delegation Is Effortless](AI_DESIGN_PRINCIPLES.md)** — the judgment you stop exercising is the judgment you lose.
+
+> Build the loop. But build it like someone who intends to stay the engineer, not just the person who presses go.
+
+---
+
 ## Templates
 
 Practical, fill-in-the-blank artifacts for product teams:
