@@ -108,6 +108,8 @@ ground in real data, and keep a human in the loop where the stakes justify it.
 
 ## Where to go next
 
+- **[HARNESS.md](HARNESS.md)** — the engineering that wraps the model: its
+  three layers, and how the 78 patterns map onto them.
 - **[data/capabilities/](data/capabilities/)** — what AI is actually good at,
   and which primitive to reach for.
 - **[GLOSSARY.md](GLOSSARY.md)** — one-line definitions of the core terms.
