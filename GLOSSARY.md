@@ -32,5 +32,8 @@ behind these, see [FOUNDATIONS.md](FOUNDATIONS.md).
 | **Semantic search** | Retrieving content by meaning via embedding similarity, rather than exact keyword match. |
 | **Agentic system** | Software where a model plans and takes multi-step actions toward a goal, often using tools, rather than answering a single prompt. |
 | **Guardrails** | Checks that filter or constrain model inputs and outputs to keep behaviour safe and on-policy. |
+| **Harness** | The engineering that wraps a model to turn raw intelligence into reliable, useful work — its three layers being the model, the data/API integrations, and the verification that stops bad output from cascading. The model is the unit of compute; the harness is what you own around it. See [HARNESS.md](HARNESS.md). |
+| **Hard-verifiable task** | A task with a cheap, objective correctness check built in (code that must compile and pass tests, a query that runs) — so the harness can verify its own output and iterate. |
+| **Soft-verifiable task** | A task with no objective correctness check (a strategy memo, a support reply, a tax filing) — "correct" is a judgment call, so the harness needs heavier verification and, for stakes, a human in the loop. |
 
-See also: [FOUNDATIONS.md](FOUNDATIONS.md) · [data/capabilities/](data/capabilities/) · [AI_AGENT_PATTERNS_PLAYBOOK.md](AI_AGENT_PATTERNS_PLAYBOOK.md)
+See also: [FOUNDATIONS.md](FOUNDATIONS.md) · [HARNESS.md](HARNESS.md) · [data/capabilities/](data/capabilities/) · [AI_AGENT_PATTERNS_PLAYBOOK.md](AI_AGENT_PATTERNS_PLAYBOOK.md)

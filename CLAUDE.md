@@ -10,6 +10,9 @@ AI_DESIGN_PRINCIPLES.md         17 design principles + 9 UX patterns + governanc
 AI_ANTI_PATTERNS.md             17 anti-patterns with failure case studies and fixes
 INDUSTRY_GUIDES.md              6 industry guides with phased pattern selections
 AI_FIRST_BUILD_GUIDE.md         Decision trees + 5-phase implementation roadmap
+HARNESS.md                      The harness concept: 3-layer anatomy + all 78 patterns mapped onto it
+FOUNDATIONS.md                  Builder literacy (tokens, context, embeddings, training)
+GLOSSARY.md                     One-line definitions of core terms
 PATTERN_INDEX.md                One-line pattern summaries for quick lookup
 
 templates/                      Fill-in-the-blank artifacts for product teams

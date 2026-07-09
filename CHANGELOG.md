@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the data package (`@muriloscigliano/ai-playbook`) adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] — docs
+
+**The Harness.** Adds `HARNESS.md` — the organizing concept the playbook had been
+building toward without naming. Docs-only; no change to the `@muriloscigliano/ai-playbook`
+package (no version bump). Distilled from *"What Is an AI Harness?"* (The Nuanced
+Perspective, 2026); as with loop engineering, the article's mechanisms were already
+patterns, so this adds the *lens*, not new entities.
+
+### Added
+
+- **`HARNESS.md`** — defines the harness (the engineering that wraps a model) and
+  its **three-layer anatomy**: Model layer (how intelligence is consumed), Data &
+  API layer (what it consumes — deterministic, test it hard), and Verification
+  layer (what stops bad output from cascading). Maps all 78 patterns onto the
+  three layers, turning the playbook into one system rather than a list. Introduces
+  the **hard- vs soft-verifiable task** decision (how much verification you build
+  is set by the task) and the **build-vs-compose** / **stable-vs-nuanced** strategic
+  framings. Model-agnostic — no version numbers or benchmarks. Every pattern,
+  principle, and UX citation verified to resolve.
+- **`GLOSSARY.md`** — new terms: *harness*, *hard-verifiable task*,
+  *soft-verifiable task*.
+- README gains a "The Harness: how it all fits together" section; `FOUNDATIONS.md`
+  links to it.
+
 ## [2.2.0] — 2026-07-08
 
 **Loop engineering.** Encodes the autonomous-loop layer — the shift from prompting
