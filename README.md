@@ -12,7 +12,7 @@
 npm install @muriloscigliano/ai-playbook   # the structured data layer (patterns, uxDiagnoses, relations…)
 ```
 
-> **New in 2.1** — a **capability layer** (task → the right AI primitive, with data needs, failure modes, and mapped patterns/principles/UX) plus `FOUNDATIONS.md` and `GLOSSARY.md`. **2.0** added a `diagnose_ux` reverse lookup, response-shaping UX patterns (P8/P9), a Quiet-vs-Visible AI axis (V1–V4), and a provably-consistent data layer. See the [CHANGELOG](CHANGELOG.md).
+> **Recently added** — [`HARNESS.md`](HARNESS.md) (the harness concept + 3-layer anatomy that ties the whole playbook together), **loop engineering** (autonomous-loop blueprint + 3 autonomy anti-patterns), a **capability layer** (task → the right AI primitive), `FOUNDATIONS.md`/`GLOSSARY.md`, a `diagnose_ux` reverse lookup, response-shaping UX patterns (P8/P9), and a Quiet-vs-Visible AI axis (V1–V4). See the [CHANGELOG](CHANGELOG.md).
 
 ---
 
@@ -105,8 +105,8 @@ New to the vocabulary? [`FOUNDATIONS.md`](FOUNDATIONS.md) covers tokens, context
 
 Everything below builds one thing — a **harness**: the engineering that wraps a model and turns raw intelligence into reliable work. The model is the unit of compute you can swap; the harness is the product you own. [`HARNESS.md`](HARNESS.md) defines its three layers and maps all 78 patterns onto them:
 
-- **Model layer** — how intelligence is consumed: the loop, context, prompting, inference. (Patterns 4–16, 22, 44–49)
-- **Data & API layer** — what it consumes to do useful work: tools, retrieval, MCP, services. Deterministic — test it hard. (Patterns 17–21, 30–35, 56–63)
+- **Model layer** — how intelligence is consumed: the loop, context, prompting, inference. (Patterns 4–12, 14, 22, 44–49)
+- **Data & API layer** — what it consumes to do useful work: tools, retrieval, MCP, services. Deterministic — test it hard. (Patterns 17–19, 21, 30–35, 56–63)
 - **Verification layer** — what stops bad output from cascading: evals, handoff checks, guardrails, human gates. (Patterns 13, 16, 41, 50–55, 20, 64)
 
 The sharpest design question it answers: **is your task [hard- or soft-verifiable](HARNESS.md)?** Code has a pass/fail loop and can run more autonomously; a strategy memo has none and needs heavier verification and a human on the path. How much verification you build is set by the task, not by taste.
