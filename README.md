@@ -66,6 +66,7 @@ Then add to Claude Code (`~/.claude/settings.json`):
 | [`AI_ANTI_PATTERNS.md`](AI_ANTI_PATTERNS.md) | 18 anti-patterns with failure case studies and fixes | Avoiding common pitfalls, code reviews, postmortems |
 | [`INDUSTRY_GUIDES.md`](INDUSTRY_GUIDES.md) | 6 industry guides with phased pattern selections | Fintech, healthcare, dev tools, support, e-commerce, enterprise |
 | [`HARNESS.md`](HARNESS.md) | The harness concept + 3-layer anatomy (model / data-API / verification), with all 78 patterns mapped onto it, and the hard- vs soft-verifiable decision | Understanding how the whole playbook fits together |
+| [`AGENT_EXPERIENCE.md`](AGENT_EXPERIENCE.md) | Agent Experience (AX) — the third design lens: making *your* product legible to the agents that consume it (Access · Context · Tools · Orchestration) | Designing a product/site/API that agents act on well |
 | [`FOUNDATIONS.md`](FOUNDATIONS.md) | Builder literacy: tokens, context, embeddings, training, "prediction not understanding" | Getting the mental model before you build |
 | [`GLOSSARY.md`](GLOSSARY.md) | One-line definitions of the core terms | Quick term lookup |
 | [`data/`](data/) | Structured data layer (140+ files, npm package) | Programmatic access, building tools, web UIs |
@@ -110,6 +111,14 @@ Everything below builds one thing — a **harness**: the engineering that wraps 
 - **Verification layer** — what stops bad output from cascading: evals, handoff checks, guardrails, human gates. (Patterns 13, 16, 41, 50–55, 20, 64)
 
 The sharpest design question it answers: **is your task [hard- or soft-verifiable](HARNESS.md)?** Code has a pass/fail loop and can run more autonomously; a strategy memo has none and needs heavier verification and a human on the path. How much verification you build is set by the task, not by taste.
+
+---
+
+## Agent Experience (AX): the outward lens
+
+The harness is the *inward* view — the agent you build. **[`AGENT_EXPERIENCE.md`](AGENT_EXPERIENCE.md)** is the *outward* one: your product, site, or API is a thing **other people's agents consume** on a user's behalf. That's a third design lens alongside UX (designing for the user) and DX (for the developer) — and as more traffic is agent-dispatched, poor AX makes you invisible to the delegates deciding for your users.
+
+Four surfaces to design: **Access** (API parity, no needless human-only gates) · **Context** (`AGENTS.md`, `llms.txt`, docs that match reality) · **Tools** (expose capability as callable, structured, error-legible tools) · **Orchestration** (standardized trust-critical flows, agent-distinct logging). Put it to work with the **[AX Review Checklist](templates/AX_REVIEW_CHECKLIST.md)**.
 
 ---
 
@@ -171,6 +180,7 @@ The **build guide** — how to combine patterns into a product:
 | [`AI_FEATURE_PRD.md`](templates/AI_FEATURE_PRD.md) | Product requirements template for any AI feature |
 | [`DESIGN_REVIEW_CHECKLIST.md`](templates/DESIGN_REVIEW_CHECKLIST.md) | 40+ item design review checklist |
 | [`ENGINEERING_READINESS_CHECKLIST.md`](templates/ENGINEERING_READINESS_CHECKLIST.md) | Pre-launch engineering readiness checklist |
+| [`AX_REVIEW_CHECKLIST.md`](templates/AX_REVIEW_CHECKLIST.md) | Agent Experience review — is your product usable by agents? |
 | [`MICROCOPY_SNIPPETS.md`](templates/MICROCOPY_SNIPPETS.md) | Copy-paste UI text for AI interactions |
 
 ---
