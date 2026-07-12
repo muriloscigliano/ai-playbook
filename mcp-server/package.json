@@ -1,6 +1,6 @@
 {
   "name": "ai-playbook-mcp",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "MCP server for AI Agent Patterns Playbook — search patterns, design principles, and Atlas interaction vocabularies without blowing out context",
   "type": "module",
   "main": "server.js",
