@@ -29,8 +29,14 @@ patterns, so this adds the *lens*, not new entities.
   *soft-verifiable task*.
 - README gains a "The Harness: how it all fits together" section; `FOUNDATIONS.md`
   links to it.
-
-## [2.2.0] — 2026-07-08
+- **Anti-pattern #18 — The Over-Engineering Agent** (new Code-Generation category
+  in `AI_ANTI_PATTERNS.md`, now 18): the coding agent that reaches for the most
+  elaborate solution that works — needless dependencies, wrappers, speculative
+  abstractions — instead of the simplest. Fix is a minimalism decision-ladder
+  applied *before* generation (as a Skill / memory file), never at the cost of
+  validation, security, or accessibility. Threaded through ToC, summary table,
+  interaction map, coverage analysis, and quick diagnostic. Credits the *Ponytail*
+  minimalism skill as a real-world signal for the technique (no vendor benchmarks).
 
 **Loop engineering.** Encodes the autonomous-loop layer — the shift from prompting
 an agent to designing the system that prompts it — as queryable playbook entities.

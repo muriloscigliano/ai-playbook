@@ -1,11 +1,12 @@
-# AI Anti-Patterns: 17 Failure Modes in Agent Systems
+# AI Anti-Patterns: 18 Failure Modes in Agent Systems
 
 > Companion to the [AI Agent Patterns Playbook](AI_AGENT_PATTERNS_PLAYBOOK.md) and [AI Design Principles](AI_DESIGN_PRINCIPLES.md).
-> 17 common failure modes that the 78 engineering patterns and 17 design principles are designed to prevent.
+> 18 common failure modes that the 78 engineering patterns and 17 design principles are designed to prevent.
 > Learn what goes wrong so you can recognize it before it ships.
 >
 > **v1.0 — April 2026**: Synthesized from production postmortems, practitioner observations, and the patterns that exist specifically because these failures kept happening.
 > **v1.1**: Added the Autonomy Anti-Patterns (15–17) — the failure modes of loop engineering, where the risk shifts from the system to the human's relationship to it.
+> **v1.2**: Added the Code-Generation Anti-Patterns (18) — the failure mode in what a coding agent *produces*, not how it is built.
 
 ---
 
@@ -35,6 +36,9 @@
 15. [Grading Its Own Homework](#15-grading-its-own-homework)
 16. [Comprehension Debt](#16-comprehension-debt)
 17. [Cognitive Surrender](#17-cognitive-surrender)
+
+### Code-Generation Anti-Patterns
+18. [The Over-Engineering Agent](#18-the-over-engineering-agent)
 
 ### Reference
 - [Summary Table: Anti-Patterns to Fixes](#summary-table-anti-patterns--fixes)
@@ -792,6 +796,55 @@ There is no pattern that fixes Cognitive Surrender, because the failure is not i
 
 ---
 
+## Code-Generation Anti-Patterns
+
+The other anti-patterns concern how the agent is *built* and *run*. This one concerns what it *produces*. When an agent writes code, its default is not the simplest thing that works — it is the most *complete-looking* thing, because elaboration reads as competence in training data. Left unchecked, a coding agent quietly inflates every task: a dependency where a built-in would do, a wrapper where a one-liner would do, an abstraction for a case that will never come. The output passes review, runs fine, and costs you for the life of the codebase.
+
+---
+
+### 18. The Over-Engineering Agent
+
+**One-liner:** The coding agent reaches for the most elaborate solution that works instead of the simplest — new dependencies, wrapper layers, and speculative abstractions the task never asked for — inflating the codebase with plausible-looking code that someone now has to own forever.
+
+**The Trap:**
+
+Ask a coding agent for a date picker and it installs a library and builds a wrapper component. Ask for a config toggle and it introduces a settings framework. The elaborate answer is not a bug — it is the *default*, because verbose, structured, dependency-rich code is what "good engineering" looks like in the corpus the model learned from. Simplicity is the harder, rarer signal; elaboration is the easy one.
+
+This is the code-generation cousin of **The God Agent (#1)**: the God Agent over-builds the *agent*, the Over-Engineering Agent over-builds the *output*. And it is insidious for the same reason as **Comprehension Debt (#16)** — every over-built change passes review (it works, the tests are green) and merges. The cost is not a failure; it is *carry*. Every needless dependency is a future upgrade, a supply-chain surface, and a paragraph of docs. Every needless abstraction is indirection the next reader must hold in their head. The bill arrives slowly, as a codebase that is twice the size it needs to be and nobody can say which half is load-bearing.
+
+The fix is not "tell the agent to write less" — terseness that drops validation, error handling, security, or accessibility is a different failure. The fix is a *decision discipline* applied before generation: does this need to exist at all; is it already in the codebase; does the standard library or platform already do it; only then, the minimum that works.
+
+**What It Looks Like:**
+
+- The agent installs a dependency for something a built-in or a few lines would handle (`<input type="date">` becomes a date-picker library plus a wrapper)
+- New abstractions, config layers, or "for future flexibility" generalizations appear for problems that have exactly one current case
+- The diff for a small feature is large; most of it is scaffolding, not the feature
+- Dependency count creeps up steadily, each addition individually reasonable
+- Code review approves it because it *works* — over-engineering has no failing test
+- Six months on, the codebase is bloated and no one can tell which layers earn their keep (see [Comprehension Debt (#16)](AI_ANTI_PATTERNS.md))
+- Asking the agent to "simplify" produces a rewrite that is *also* over-built, because nothing changed the default
+
+**The Fix:**
+
+- **A minimalism skill / ruleset applied before generation** — encode the decision ladder (need it at all? → already present? → stdlib? → native platform feature? → one-liner? → *then* the minimum that works) as a [Skill (Pattern 74)](AI_AGENT_PATTERNS_PLAYBOOK.md) or a [hierarchical memory file (Pattern 69)](AI_AGENT_PATTERNS_PLAYBOOK.md) the agent retrieves every turn. This is the single highest-leverage fix; it changes the default, not the individual response.
+- **[Pattern 13 (CRITIC / Tool-Verified Self-Correction)](AI_AGENT_PATTERNS_PLAYBOOK.md)** — verify the change against real signals (does it build, do tests pass, did dependency count grow?) so bloat is measurable, not just felt.
+- **[Pattern 75 (Coordinator-Worker)](AI_AGENT_PATTERNS_PLAYBOOK.md)** — a separate reviewer whose job is specifically to challenge complexity the author rationalized (pairs with [#15 Grading Its Own Homework](AI_ANTI_PATTERNS.md)).
+- **[Pattern 21 (Agent-Friendly Tool Design)](AI_AGENT_PATTERNS_PLAYBOOK.md)** — tools that make the simple path the easy path for the agent, so minimalism is the default affordance rather than a constant correction.
+- **Keep the non-negotiables non-negotiable:** the ladder cuts *elaboration*, never validation, error handling, security, or accessibility. Minimal is not the same as unsafe.
+
+**Design Principle Connection:**
+
+- **Principle 1: Preserve Struggle When Delegation Is Effortless** — when generating a hundred lines is as cheap as generating ten, the discipline of asking "does this need to exist?" has to be imposed by the system, because the effortlessness removes the natural pressure toward restraint.
+- **Principle 8: Generate Interfaces for the Moment** — the right amount of code, like the right amount of interface, is set by the actual need, not by what looks thorough. Match the solution to the problem in front of you, not to an imagined future one.
+
+**Real-World Signal:**
+
+> The best code is the code you never wrote. A decision ladder applied before generation — does this need to exist, is it already here, does the platform already do it — can cut generated code substantially while keeping validation, security, and accessibility intact. Tools like the *Ponytail* skill for coding agents encode exactly this discipline as an always-on ruleset.
+>
+> — on minimalism skills for coding agents (2026)
+
+---
+
 ## Quick Diagnostic: How Many Apply to Your System?
 
 Score your system honestly. Each "yes" is a signal, not a verdict.
@@ -823,12 +876,18 @@ Score your system honestly. Each "yes" is a signal, not a verdict.
 - [ ] No single human could explain your system end-to-end anymore, or function if the loop went away
 - [ ] You built the loop to think about the work *less*, not to think about the hard parts *better*
 
+**Code generation:**
+- [ ] Your coding agent adds dependencies for things a built-in or a few lines would handle
+- [ ] Small features produce large diffs — mostly scaffolding, not feature
+- [ ] Dependency count and abstraction layers creep up steadily, each addition individually reasonable
+- [ ] Nobody can say which parts of the codebase are load-bearing and which are speculative
+
 **Scoring:**
 
 - **0-2:** You are ahead of most teams. Focus on the specific anti-patterns you identified.
 - **3-6:** Typical for a team six months into production. Prioritize the operational and autonomy anti-patterns — they compound fastest.
-- **7-11:** Significant risk. Start with Pattern 53 (Observability) and Pattern 71 (Cost Gating) — they give you the visibility to fix everything else.
-- **12-19:** Stop building features. The system needs structural remediation before new capabilities will be reliable — and if the autonomy boxes are checked, remediation starts with the human, not the code.
+- **7-12:** Significant risk. Start with Pattern 53 (Observability) and Pattern 71 (Cost Gating) — they give you the visibility to fix everything else.
+- **13-23:** Stop building features. The system needs structural remediation before new capabilities will be reliable — and if the autonomy boxes are checked, remediation starts with the human, not the code.
 
 Note: scoring 0 likely means you have not looked closely enough. Every production agent system has at least one of these issues. The question is whether you have detected it yet.
 
@@ -855,6 +914,7 @@ Note: scoring 0 likely means you have not looked closely enough. Every productio
 | 15 | **Grading Its Own Homework** | Autonomy | P13 (CRITIC), P16 (Self-Consistency), P41 (Debate), P75 (Coordinator-Worker), P54 (Golden Dataset), P55 (LLM-as-Judge) | 2, 13 |
 | 16 | **Comprehension Debt** | Autonomy | P69 (Hierarchical Memory), P74 (Skills System), P53 (Observability), P8 (Progressive Disclosure), UX-P3 (Explainable Rationale) | 1, 10 |
 | 17 | **Cognitive Surrender** | Autonomy | P20 (Suspend/Resume), P70 (Denial Tracking), UX-P1 (Intent Preview), UX-P6 (Escalation Pathway) | 1, 9, 17 |
+| 18 | **The Over-Engineering Agent** | Code-Generation | P74 (Skills System), P69 (Hierarchical Memory), P13 (CRITIC), P75 (Coordinator-Worker), P21 (Agent-Friendly Tools) | 1, 8 |
 
 ---
 
@@ -869,6 +929,7 @@ Anti-patterns rarely occur in isolation. They reinforce each other:
 - **Permission Theater** enables **Agentic Sludge** (if permissions are not enforced, business-aligned defaults go unchecked)
 - **Grading Its Own Homework** feeds **Comprehension Debt** (unchecked output merges faster than anyone reads) which decays into **Cognitive Surrender** (once no one understands the system, deferring to it stops feeling like a choice) — the autonomy anti-patterns are a progression, not three separate bugs
 - **Cognitive Surrender** amplifies every other anti-pattern: a human who has stopped thinking about the system will not catch the God Agent forming, the Runaway Bill climbing, or the Hallucination Factory shipping
+- **The Over-Engineering Agent** feeds **Comprehension Debt** (more code than needed is more code no one reads) and **The Runaway Bill** (bloated output costs tokens to generate and tokens to carry in future context) — and it is the **God Agent** turned on the codebase instead of the agent
 
 When diagnosing your system, look for clusters. A single anti-pattern is a fix. A cluster is a refactoring.
 
@@ -876,14 +937,13 @@ When diagnosing your system, look for clusters. A single anti-pattern is a fix. 
 
 ## Pattern Coverage Analysis
 
-The 17 anti-patterns reference **39 distinct playbook patterns** (out of 78) and **all 17 design principles**. This is not coincidental — the patterns were designed to address these failure modes.
+The 18 anti-patterns reference **39 distinct playbook patterns** (out of 78) and **all 17 design principles**. This is not coincidental — the patterns were designed to address these failure modes.
 
 **Most-referenced playbook patterns:**
+- Pattern 13 (CRITIC / Tool-Verified Self-Correction) — referenced by 4 anti-patterns
 - Pattern 53 (Observability Span Hierarchy) — referenced by 4 anti-patterns
 - Pattern 70 (Denial Tracking & Permission Escalation) — referenced by 4 anti-patterns
-- Pattern 13 (CRITIC / Tool-Verified Self-Correction) — referenced by 3 anti-patterns
-- Pattern 64 (Multi-Layer Permission Architecture) — referenced by 3 anti-patterns
-- Patterns 8, 54, 55 — each referenced by 3 anti-patterns
+- Patterns 8, 21, 54, 55, 64 — each referenced by 3 anti-patterns
 
 **Most-referenced design principles:**
 - Principle 15 (Establish Guardrails) — referenced by 5 anti-patterns
