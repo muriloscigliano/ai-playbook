@@ -63,7 +63,7 @@ Then add to Claude Code (`~/.claude/settings.json`):
 | [`AI_FIRST_BUILD_GUIDE.md`](AI_FIRST_BUILD_GUIDE.md) | Decision trees + 5-phase build plan | Starting a feature or project |
 | [`AI_AGENT_PATTERNS_PLAYBOOK.md`](AI_AGENT_PATTERNS_PLAYBOOK.md) | Full reference (78 patterns, 4500+ lines) | Deep implementation details |
 | [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) | 17 design principles + 9 UX patterns + governance | Designing interactions, UX reviews, governance |
-| [`AI_ANTI_PATTERNS.md`](AI_ANTI_PATTERNS.md) | 17 anti-patterns with failure case studies and fixes | Avoiding common pitfalls, code reviews, postmortems |
+| [`AI_ANTI_PATTERNS.md`](AI_ANTI_PATTERNS.md) | 18 anti-patterns with failure case studies and fixes | Avoiding common pitfalls, code reviews, postmortems |
 | [`INDUSTRY_GUIDES.md`](INDUSTRY_GUIDES.md) | 6 industry guides with phased pattern selections | Fintech, healthcare, dev tools, support, e-commerce, enterprise |
 | [`HARNESS.md`](HARNESS.md) | The harness concept + 3-layer anatomy (model / data-API / verification), with all 78 patterns mapped onto it, and the hard- vs soft-verifiable decision | Understanding how the whole playbook fits together |
 | [`FOUNDATIONS.md`](FOUNDATIONS.md) | Builder literacy: tokens, context, embeddings, training, "prediction not understanding" | Getting the mental model before you build |

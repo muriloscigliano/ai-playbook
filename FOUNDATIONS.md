@@ -46,6 +46,31 @@ conversation or task outgrows it, something has to give.
   relevant material dilutes attention and raises cost. Retrieval quality beats
   retrieval quantity.
 
+### Having a large window is not the same as using it well
+
+Window sizes keep growing, but capacity and competence are different things. A
+model can *hold* a long document and still fail to *use* it: attention thins out
+across a large window (the "lost in the middle" effect — a fact buried mid-context
+is retrieved less reliably than one at the edges), and finding a fact is not the
+same as reasoning across the whole document.
+
+**Design consequences.**
+- **Test that your harness uses the context it's given, not just that it fits.**
+  A "can it retrieve a buried fact?" check and a "can it reason across the whole
+  document?" check are different evals — pass the first, and you still know
+  nothing about the second. Long-context retrieval deserves its own evals, not
+  just general quality ones. See [Pattern 54 (Golden Dataset Testing)](AI_AGENT_PATTERNS_PLAYBOOK.md)
+  and [Pattern 55 (LLM-as-Judge)](AI_AGENT_PATTERNS_PLAYBOOK.md).
+- **Structure beats dumping.** When a task spans a lot of material, hierarchical
+  retrieval and summarization ([Pattern 30 (RAPTOR)](AI_AGENT_PATTERNS_PLAYBOOK.md),
+  [Pattern 7 (Context Compaction)](AI_AGENT_PATTERNS_PLAYBOOK.md)) usually beat
+  pouring everything into one window and hoping attention holds.
+- **In-context examples cut both ways.** Supplying many examples in the prompt
+  can lift performance on a task — and the same many-example lever can erode
+  safety guardrails as the count climbs. Treat "add more examples" as a capability
+  *and* a safety-surface decision, not a free win. See
+  [Pattern 51 (Prompt Injection Defense)](AI_AGENT_PATTERNS_PLAYBOOK.md).
+
 ## Embeddings & embedding space
 
 An **embedding** turns a piece of content — text, image, audio — into a vector:

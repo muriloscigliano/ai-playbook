@@ -7,7 +7,7 @@ This repository is a comprehensive reference for building production AI agent sy
 ```
 AI_AGENT_PATTERNS_PLAYBOOK.md   78 engineering patterns (foundation → production)
 AI_DESIGN_PRINCIPLES.md         17 design principles + 9 UX patterns + governance
-AI_ANTI_PATTERNS.md             17 anti-patterns with failure case studies and fixes
+AI_ANTI_PATTERNS.md             18 anti-patterns with failure case studies and fixes
 INDUSTRY_GUIDES.md              6 industry guides with phased pattern selections
 AI_FIRST_BUILD_GUIDE.md         Decision trees + 5-phase implementation roadmap
 HARNESS.md                      The harness concept: 3-layer anatomy + all 78 patterns mapped onto it
