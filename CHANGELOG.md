@@ -37,6 +37,14 @@ patterns, so this adds the *lens*, not new entities.
   validation, security, or accessibility. Threaded through ToC, summary table,
   interaction map, coverage analysis, and quick diagnostic. Credits the *Ponytail*
   minimalism skill as a real-world signal for the technique (no vendor benchmarks).
+- **`FOUNDATIONS.md` — "Having a large window is not the same as using it well"**:
+  the long-context distinction between capacity and competence (the "lost in the
+  middle" effect; retrieval ≠ reasoning), guidance to give long-context retrieval
+  its own evals ([54](AI_AGENT_PATTERNS_PLAYBOOK.md), [55](AI_AGENT_PATTERNS_PLAYBOOK.md)),
+  prefer structured retrieval over dumping ([30](AI_AGENT_PATTERNS_PLAYBOOK.md),
+  [7](AI_AGENT_PATTERNS_PLAYBOOK.md)), and the note that many-shot in-context
+  examples raise capability but also widen the safety surface. Model-agnostic — no
+  token counts or model names.
 
 **Loop engineering.** Encodes the autonomous-loop layer — the shift from prompting
 an agent to designing the system that prompts it — as queryable playbook entities.

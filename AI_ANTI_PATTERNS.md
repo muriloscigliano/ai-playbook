@@ -821,14 +821,14 @@ The fix is not "tell the agent to write less" — terseness that drops validatio
 - The diff for a small feature is large; most of it is scaffolding, not the feature
 - Dependency count creeps up steadily, each addition individually reasonable
 - Code review approves it because it *works* — over-engineering has no failing test
-- Six months on, the codebase is bloated and no one can tell which layers earn their keep (see [Comprehension Debt (#16)](AI_ANTI_PATTERNS.md))
+- Six months on, the codebase is bloated and no one can tell which layers earn their keep (see [Comprehension Debt (#16)](#16-comprehension-debt))
 - Asking the agent to "simplify" produces a rewrite that is *also* over-built, because nothing changed the default
 
 **The Fix:**
 
 - **A minimalism skill / ruleset applied before generation** — encode the decision ladder (need it at all? → already present? → stdlib? → native platform feature? → one-liner? → *then* the minimum that works) as a [Skill (Pattern 74)](AI_AGENT_PATTERNS_PLAYBOOK.md) or a [hierarchical memory file (Pattern 69)](AI_AGENT_PATTERNS_PLAYBOOK.md) the agent retrieves every turn. This is the single highest-leverage fix; it changes the default, not the individual response.
 - **[Pattern 13 (CRITIC / Tool-Verified Self-Correction)](AI_AGENT_PATTERNS_PLAYBOOK.md)** — verify the change against real signals (does it build, do tests pass, did dependency count grow?) so bloat is measurable, not just felt.
-- **[Pattern 75 (Coordinator-Worker)](AI_AGENT_PATTERNS_PLAYBOOK.md)** — a separate reviewer whose job is specifically to challenge complexity the author rationalized (pairs with [#15 Grading Its Own Homework](AI_ANTI_PATTERNS.md)).
+- **[Pattern 75 (Coordinator-Worker)](AI_AGENT_PATTERNS_PLAYBOOK.md)** — a separate reviewer whose job is specifically to challenge complexity the author rationalized (pairs with [#15 Grading Its Own Homework](#15-grading-its-own-homework)).
 - **[Pattern 21 (Agent-Friendly Tool Design)](AI_AGENT_PATTERNS_PLAYBOOK.md)** — tools that make the simple path the easy path for the agent, so minimalism is the default affordance rather than a constant correction.
 - **Keep the non-negotiables non-negotiable:** the ladder cuts *elaboration*, never validation, error handling, security, or accessibility. Minimal is not the same as unsafe.
 
@@ -943,7 +943,7 @@ The 18 anti-patterns reference **39 distinct playbook patterns** (out of 78) and
 - Pattern 13 (CRITIC / Tool-Verified Self-Correction) — referenced by 4 anti-patterns
 - Pattern 53 (Observability Span Hierarchy) — referenced by 4 anti-patterns
 - Pattern 70 (Denial Tracking & Permission Escalation) — referenced by 4 anti-patterns
-- Patterns 8, 21, 54, 55, 64 — each referenced by 3 anti-patterns
+- Patterns 8, 21, 54, 55, 64, 69, 74, 75 — each referenced by 3 anti-patterns
 
 **Most-referenced design principles:**
 - Principle 15 (Establish Guardrails) — referenced by 5 anti-patterns
