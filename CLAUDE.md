@@ -11,6 +11,7 @@ AI_ANTI_PATTERNS.md             18 anti-patterns with failure case studies and f
 INDUSTRY_GUIDES.md              6 industry guides with phased pattern selections
 AI_FIRST_BUILD_GUIDE.md         Decision trees + 5-phase implementation roadmap
 HARNESS.md                      The harness concept: 3-layer anatomy + all 78 patterns mapped onto it
+AGENT_EXPERIENCE.md             Agent Experience (AX): the outward lens — making your product legible to agents
 FOUNDATIONS.md                  Builder literacy (tokens, context, embeddings, training)
 GLOSSARY.md                     One-line definitions of core terms
 PATTERN_INDEX.md                One-line pattern summaries for quick lookup
@@ -19,6 +20,7 @@ templates/                      Fill-in-the-blank artifacts for product teams
 ├── AI_FEATURE_PRD.md           Product requirements template for AI features
 ├── DESIGN_REVIEW_CHECKLIST.md  40+ item design review checklist
 ├── ENGINEERING_READINESS_CHECKLIST.md  Pre-launch engineering checklist
+├── AX_REVIEW_CHECKLIST.md      Agent Experience review checklist
 └── MICROCOPY_SNIPPETS.md       Copy-paste UI text for AI interactions
 
 data/                           Structured data layer (npm: @muriloscigliano/ai-playbook)

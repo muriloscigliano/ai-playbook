@@ -37,6 +37,19 @@ patterns, so this adds the *lens*, not new entities.
   validation, security, or accessibility. Threaded through ToC, summary table,
   interaction map, coverage analysis, and quick diagnostic. Credits the *Ponytail*
   minimalism skill as a real-world signal for the technique (no vendor benchmarks).
+- **`AGENT_EXPERIENCE.md` — Agent Experience (AX), the outward design lens.** The
+  playbook's first entry written from the inverse vantage point: *your* product is
+  the thing *other people's* agents consume on a user's behalf. Defines AX as the
+  third lens alongside UX and DX, organized around four surfaces — **Access**
+  (API parity, no needless human-only gates), **Context** (`AGENTS.md`, `llms.txt`,
+  docs that match reality), **Tools** (expose capability as callable, structured,
+  error-legible interfaces), **Orchestration** (standardized trust-critical flows,
+  agent-distinct logging) — plus the reciprocal principles for well-behaved
+  agents. Bridged to real patterns (21, 60, 59, 49, 19, 53, 70, 20, 64) and to the
+  visibility axis. New `templates/AX_REVIEW_CHECKLIST.md` gives it actionable teeth.
+  GLOSSARY adds *Agent Experience (AX)*, *AGENTS.md*, *llms.txt*. Distilled from the
+  open [agentexperience.ax](https://agentexperience.ax) community (with Netlify);
+  model-agnostic — no vendor names, adoption stats, or version numbers.
 - **`FOUNDATIONS.md` — "Having a large window is not the same as using it well"**:
   the long-context distinction between capacity and competence (the "lost in the
   middle" effect; retrieval ≠ reasoning), guidance to give long-context retrieval

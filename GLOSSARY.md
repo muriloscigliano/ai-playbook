@@ -35,5 +35,8 @@ behind these, see [FOUNDATIONS.md](FOUNDATIONS.md).
 | **Harness** | The engineering that wraps a model to turn raw intelligence into reliable, useful work — its three layers being the model, the data/API integrations, and the verification that stops bad output from cascading. The model is the unit of compute; the harness is what you own around it. See [HARNESS.md](HARNESS.md). |
 | **Hard-verifiable task** | A task with a cheap, objective correctness check built in (code that must compile and pass tests, a query that runs) — so the harness can verify its own output and iterate. |
 | **Soft-verifiable task** | A task with no objective correctness check (a strategy memo, a support reply, a tax filing) — "correct" is a judgment call, so the harness needs heavier verification and, for stakes, a human in the loop. |
+| **Agent Experience (AX)** | The experience an AI agent has when it interacts with your product/site/API to accomplish a user's goal — how readily it can access, understand, and operate your system. The third design lens alongside UX (the user's experience) and DX (the developer's). See [AGENT_EXPERIENCE.md](AGENT_EXPERIENCE.md). |
+| **AGENTS.md** | An open, machine-readable file placed in a project to guide AI coding agents — the agent-facing counterpart to a README; the inbound mirror of a hierarchical memory file. |
+| **llms.txt** | A convention for a machine-readable file that points agents at a site's documentation and key resources — good AX onboarding for a visiting agent. |
 
-See also: [FOUNDATIONS.md](FOUNDATIONS.md) · [HARNESS.md](HARNESS.md) · [data/capabilities/](data/capabilities/) · [AI_AGENT_PATTERNS_PLAYBOOK.md](AI_AGENT_PATTERNS_PLAYBOOK.md)
+See also: [FOUNDATIONS.md](FOUNDATIONS.md) · [HARNESS.md](HARNESS.md) · [AGENT_EXPERIENCE.md](AGENT_EXPERIENCE.md) · [data/capabilities/](data/capabilities/) · [AI_AGENT_PATTERNS_PLAYBOOK.md](AI_AGENT_PATTERNS_PLAYBOOK.md)
