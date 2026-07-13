@@ -157,7 +157,7 @@ See [`AI_DESIGN_PRINCIPLES.md`](AI_DESIGN_PRINCIPLES.md) for full content.
 | 16 | Make Power Legible in Infrastructure | Accountability |
 | 17 | Design Exit as Sacred Right | Accountability |
 
-**7 UX Patterns (lifecycle-organized):**
+**9 UX Patterns (lifecycle-organized):**
 
 | # | Pattern | Lifecycle Phase |
 |---|---------|----------------|

@@ -348,7 +348,7 @@ git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
 ### What the installer does
 
-1. Creates `.claude/ai-playbook/` in your project with the 6 reference files
+1. Creates `.claude/ai-playbook/` in your project with the 10 reference docs (patterns, principles, anti-patterns, build guide, industry guides, plus HARNESS, AGENT_EXPERIENCE, FOUNDATIONS, GLOSSARY)
 2. Adds a playbook section to your `CLAUDE.md` (creates one if missing)
 3. Adds `.claude/ai-playbook/` to `.gitignore` (symlink mode only)
 

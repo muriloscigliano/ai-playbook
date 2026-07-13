@@ -21,7 +21,7 @@ export const constraints = {
     categoryLabel: 'Quality & Safety',
     principles: [13],
     patterns: [20],
-    keywords: ['human review', 'manual check', 'approval required', 'hitl'],
+    keywords: ['human review', 'manual check', 'approval required', 'hitl', 'approval', 'approve', 'approves', 'human approval', 'sign-off', 'sign off', 'human in the loop', 'asks before', 'confirm before', 'review before'],
     description: 'Outputs above risk threshold require human review before action.',
   },
   auth_required: {
@@ -120,7 +120,7 @@ export const constraints = {
     categoryLabel: 'Performance & Resource',
     principles: [6],
     patterns: [65],
-    keywords: ['latency', 'speed', 'fast', 'slow', 'real-time', 'responsive'],
+    keywords: ['latency', 'speed', 'fast', 'slow', 'real-time', 'responsive', 'response time', 'under a second', 'seconds', 'low latency', 'quick response'],
     description: 'Response time stays within defined threshold (e.g., <2s for interactive).',
   },
   rate_limit: {
@@ -435,15 +435,20 @@ export const constraintCategories = {
   },
 }
 
-export const constraintKeywords = {
-  privacy_preserving: ['privacy', 'gdpr', 'ccpa', 'personal data', 'pii'],
-  human_verification: ['human review', 'manual check', 'approval required', 'hitl'],
-  content_safety: ['safety', 'harmful', 'toxic', 'offensive', 'moderation'],
-  cost_budget: ['cost', 'budget', 'expensive', 'spending', 'billing'],
-  latency_budget: ['latency', 'speed', 'fast', 'slow', 'real-time', 'responsive'],
-  confidence_threshold: ['confidence', 'threshold', 'certainty', 'accuracy'],
-  audit_logging: ['audit', 'log', 'trace', 'compliance', 'record'],
-  autonomous_execution: ['autonomous', 'automatic', 'unattended', 'self-service'],
-  data_provenance: ['provenance', 'source', 'attribution', 'citation', 'origin'],
-  tone_voice: ['tone', 'voice', 'brand', 'personality', 'style'],
+// Detection keyword map for `detectConstraints`. Derived from every constraint's
+// own `keywords[]` (so all 36 constraints are reachable — not a hand-maintained
+// subset), merged with a few curated extras for natural-brief phrasings.
+const constraintKeywordExtras = {
+  privacy_preserving: ['gdpr', 'ccpa', 'personal data', 'pii'],
+  content_safety: ['harmful', 'toxic', 'offensive', 'moderation'],
+  cost_budget: ['budget', 'expensive', 'spending', 'billing'],
+  audit_logging: ['audit', 'trace', 'compliance', 'comply', 'record'],
+  autonomous_execution: ['autonomous', 'unattended', 'self-service'],
 }
+
+export const constraintKeywords = Object.fromEntries(
+  Object.entries(constraints).map(([key, c]) => [
+    key,
+    [...new Set([...(c.keywords || []), ...(constraintKeywordExtras[key] || [])])],
+  ]),
+)

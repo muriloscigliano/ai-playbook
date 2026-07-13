@@ -937,7 +937,7 @@ When diagnosing your system, look for clusters. A single anti-pattern is a fix. 
 
 ## Pattern Coverage Analysis
 
-The 18 anti-patterns reference **39 distinct playbook patterns** (out of 78) and **all 17 design principles**. This is not coincidental — the patterns were designed to address these failure modes.
+The 18 anti-patterns reference **39 distinct playbook patterns** (out of 78) and **16 of the 17 design principles**. This is not coincidental — the patterns were designed to address these failure modes.
 
 **Most-referenced playbook patterns:**
 - Pattern 13 (CRITIC / Tool-Verified Self-Correction) — referenced by 4 anti-patterns
@@ -970,7 +970,7 @@ If you build nothing else from this document, build these three. They are the fo
 This document synthesizes failure modes observed across production AI agent systems and maps them to the patterns and principles documented in the companion files:
 
 - **AI Agent Architecture Patterns Playbook** (78 patterns) — `AI_AGENT_PATTERNS_PLAYBOOK.md`
-- **AI Design Principles & UX Patterns for Agentic Systems** (17 principles, 7 UX patterns) — `AI_DESIGN_PRINCIPLES.md`
+- **AI Design Principles & UX Patterns for Agentic Systems** (17 principles, 9 UX patterns) — `AI_DESIGN_PRINCIPLES.md`
 - **AI-First Product Build Guide** — `AI_FIRST_BUILD_GUIDE.md`
 
 **Practitioner voices referenced:**

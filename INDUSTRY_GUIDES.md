@@ -1,6 +1,6 @@
 # Industry-Specific Guides for AI Agent Systems
 
-> Which of the 78 engineering patterns, 17 design principles, and 7 UX patterns matter most for **your** industry — with domain-specific context, phased rollout plans, and anti-pattern warnings.
+> Which of the 78 engineering patterns, 17 design principles, and 9 UX patterns matter most for **your** industry — with domain-specific context, phased rollout plans, and anti-pattern warnings.
 >
 > Companion to the [AI Agent Patterns Playbook](AI_AGENT_PATTERNS_PLAYBOOK.md) and [AI Design Principles](AI_DESIGN_PRINCIPLES.md).
 
@@ -31,7 +31,7 @@ This document is not a replacement for the full playbook. It is a **lens** — a
 2. **Regulatory & Trust Requirements** — non-negotiable constraints
 3. **Pattern Selection** — phased table (start here, add next, when mature)
 4. **Design Principles Priority** — which of the 17 matter most and why
-5. **UX Patterns Priority** — which of P1-P7 are critical
+5. **UX Patterns Priority** — which of P1-P9 are critical
 6. **Constraints Checklist** — which constraints from the taxonomy apply
 7. **Example Workflow** — one concrete agent workflow with pattern references
 8. **Anti-Pattern Warnings** — 2-3 industry-specific pitfalls
@@ -49,7 +49,7 @@ Start with the industry closest to yours. If you span two industries (e.g., a he
 
 The 78 patterns in the playbook are industry-agnostic by design. But the *order* in which you implement them, the *constraints* you prioritize, and the *anti-patterns* you watch for are deeply industry-specific. A healthcare agent and an e-commerce agent both need guardrails — but a healthcare agent needs guardrails that scrub PHI and enforce clinical disclaimers, while an e-commerce agent needs guardrails that prevent dark patterns and false urgency. Same pattern, different configuration, different priority.
 
-This guide saves you the work of figuring out that mapping. For each industry, we have already analyzed which of the 78 patterns, 17 principles, 7 UX patterns, and 36 constraints matter most — and in what order to implement them.
+This guide saves you the work of figuring out that mapping. For each industry, we have already analyzed which of the 78 patterns, 17 principles, 9 UX patterns, and 36 constraints matter most — and in what order to implement them.
 
 **How this relates to Project Blueprints:**
 

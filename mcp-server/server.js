@@ -260,7 +260,10 @@ function formatPatternSummary(p) {
 }
 
 function getPatternByNumber(num) {
-  return patterns.find(p => p.pattern === num || p.section === num)
+  // Match on the pattern number only. The `section` field is the markdown
+  // header index (pattern number + 1 for the offset in the source), so matching
+  // on it would return the WRONG (neighbouring) pattern for every lookup.
+  return patterns.find(p => p.pattern === num)
 }
 
 function getBuildGuideSection(section) {
@@ -784,7 +787,7 @@ server.tool(
       for (const key of matchedConstraints) {
         const constraint = constraints[key]
         if (!constraint) continue
-        const pbPatterns = constraint.playbook.length > 0 ? constraint.playbook.map(n => `Pattern ${n}`).join(', ') : '—'
+        const pbPatterns = (constraint.patterns && constraint.patterns.length > 0) ? constraint.patterns.map(n => `Pattern ${n}`).join(', ') : '—'
         lines.push(`| ${constraint.name} | ${constraint.category} | ${pbPatterns} |`)
       }
       lines.push('')

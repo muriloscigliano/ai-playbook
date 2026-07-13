@@ -28,7 +28,7 @@ node build-index.js && node build-design-index.js
 ### Tools
 - **MCP server** — New tools or improved recommendation logic in `mcp-server/server.js`
 - **CLI** — New commands or better output formatting in `cli/index.js`
-- **Web UI** — Improvements to `web/build.js` or `web/public/index.html`
+- **Web UI** — Improvements to the Vite + Vue 3 app under `web/src/` (components in `web/src/components/`, data adapter in `web/src/data.ts`)
 
 ## How to Submit
 
@@ -49,7 +49,7 @@ node build-index.js && node build-design-index.js
 ## Conventions
 
 - Patterns are numbered sequentially. Don't skip numbers.
-- Design principles are numbered 1-17. UX patterns are P1-P7.
+- Design principles are numbered 1-17. UX patterns are P1-P9.
 - Autonomy levels: L1 (Observe & Suggest), L2 (Plan & Propose), L3 (Act with Confirmation), L4 (Act Autonomously)
 - Relations use typed edges: `requires`, `enhances`, `alternative`, `extends`, `implements`, `conflicts`
 - All data files are ESM (`export`/`import`). No TypeScript build step.

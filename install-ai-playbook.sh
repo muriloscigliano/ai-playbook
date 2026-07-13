@@ -27,6 +27,10 @@ FILES=(
     "AI_ANTI_PATTERNS.md"
     "INDUSTRY_GUIDES.md"
     "PATTERN_INDEX.md"
+    "HARNESS.md"
+    "AGENT_EXPERIENCE.md"
+    "FOUNDATIONS.md"
+    "GLOSSARY.md"
 )
 
 # Colors
@@ -90,10 +94,17 @@ This project uses the AI Agent Patterns Playbook for architecture and design gui
 - Build guide: \`Read .claude/ai-playbook/AI_FIRST_BUILD_GUIDE.md\`
 - Full reference: \`.claude/ai-playbook/AI_AGENT_PATTERNS_PLAYBOOK.md\` (78 patterns, read specific sections only)
 
-### Design Principles (17) + UX Patterns (7)
+### Design Principles (17) + UX Patterns (9)
 - Design reference: \`.claude/ai-playbook/AI_DESIGN_PRINCIPLES.md\`
 - Covers: autonomy taxonomy, human task vocabulary, constraint taxonomy, governance
-- Cross-referenced to engineering patterns"
+- Cross-referenced to engineering patterns
+
+### Concepts & literacy
+- How it all fits together (3-layer harness, all 78 patterns mapped): \`Read .claude/ai-playbook/HARNESS.md\`
+- Designing your product for agents (Agent Experience): \`Read .claude/ai-playbook/AGENT_EXPERIENCE.md\`
+- Builder literacy (tokens, context, embeddings): \`Read .claude/ai-playbook/FOUNDATIONS.md\`
+- Term lookup: \`Read .claude/ai-playbook/GLOSSARY.md\`
+- Anti-patterns (18 failure modes): \`Read .claude/ai-playbook/AI_ANTI_PATTERNS.md\`"
 
     if [ -f "$claude_md" ]; then
         # Check if section already exists
