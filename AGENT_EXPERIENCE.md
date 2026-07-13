@@ -76,7 +76,7 @@ playbook already:
 | Risk when AX forgets the human | Where the playbook guards against it |
 |---|---|
 | Opaque, uncorrectable "black box" behavior | [The Black Box (#7)](AI_ANTI_PATTERNS.md); [Principle 3 (Transparent Thinking Partner)](AI_DESIGN_PRINCIPLES.md); [P3 Explainable Rationale](AI_DESIGN_PRINCIPLES.md) |
-| Transparency shrinking as confidence grows | [Trust Cliff (#14)](AI_ANTI_PATTERNS.md); [Principle 10 (Communicate Limitations)](AI_DESIGN_PRINCIPLES.md) |
+| Transparency shrinking as confidence grows → dependency without understanding | [Comprehension Debt (#16)](AI_ANTI_PATTERNS.md); [Principle 10 (Communicate Limitations)](AI_DESIGN_PRINCIPLES.md) |
 | Homogenized voice / flattened human expression | [Authenticity: the scarce signal](templates/MICROCOPY_SNIPPETS.md); [Principle 4 (Preserve Creative Interpretation)](AI_DESIGN_PRINCIPLES.md) |
 | Reinforced bias from preference-modeling | [Principle 14 (Beyond Immediate Utility)](AI_DESIGN_PRINCIPLES.md), [Principle 15 (Guardrails)](AI_DESIGN_PRINCIPLES.md) |
 | "AI as partner" overclaiming judgment it lacks | [Principle 5 (Non-Human Metaphors)](AI_DESIGN_PRINCIPLES.md); [Sycophancy Spiral (#9)](AI_ANTI_PATTERNS.md) |
