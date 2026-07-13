@@ -16,6 +16,18 @@ patterns, so this adds the *lens*, not new entities.
 
 ### Added
 
+- **AX serves UX; it does not replace it** — new section in `AGENT_EXPERIENCE.md`
+  that stress-tests the AX framing against its strongest critique (Ezra Schwartz,
+  *"Agentic Experience is just bad UX in disguise"*) and holds it correctly:
+  AX is good UX extended to a new medium, not a replacement for human-centeredness.
+  Encodes the critique's specific human-side failure modes (opaque black boxes,
+  transparency shrinking as confidence grows, homogenized voice, reinforced bias,
+  "AI as partner" overclaiming, agency lost to path-planning) as a table mapping
+  each to the playbook entity that already guards against it (#7, #14, #9,
+  principles 3/4/5/10/12/14/15, Authenticity). Folds in John Maeda's reconciliation
+  (*Simplicity & AX* — "teleport to the goal instead of navigating an obstacle
+  course"; designer as orchestrator) and sharpens the definition with Netlify's
+  discover / invoke / recover framing. Model-agnostic — no vendor stats.
 - **Usefulness audit — real bugs fixed.** A full audit (3 parallel review agents +
   functional testing) found surfaces that ran but didn't deliver value:
   - **`get_pattern(N)` returned the wrong pattern for all 78** (MCP) — matched the

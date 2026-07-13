@@ -7,8 +7,10 @@ different design problem, and it has a name.
 
 > **Agent Experience (AX)** is the experience an AI agent has when it interacts
 > with your product to accomplish a user's goal — how readily it can access,
-> understand, and operate your system. As people delegate more work to agents,
-> AX becomes a design surface of its own, next to UX and DX.
+> understand, and operate your system. Concretely, it measures how well an agent
+> can **discover** your service, **invoke** it reliably, and **recover** when
+> something fails. As people delegate more work to agents, AX becomes a design
+> surface of its own, next to UX and DX.
 
 Model-agnostic by construction: no vendor names, adoption stats, or version
 numbers — AX is a stance about *your* surface, not about which agent visits it.
@@ -39,6 +41,50 @@ all.
 describes how visible *your* AI is to *your* user. AX is orthogonal to it — it is
 about how legible *your product* is to *someone else's* agent. A quiet, ambient
 feature (V1) can still have excellent or terrible AX.
+
+---
+
+## AX serves UX; it does not replace it
+
+AX has a sharp, fair critique worth stating plainly: the "A" in AX is an *agent*
+— a non-human — while the "U" in UX is the *human*, and it is a mistake to let
+"design for agents" quietly become "stop designing for humans." The failure mode
+is real: a system that plans its own path with opaque logic produces a **black
+box the user cannot understand, predict, or correct**; preference-modeling
+treats human goals — which are contextual, contradictory, and evolving — as fixed
+data points, **homogenizing voice and reinforcing bias**; and the "AI as partner"
+metaphor **overclaims**, because an agent executes programmed behavior, not
+judgment. Reducing transparency *as confidence grows* leaves users with
+dependency and no framework for understanding failure. (This is Ezra Schwartz's
+argument, and it is a good one.)
+
+The resolution is not to abandon AX but to hold it correctly: **AX is good UX
+extended to a new medium, not a replacement for human-centeredness.** The user
+still owns the goal; the agent is how they reach it; and the same principles that
+make a human interface trustworthy make an agent-facing one trustworthy. John
+Maeda frames the upside precisely: at its best, an agentic experience lets a
+person **"teleport to the goal instead of navigating an obstacle course"** —
+simplicity as agency, the system carrying elaborate complexity beneath a simple
+surface. The designer becomes an *orchestrator of the experience*, not merely a
+crafter of screens — but the experience is still the human's.
+
+So every AX decision in this document is bounded by a human-centered rule: **make
+the agent path legible and capable, without making the human path opaque or
+disposable.** The specific risks the critique names each have a home in this
+playbook already:
+
+| Risk when AX forgets the human | Where the playbook guards against it |
+|---|---|
+| Opaque, uncorrectable "black box" behavior | [The Black Box (#7)](AI_ANTI_PATTERNS.md); [Principle 3 (Transparent Thinking Partner)](AI_DESIGN_PRINCIPLES.md); [P3 Explainable Rationale](AI_DESIGN_PRINCIPLES.md) |
+| Transparency shrinking as confidence grows | [Trust Cliff (#14)](AI_ANTI_PATTERNS.md); [Principle 10 (Communicate Limitations)](AI_DESIGN_PRINCIPLES.md) |
+| Homogenized voice / flattened human expression | [Authenticity: the scarce signal](templates/MICROCOPY_SNIPPETS.md); [Principle 4 (Preserve Creative Interpretation)](AI_DESIGN_PRINCIPLES.md) |
+| Reinforced bias from preference-modeling | [Principle 14 (Beyond Immediate Utility)](AI_DESIGN_PRINCIPLES.md), [Principle 15 (Guardrails)](AI_DESIGN_PRINCIPLES.md) |
+| "AI as partner" overclaiming judgment it lacks | [Principle 5 (Non-Human Metaphors)](AI_DESIGN_PRINCIPLES.md); [Sycophancy Spiral (#9)](AI_ANTI_PATTERNS.md) |
+| Agency lost to the system's own path-planning | [Principle 12 (Negotiate Agency)](AI_DESIGN_PRINCIPLES.md); [P2 Autonomy Dial](AI_DESIGN_PRINCIPLES.md) |
+
+The takeaway: **the future of software design needs deeper UX expertise, not
+less.** AX is where that expertise gets applied to a new class of user — the
+agent — *in service of* the human who sent it.
 
 ---
 
