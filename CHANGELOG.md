@@ -16,6 +16,15 @@ patterns, so this adds the *lens*, not new entities.
 
 ### Added
 
+- **Authenticity: the scarce signal** — new section in `templates/MICROCOPY_SNIPPETS.md`
+  (companion to Positioning & Naming). As generated output saturates every surface,
+  the genuinely human detail becomes the scarce, differentiating signal — the
+  positive inverse of Agentic Sludge. Concrete microcopy for preserving the user's
+  voice, attributing human review, and framing generated output as a draft to
+  humanize. Distilled from the authenticity counter-trend in NN/g's *State of UX
+  2026* — the one timeless design idea from an otherwise industry/careers piece;
+  its trends, stats, and careers commentary were deliberately left out as
+  out-of-scope.
 - **`HARNESS.md`** — defines the harness (the engineering that wraps a model) and
   its **three-layer anatomy**: Model layer (how intelligence is consumed), Data &
   API layer (what it consumes — deterministic, test it hard), and Verification
