@@ -1,7 +1,7 @@
 # AI Design Principles & UX Patterns for Agentic Systems
 
 > Companion to the [AI Agent Patterns Playbook](AI_AGENT_PATTERNS_PLAYBOOK.md).
-> 17 strategic design principles + 7 UX patterns + governance framework for building human-centered AI products.
+> 17 strategic design principles + 9 UX patterns + governance framework for building human-centered AI products.
 >
 > **v1.1 — April 2026**: Synthesized from Carnegie Mellon's UI for AI Lab, practitioner research, industry frameworks, and the AI Interaction Atlas. Cross-referenced to the playbook's 78 technical patterns. v1.1 adds Atlas interaction vocabularies (human tasks, constraints, touchpoints, AI task-to-autonomy mapping).
 
@@ -614,7 +614,7 @@ Friedman's five-area framework provides the most comprehensive vocabulary for de
 
 **Touchpoint Vocabulary (Where Interactions Happen):**
 
-Friedman's vocabulary defines *how* users interact. The touchpoint taxonomy defines *where* — the physical and digital surfaces through which agentic interactions occur. Each UX pattern (P1-P7) manifests differently depending on the touchpoint.
+Friedman's vocabulary defines *how* users interact. The touchpoint taxonomy defines *where* — the physical and digital surfaces through which agentic interactions occur. Each UX pattern (P1-P9) manifests differently depending on the touchpoint.
 
 **Source:** AI Interaction Atlas (ai-interaction.com, Apache 2.0, by quietloudlab).
 
@@ -627,7 +627,7 @@ Friedman's vocabulary defines *how* users interact. The touchpoint taxonomy defi
 | **Technical** (3) | Public API, CLI/Terminal, Document/Report | Developer-facing — P3 (Rationale) becomes structured metadata (JSON); P4 (Confidence) becomes a numeric field. Pattern 76 (Bridge) connects these to user-facing surfaces. | Pattern 76 |
 | **Physical Devices** (6) | IoT Sensor, Robot, Smart Appliance, Vehicle Interface, Haptic Device, Ambient Display | Physical consequences — L3/L4 actions have real-world effects. P1 (Intent Preview) is critical before any physical action. Escalation (P6) may require hardware kill switches. | Principle 13, 15 |
 
-**Design implication:** When implementing any UX pattern (P1-P7), first ask "which touchpoints will this appear on?" Then adapt the pattern's anatomy to the touchpoint's constraints. A Confidence Signal on a dashboard is a color-coded bar; on a voice interface it is a verbal qualifier ("I'm fairly confident..."); on an IoT sensor it is a LED color.
+**Design implication:** When implementing any UX pattern (P1-P9), first ask "which touchpoints will this appear on?" Then adapt the pattern's anatomy to the touchpoint's constraints. A Confidence Signal on a dashboard is a color-coded bar; on a voice interface it is a verbal qualifier ("I'm fairly confident..."); on an IoT sensor it is a LED color.
 
 **Playbook connection:** [Pattern 44 (Model Loop)](AI_AGENT_PATTERNS_PLAYBOOK.md) — the technical core of the iterative loop. Adaptive interfaces are the user-facing expression of the model loop, providing rich controls (Precision Knobs, Modifiers, Contextual Prompts) as the control surface for each iteration.
 

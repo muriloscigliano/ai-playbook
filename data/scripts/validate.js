@@ -10,6 +10,7 @@
 //   - orphan patterns (0 relations) — warned, not failed.
 // Exits non-zero with a readable report on any hard failure.
 
+import { readFileSync } from 'node:fs'
 import { patterns } from '../patterns/_index.js'
 import { principles } from '../principles/_index.js'
 import { uxPatterns } from '../ux-patterns/_index.js'
@@ -216,6 +217,44 @@ const CAPABILITY_CATEGORIES = new Set(['Retrieval', 'Classification', 'Analysis'
   }
   for (const p of patterns) {
     if (!involved.has(p.id)) warn(`orphan pattern ${p.id} (${p.name}) has 0 relations`)
+  }
+})()
+
+// ── 7. Prose-count drift in the markdown docs (fails on contradiction) ──
+// The data layer is the source of truth; the markdown must not claim a count
+// that contradicts it. This catches the class of staleness (e.g. "7 UX
+// patterns" / "P1-P7" left behind when P8/P9 were added) that data-only checks
+// miss because the numbers live in prose, not data.
+;(() => {
+  const repoRoot = new URL('../../', import.meta.url)
+  const uxCount = uxPatterns.length
+  const patternCount = patterns.length
+  const principleCount = principles.length
+  const uxMax = Math.max(...uxPatterns.map((p) => p.number))
+  // [file, /regex/, human description, predicate(matchText) => ok]
+  const staleUxRange = new RegExp(`P1[-–]P(?!${uxMax}\\b)\\d+`) // P1-Pn where n !== uxMax
+  const docChecks = [
+    ['AI_DESIGN_PRINCIPLES.md', staleUxRange, `UX range should be P1-P${uxMax}`],
+    ['AI_ANTI_PATTERNS.md', staleUxRange, `UX range should be P1-P${uxMax}`],
+    ['INDUSTRY_GUIDES.md', staleUxRange, `UX range should be P1-P${uxMax}`],
+    ['PATTERN_INDEX.md', staleUxRange, `UX range should be P1-P${uxMax}`],
+    ['CONTRIBUTING.md', staleUxRange, `UX range should be P1-P${uxMax}`],
+    ['CLAUDE.md', staleUxRange, `UX range should be P1-P${uxMax}`],
+  ]
+  // "N UX patterns" where N !== uxCount
+  const staleUxCount = new RegExp(`\\b(?!${uxCount}\\b)\\d+ UX patterns?\\b`)
+  for (const doc of ['README.md', 'CLAUDE.md', 'AI_DESIGN_PRINCIPLES.md', 'INDUSTRY_GUIDES.md', 'PATTERN_INDEX.md']) {
+    docChecks.push([doc, staleUxCount, `count should be ${uxCount} UX patterns`])
+  }
+  for (const [file, re, desc] of docChecks) {
+    let text
+    try {
+      text = readFileSync(new URL(file, repoRoot), 'utf8')
+    } catch {
+      continue // doc not present in this checkout — skip, don't fail
+    }
+    const m = text.match(re)
+    if (m) fail(`${file}: stale prose count "${m[0]}" — ${desc} (data has ${uxCount} UX patterns, ${patternCount} patterns, ${principleCount} principles)`)
   }
 })()
 

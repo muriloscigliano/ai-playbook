@@ -16,6 +16,25 @@ patterns, so this adds the *lens*, not new entities.
 
 ### Added
 
+- **Usefulness audit — real bugs fixed.** A full audit (3 parallel review agents +
+  functional testing) found surfaces that ran but didn't deliver value:
+  - **`get_pattern(N)` returned the wrong pattern for all 78** (MCP) — matched the
+    `section` field (pattern# + 1) as a fallback, so every lookup returned the
+    neighbour. Fixed.
+  - **`recommend_design` / CLI `design` dead-ended on realistic briefs** — only 10
+    of 36 constraints and 15 of 23 human tasks had detection keywords. Now derived
+    from each entity's own `keywords[]` (all reachable) + curated extras; added
+    approve/approval/human-in-the-loop and response-time phrasings; de-greedied
+    project-type detection. Also fixed a latent `constraint.playbook` (→ `.patterns`)
+    crash.
+  - **`get_relations(N)` — new 16th MCP tool** exposing the typed relations graph
+    (the web explorer's best feature) for architecture traversal.
+  - Synced stale prose counts across 6 docs (`P1-P7` → `P1-P9`, "all 17 principles"
+    → "16 of 17"); installer now ships HARNESS/AGENT_EXPERIENCE/FOUNDATIONS/GLOSSARY;
+    CONTRIBUTING points at the real Vite/Vue web paths.
+  - **`validate.js` now greps the markdown for prose-count drift** and fails on
+    contradiction with the data — the guardrail that would have caught all the
+    above.
 - **Authenticity: the scarce signal** — new section in `templates/MICROCOPY_SNIPPETS.md`
   (companion to Positioning & Naming). As generated output saturates every surface,
   the genuinely human detail becomes the scarce, differentiating signal — the

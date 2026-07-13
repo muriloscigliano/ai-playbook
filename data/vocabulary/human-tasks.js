@@ -186,7 +186,7 @@ export const humanTasks = {
     uxPattern: 'P1',
     principles: [12, 13],
     patterns: [20, 44],
-    keywords: ['review', 'approve', 'check', 'verify', 'confirm', 'validate'],
+    keywords: ['review', 'approve', 'approval', 'approves', 'check', 'verify', 'confirm', 'validate', 'sign-off', 'sign off', 'human in the loop', 'asks before', 'confirm before'],
     description: 'Inspect and approve or reject agent-generated results.',
   },
   validate_data: {
@@ -257,20 +257,24 @@ export const humanTasks = {
   },
 }
 
-export const taskKeywords = {
-  authenticate: ['login', 'auth', 'identity', 'sign in', 'credentials', 'sso'],
-  grant_consent: ['consent', 'permission', 'authorize', 'allow', 'gdpr', 'privacy'],
-  upload_file: ['upload', 'file', 'document', 'attachment', 'import'],
-  type_input: ['input', 'type', 'text', 'prompt', 'query', 'search'],
-  voice_command: ['voice', 'speech', 'speak', 'audio', 'dictation', 'alexa', 'siri'],
-  configure_system: ['configure', 'settings', 'preferences', 'setup', 'customize', 'parameters'],
-  review_approve: ['review', 'approve', 'check', 'verify', 'confirm', 'validate'],
-  provide_feedback: ['feedback', 'rating', 'thumbs', 'like', 'dislike', 'sentiment'],
-  flag_content: ['flag', 'report', 'inappropriate', 'harmful', 'abuse', 'moderation'],
-  edit_content: ['edit', 'modify', 'refine', 'rewrite', 'tweak'],
-  export_download: ['export', 'download', 'share', 'copy', 'csv', 'json'],
-  start_process: ['start', 'begin', 'initiate', 'launch', 'trigger', 'run'],
-  stop_process: ['stop', 'cancel', 'abort', 'pause', 'halt', 'kill'],
-  compare_options: ['compare', 'side by side', 'diff', 'options', 'alternatives'],
-  annotate: ['annotate', 'highlight', 'mark', 'comment', 'label'],
+// Detection keyword map for `detectHumanTasks`. Derived from every task's own
+// `keywords[]` (so all 23 tasks are reachable — not a hand-maintained subset),
+// merged with curated extras for common natural phrasings.
+const taskKeywordExtras = {
+  authenticate: ['login', 'sign in', 'credentials', 'sso'],
+  grant_consent: ['permission', 'authorize', 'allow', 'gdpr'],
+  type_input: ['prompt', 'query'],
+  voice_command: ['speech', 'speak', 'dictation', 'alexa', 'siri'],
+  configure_system: ['settings', 'preferences', 'setup', 'customize'],
+  provide_feedback: ['rating', 'thumbs', 'like', 'dislike'],
+  flag_content: ['report', 'inappropriate', 'abuse', 'moderation'],
+  start_process: ['begin', 'initiate', 'launch', 'trigger', 'run'],
+  stop_process: ['cancel', 'abort', 'pause', 'halt'],
 }
+
+export const taskKeywords = Object.fromEntries(
+  Object.entries(humanTasks).map(([key, t]) => [
+    key,
+    [...new Set([...(t.keywords || []), ...(taskKeywordExtras[key] || [])])],
+  ]),
+)
