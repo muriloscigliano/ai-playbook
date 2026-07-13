@@ -1,7 +1,7 @@
 # AI Agent Patterns Playbook
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![MCP Tools](https://img.shields.io/badge/MCP_Tools-15-blue.svg)](mcp-server/)
+[![MCP Tools](https://img.shields.io/badge/MCP_Tools-16-blue.svg)](mcp-server/)
 [![Patterns](https://img.shields.io/badge/Patterns-78-orange.svg)](AI_AGENT_PATTERNS_PLAYBOOK.md)
 [![Principles](https://img.shields.io/badge/Design_Principles-17-purple.svg)](AI_DESIGN_PRINCIPLES.md)
 
@@ -356,7 +356,7 @@ git clone https://github.com/muriloscigliano/ai-playbook.git ~/.ai-playbook
 
 ## MCP Server (Recommended)
 
-The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 380KB+ of files**. 15 tools, zero context waste.
+The MCP server gives any AI agent instant access to patterns and design principles **without loading the full 380KB+ of files**. 16 tools, zero context waste.
 
 ### Setup
 
@@ -389,7 +389,7 @@ node build-design-index.js
 
 ### Available Tools
 
-**Engineering Patterns & Capabilities (10 tools):**
+**Engineering Patterns & Capabilities (11 tools):**
 
 | Tool | Input | Output | Best for |
 |------|-------|--------|----------|
@@ -401,6 +401,7 @@ node build-design-index.js
 | `get_capability` | `"anomaly-detection"` | Full capability write-up | Ready to design around a specific capability |
 | `search_patterns` | `"memory"` | Top 10 matching patterns | Know the topic, need the right pattern |
 | `get_pattern` | `23` | Full pattern content (problem, solution, pseudocode) | Ready to implement a specific pattern |
+| `get_relations` | `44` | The pattern's typed graph neighbourhood — requires / enhances / conflicts / alternatives | Architecting: find what a pattern connects to |
 | `list_patterns` | `"safety"` (optional) | All patterns in a Part, one-line each | Browsing what's available |
 | `get_build_guide` | `"phase 1"` (optional) | Build guide section or decision trees | Planning your architecture |
 

@@ -3,7 +3,7 @@
 /**
  * AI Playbook MCP Server
  *
- * Provides 15 tools for retrieving patterns and design principles from the
+ * Provides 16 tools for retrieving patterns and design principles from the
  * AI Agent Patterns Playbook and AI Design Principles document.
  *
  * Engineering Patterns (7 tools):
@@ -15,6 +15,7 @@
  *   - recommend_capability(task)              → "group these" → the right primitive
  *   - search_patterns(query)                  → Find patterns by keyword
  *   - get_pattern(number)                     → Get full content of a pattern
+ *   - get_relations(number)                   → Typed relations / graph neighbourhood of a pattern
  *   - list_patterns(part?)                    → List all patterns by Part
  *   - get_build_guide(section?)               → Decision trees & phases
  *
@@ -45,6 +46,8 @@ import { taskKeywords } from '../data/vocabulary/human-tasks.js'
 import { constraints, constraintCategories, constraintKeywords } from '../data/vocabulary/constraints.js'
 import { uxPatternsByNumber } from '../data/ux-patterns/_index.js'
 import { principlesByNumber } from '../data/principles/_index.js'
+import { patternsByNumber } from '../data/patterns/_index.js'
+import { getRelationsFor } from '../data/relations/_index.js'
 import { detectProjectType, detectProblems, detectUxComplaints, detectCapabilities, detectHumanTasks, detectConstraints } from '../data/helpers/search.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -500,6 +503,52 @@ server.tool(
         text: pattern.content,
       }],
     }
+  },
+)
+
+// Tool 4b: Get the typed relations for a pattern (graph traversal)
+server.tool(
+  'get_relations',
+  'Get the typed relationships for an engineering pattern — what it requires, enhances, extends, is an alternative to, conflicts with, or implements. This is the graph traversal behind the web explorer: use it to find the neighbourhood of a pattern when architecting.',
+  { number: z.number().describe('Pattern number (1-78) to get relationships for') },
+  async ({ number }) => {
+    const p = patternsByNumber[number]
+    if (!p) {
+      return { content: [{ type: 'text', text: `Pattern ${number} not found. Valid range: 1-78.` }] }
+    }
+    const rels = getRelationsFor(p.id)
+    if (rels.length === 0) {
+      return { content: [{ type: 'text', text: `Pattern ${number} (${p.name}) has no recorded relations.` }] }
+    }
+
+    const label = (id) => {
+      const [kind, ...rest] = id.split('-')
+      if (kind === 'pattern') { const n = patternsByNumber[+rest[0]]; return n ? `Pattern ${n.number}: ${n.name}` : id }
+      if (kind === 'principle') { const n = principlesByNumber[+rest[0]]; return n ? `Principle ${n.number}: ${n.name}` : id }
+      if (kind === 'ux') { const n = uxPatternsByNumber[+rest[1]]; return n ? `${n.code}: ${n.name}` : id }
+      if (kind === 'capability') return `Capability: ${rest.join('-')}`
+      return id
+    }
+
+    // group by relation type, showing direction
+    const byType = {}
+    for (const r of rels) {
+      const outgoing = r.from === p.id
+      const other = outgoing ? r.to : r.from
+      ;(byType[r.type] ||= []).push({ label: label(other), outgoing, strength: r.strength, reason: r.reason || r.note || '' })
+    }
+
+    const lines = [`# Relations for Pattern ${number}: ${p.name}\n`, `${rels.length} connection${rels.length === 1 ? '' : 's'}.\n`]
+    for (const [type, items] of Object.entries(byType)) {
+      lines.push(`## ${type.replace(/_/g, ' ')}`)
+      for (const it of items) {
+        const arrow = it.outgoing ? '→' : '←'
+        lines.push(`- ${arrow} ${it.label} *(${it.strength})*${it.reason ? ` — ${it.reason}` : ''}`)
+      }
+      lines.push('')
+    }
+    lines.push('Use `get_pattern(N)` for full content, or `get_relations(N)` on a neighbour to keep traversing.')
+    return { content: [{ type: 'text', text: lines.join('\n') }] }
   },
 )
 
