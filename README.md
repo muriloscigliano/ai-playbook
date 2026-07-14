@@ -9,8 +9,8 @@
 > The core (63–78) is the stuff that only shows up once agents hit production: deferred tool loading, hierarchical memory files, a skills system, the one-core-many-surfaces bridge pattern, and tool-result tombstones. Wrapped around it: 78 engineering patterns, 17 design principles, 9 UX patterns, and a typed data layer that connects them.
 
 ```bash
-git clone https://github.com/muriloscigliano/ai-playbook.git   # CLI, MCP server, web explorer, docs
-# npm package (@muriloscigliano/ai-playbook, the structured data layer) — publish pending; see "Structured Data Layer" below
+npm install @muriloscigliano/ai-playbook              # the structured data layer (patterns, uxDiagnoses, relations…)
+git clone https://github.com/muriloscigliano/ai-playbook.git   # or the full repo: CLI, MCP server, web explorer, docs
 ```
 
 > **Recently added** — an **Agent Experience (AX)** lens ([`AGENT_EXPERIENCE.md`](AGENT_EXPERIENCE.md)) with its own review checklist and the human-centered guardrail that answers the "AX is just bad UX" critique; the [`HARNESS.md`](HARNESS.md) 3-layer anatomy tying all 78 patterns together; **loop engineering** (autonomous-loop blueprint + 3 autonomy anti-patterns) and an over-engineering anti-pattern; a **capability layer** (task → the right AI primitive); `FOUNDATIONS.md`/`GLOSSARY.md`; a `diagnose_ux` reverse lookup; response-shaping UX patterns (P8/P9); a Quiet-vs-Visible AI axis (V1–V4); and a `get_relations` graph tool (16 MCP tools total). See the [CHANGELOG](CHANGELOG.md).
@@ -210,14 +210,14 @@ Sources include Carnegie Mellon's UI for AI Lab, the [AI Interaction Atlas](http
 
 The `data/` directory is a structured, programmatic data layer — the source of truth for metadata, vocabulary, taxonomy, and relations. Pure ESM, zero runtime dependencies, MIT.
 
-> **Status:** the package (`@muriloscigliano/ai-playbook`, v2.2.0) is publish-ready and verified installable, but **not yet published to npm**. Use it from the repo today; the `npm install` path lights up once it's published.
+Published on npm — `npm install @muriloscigliano/ai-playbook` (v2.2.0).
 
 ```js
-// From the repo (works today)
-import { patterns, humanTasks, constraints, getRelationsFor } from './data/index.js'
-
-// As an npm package (once published)
+// As an npm package
 import { patterns, humanTasks, getRelationsFor } from '@muriloscigliano/ai-playbook'
+
+// Or from a clone of the repo
+import { patterns, humanTasks, constraints, getRelationsFor } from './data/index.js'
 ```
 
 ### What's exported
